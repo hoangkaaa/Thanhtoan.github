@@ -66,7 +66,7 @@ class Cart {
     }
     
     // Thêm sản phẩm vào giỏ hàng
-    public function addItem($user_id, $product_id, $quantity) {
+    public function addItem($user_id, $product_id, $name, $price, $image, $category, $variant, $quantity) {
         // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
         $check_query = "SELECT id, quantity FROM " . $this->table . " 
                        WHERE user_id = :user_id AND product_id = :product_id";
@@ -91,11 +91,18 @@ class Cart {
         } else {
             // Nếu chưa có, thêm mới
             $insert_query = "INSERT INTO " . $this->table . " 
-                           (user_id, product_id, quantity) 
-                           VALUES (:user_id, :product_id, :quantity)";
+                           (user_id, product_id, product_name, product_price, product_image, 
+                            product_category, product_variant, quantity, created_at) 
+                           VALUES (:user_id, :product_id, :product_name, :product_price, 
+                                   :product_image, :product_category, :product_variant, :quantity, NOW())";
             $insert_stmt = $this->conn->prepare($insert_query);
             $insert_stmt->bindParam(':user_id', $user_id);
             $insert_stmt->bindParam(':product_id', $product_id);
+            $insert_stmt->bindParam(':product_name', $name);
+            $insert_stmt->bindParam(':product_price', $price);
+            $insert_stmt->bindParam(':product_image', $image);
+            $insert_stmt->bindParam(':product_category', $category);
+            $insert_stmt->bindParam(':product_variant', $variant);
             $insert_stmt->bindParam(':quantity', $quantity);
             
             return $insert_stmt->execute();
@@ -104,15 +111,93 @@ class Cart {
     
     // Lấy các sản phẩm trong giỏ hàng của user
     public function getItems($user_id) {
-        $query = "SELECT c.*, p.name, p.price, p.image, p.category, p.variant 
-                 FROM " . $this->table . " c 
-                 JOIN products p ON c.product_id = p.id 
-                 WHERE c.user_id = :user_id";
+        $query = "SELECT * FROM " . $this->table . " WHERE user_id = :user_id ORDER BY created_at DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':user_id', $user_id);
         $stmt->execute();
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
+    // Cập nhật số lượng sản phẩm
+    public function updateQuantity($user_id, $product_id, $quantity) {
+        if ($quantity <= 0) {
+            return $this->removeItem($user_id, $product_id);
+        }
+        
+        $query = "UPDATE " . $this->table . " 
+                 SET quantity = :quantity 
+                 WHERE user_id = :user_id AND product_id = :product_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':quantity', $quantity);
+        $stmt->bindParam(':user_id', $user_id);
+        $stmt->bindParam(':product_id', $product_id);
+        
+        return $stmt->execute();
+    }
+    
+    // Xóa sản phẩm khỏi giỏ hàng
+    public function removeItem($user_id, $product_id) {
+        $query = "DELETE FROM " . $this->table . " 
+                 WHERE user_id = :user_id AND product_id = :product_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':user_id', $user_id);
+        $stmt->bindParam(':product_id', $product_id);
+        
+        return $stmt->execute();
+    }
+    
+    // Đếm số lượng sản phẩm trong giỏ hàng
+    public function getItemCount($user_id) {
+        $query = "SELECT SUM(quantity) as total FROM " . $this->table . " WHERE user_id = :user_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':user_id', $user_id);
+        $stmt->execute();
+        
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total'] ? $result['total'] : 0;
+    }
+    
+    // Tính tổng giá trị giỏ hàng
+    public function getTotal($user_id) {
+        $query = "SELECT SUM(product_price * quantity) as total FROM " . $this->table . " WHERE user_id = :user_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':user_id', $user_id);
+        $stmt->execute();
+        
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total'] ? $result['total'] : 0;
+    }
+    
+    // Xóa toàn bộ giỏ hàng
+    public function clearCart($user_id) {
+        $query = "DELETE FROM " . $this->table . " WHERE user_id = :user_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':user_id', $user_id);
+        
+        return $stmt->execute();
+    }
+}
+
+// Include file cấu hình database
+require_once 'config/database.php';
+
+// Tạo kết nối database
+$database = new Database();
+$db = $database->connect();
+
+// Kiểm tra kết nối
+if ($db) {
+    echo "Kết nối database thành công!";
+    
+    // Sử dụng các class để thao tác với database
+    $product = new Product($db);
+    $cart = new Cart($db);
+    
+    // Ví dụ: Lấy tất cả sản phẩm
+    $products = $product->getAll();
+    
+} else {
+    echo "Lỗi kết nối database!";
 }
 ?> 

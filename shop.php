@@ -343,7 +343,7 @@ function buildUrl($params = []) {
     </div>
     <ul class="nav__list">
       <li class="nav__item">
-        <a href="index.html" class="nav__link ">Trang chủ</a>
+        <a href="index.php" class="nav__link ">Trang chủ</a>
       </li>
       <li class="nav__item">
         <a href="shop.php" class="nav__link active-link">Cửa hàng</a>
@@ -413,7 +413,7 @@ function buildUrl($params = []) {
       <!--=============== ĐƯỜNG DẪN HIỆN TẠI ===============-->
       <section class="breadcrumb">
         <ul class="breadcrumb__list flex container">
-          <li><a href="index.html" class="breadcrumb__link">Trang chủ</a></li>
+          <li><a href="index.php" class="breadcrumb__link">Trang chủ</a></li>
           <li><span class="breadcrumb__link">></span></li>
           <li><span class="breadcrumb__link">Cửa hàng</span></li>
         </ul>
