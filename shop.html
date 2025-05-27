@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!--=============== FLATICON ===============-->
+    <link rel="icon" href="./assets/img/logo_hinh_red.svg" type="image/png">
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/2.0.0/uicons-regular-straight/css/uicons-regular-straight.css"
+    />
+
+    <!--=============== SWIPER CSS ===============-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
+
+    <!--=============== CSS ===============-->
+    <link rel="stylesheet" href="./assets/css/style_shop.css" />
+    <link rel="stylesheet" href="./assets/css/breakpoint.css" />
+
+    <title>Sunkissed - Nước đóng lon</title>
+  </head>
+  <body>
+   <!--=============== HEADER ===============-->
+   <header class="header">
+    <div class="header__top">
+      <div class="header__container container">
+        <div class="header__contact">
+          <span>(+84)335993276</span>
+          <span></span>
+        </div>
+        <p class="header__alert-news">
+         Giảm 15% trên mọi đơn hàng từ 20-24/12
+        </p>
+        <a href="#" onclick="alert('Tính năng đăng nhập không có trong mini project')" class="header__top-action">
+         Đăng nhập/ Đăng kí
+        </a>
+      </div>
+    </div>
+
+<!-- Navigation -->
+<nav class="nav container">
+  <a href="shop.html" class="nav__logo">
+    <img class="nav__logo-img" src="assets/img/logo_red.svg" alt="website logo" />
+  </a>
+  <div class="nav__menu" id="nav-menu">
+    <div class="nav__menu-top">
+      <a href="shop.html" class="nav__menu-logo">
+        <img src="./assets/img/logo_red.svg" alt="">
+      </a>
+      <div class="nav__close" id="nav-close">
+        <i class="fi fi-rs-cross-small"></i>
+      </div>
+    </div>
+    <ul class="nav__list">
+      <li class="nav__item">
+        <a href="shop.html" class="nav__link active-link">Cửa hàng</a>
+      </li>
+      <li class="nav__item">
+        <a href="cart.html" class="nav__link">Giỏ hàng</a>
+      </li>
+      <li class="nav__item">
+        <a href="checkout.html" class="nav__link">Thanh toán</a>
+      </li>
+    </ul>
+
+    <!-- Hộp tìm kiếm -->
+    <div class="header__search">
+      <input type="text" placeholder="Tìm kiếm sản phẩm" class="form__input" />
+    </div>
+  </div>
+
+    <!-- Wishlist và Giỏ hàng -->
+    <div class="header__user-actions">
+      <a href="#" onclick="alert('Wishlist không có trong mini project')" class="header__action-btn" title="Wishlist">
+        <img src="assets/img/icon-heart.svg" alt="" />
+        <span class="count">3</span>
+      </a>
+      <a href="cart.html" class="header__action-btn" title="Cart">
+        <img src="assets/img/icon-cart.svg" alt="" />
+        <span class="count">2</span>
+      </a>
+      <div class="header__action-btn nav__toggle" id="nav-toggle">
+        <img src="./assets//img/menu-burger.svg" alt="">
+      </div>
+    </div>
+  </nav>
+  </header>
+    <!--=============== MAIN ===============-->
+    <main class="main">
+     
+      <!--=============== ĐƯỜNG DẪN HIỆN TẠI ===============-->
+      <section class="breadcrumb">
+        <ul class="breadcrumb__list flex container">
+          <li><a href="shop.html" class="breadcrumb__link">Cửa hàng</a></li>
+        </ul>
+      </section>
+
+      <!--=============== LỌC SẢN PHẨM ===============-->
+      <div class="filter-toggle-container">
+        <button id="toggle-filter-button" class="btn">Hiển thị bộ lọc</button>
+      </div>
+      <section class="filter container" id="filter-section">
+        <div class="filter__content">
+        <form id="filter-form">
+          <!-- Loại sản phẩm -->
+          <div class="filter__group">
+            <label for="categories">Loại sản phẩm:</label>
+            <select id="categories" name="categories">
+              <option value="">Tất cả</option>
+              <option value="Tropical">Tropical</option>
+              <option value="Trà Sữa">Trà Sữa</option>
+              <option value="Cà Phê">Cà Phê</option>
+              <option value="Trà Thảo Mộc">Trà Thảo Mộc</option>
+              <option value="Kombucha">Kombucha</option>
+              <option value="Mocktail">Mocktail</option>
+              <option value="Nước Tăng Lực">Nước Tăng Lực</option>
+              <option value="Sữa">Sữa</option>
+            </select>
+          </div>
+      
+          <!-- Giảm giá -->
+          <div class="filter__group">
+            <label for="discount">Giảm giá:</label>
+            <select id="discount" name="discount">
+              <option value="">Tất cả</option>
+              <option value="yes">Đang giảm giá</option>
+              <option value="no">Không giảm giá</option>
+            </select>
+          </div>
+      
+          <!-- Trạng thái -->
+          <div class="filter__group">
+            <label for="stock">Trạng thái:</label>
+            <select id="stock" name="stock">
+              <option value="">Tất cả</option>
+              <option value="in">Còn hàng</option>
+              <option value="almost">Sắp hết</option>
+            </select>
+          </div>
+      
+          <!-- Khoảng giá -->
+          <div class="filter__group">
+            <label for="price">Khoảng giá:</label>
+            <input type="range" id="price" name="price" min="23" max="55" step="2" value="23" />
+            <span id="price-value">23.000 vnđ</span>
+          </div>
+      
+          <!-- Ngày sản xuất -->
+          <div class="filter__group">
+            <label for="date">Ngày sản xuất:</label>
+            <select id="date" name="date">
+              <option value="">Tất cả</option>
+              <option value="1">1 tháng gần đây</option>
+              <option value="3">3 tháng gần đây</option>
+              <option value="6">6 tháng gần đây</option>
+              <option value="12">1 năm gần đây</option>
+            </select>
+          </div>
+      
+          <!-- Nút lọc -->
+          <div class="filter__actions">
+            <button type="button" id="filter-button">Lọc</button>
+            <button type="reset" id="reset-button">Đặt lại</button>
+          </div>
+        </form>
+      </div>
+      </section>
+
+      <!--=============== SẢN PHẨM ===============-->
+      <section class="products container section--lg">
+        <!--=============== SẮP XẾP SẢN PHẨM ===============-->
+      <div class="sort">
+        <label for="sort-options">Sắp xếp theo:</label>
+        <select id="sort-options" name="sort-options">
+          <option value="">Chọn tiêu chí</option>
+          <option value="rating-asc">Đánh giá (Thấp → Cao)</option>
+          <option value="rating-desc">Đánh giá (Cao → Thấp)</option>
+          <option value="price-asc">Giá (Thấp → Cao)</option>
+          <option value="price-desc">Giá (Cao → Thấp)</option>
+          <option value="date-newest">Ngày sản xuất (Mới nhất)</option>
+          <option value="date-oldest">Ngày sản xuất (Cũ nhất)</option>
+        </select>
+      </div>
+        <!--TỔNG SẢN PHẨM TÌM ĐƯỢC-->
+        <p class="total__products">Đã tìm thấy <span>...</span> sản phẩm phù hợp với bạn!</p>
+        <!--LƯỚI SẢN PHẨM-->  
+        <div class="products__container grid">
+          <div class="product__item" data-stock="in" data-categories="Tropical" data-price="35" data-rating="4.3" data-discount="yes" data-date="2024-06-15">
+            <!--ẢNH BANNER SẢN PHẨM-->
+            <div class="product__banner">
+              <a href="#" onclick="alert('Chi tiết sản phẩm không có trong mini project')" class="product__images">
+                <img
+                  src="./assets/img/td_p1_bg.png"
+                  alt=""
+                  class="product__img default"
+                />
+                <!--ẢNH BANNER SẢN PHẨM (SAU KHI HOVER)-->
+                <img
+                  src="./assets/img/td_p1_bg.png"
+                  alt=""
+                  class="product__img hover" 
+                />
+              </a>
+              <!--CÁC HÀNH ĐỘNG VỚI SẢN PHẨM-->
+              <div class="product__actions">
+                <a href="#" onclick="alert('Xem nhanh không có trong mini project')" class="action__btn" aria-label="Xem Nhanh">
+                  <i class="fi fi-rs-eye"></i>
+                </a>
+                <a
+                  href="#" onclick="alert('Wishlist không có trong mini project')"
+                  class="action__btn"
+                  aria-label="Thêm vào Wishlist"
+                >
+                  <i class="fi fi-rs-heart"></i>
+                </a>
+              </div>
+              <div class="product__badge ">-15%</div>
+            </div>
+            <div class="product__content">
+              <span class="product__category">Tropical</span>
+              <a href="#" onclick="alert('Chi tiết sản phẩm không có trong mini project')">
+                <h3 class="product__title">Hương Cam</h3>
+              </a>
+              <div class="product__rating">
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i id="product-rating-text">4.3</i>
+              </div>
+              <div class="product__price flex">
+                <span class="new__price">35.000 vnđ</span>
+                <span class="old__price">55.000 vnđ</span>
+              </div>
+              <a
+                href="#" onclick="alert('Thêm vào giỏ hàng - Chức năng demo')"
+                class="action__btn cart__btn"
+                aria-label="Thêm vào giỏ hàng"
+              >
+                <i class="fi fi-rs-shopping-bag-add"></i>
+              </a>
+            </div>
+          </div>
+          <!--SẢN PHẨM 2-->
+          <div class="product__item" data-stock="in" data-categories="Trà Sữa" data-price="30" data-rating="4.5" data-discount="yes" data-date="2024-09-16">
+            <div class="product__banner">
+              <a href="#" onclick="alert('Chi tiết sản phẩm không có trong mini project')" class="product__images">
+                <img
+                src="./assets/img/mt_p1_bg.png"
+                  alt=""
+                  class="product__img default"
+                />
+                <img
+                src="./assets/img/mt_p1_bg.png"
+                  alt=""
+                  class="product__img hover"
+                />
+              </a>
+              <div class="product__actions">
+                <a href="#" onclick="alert('Xem nhanh không có trong mini project')" class="action__btn" aria-label="Xem Nhanh">
+                  <i class="fi fi-rs-eye"></i>
+                </a>
+                <a
+                  href="#" onclick="alert('Wishlist không có trong mini project')"
+                  class="action__btn"
+                  aria-label="Thêm vào Wishlist"
+                >
+                  <i class="fi fi-rs-heart"></i>
+                </a>
+              </div>
+              <div class="product__badge ">-15%</div>
+            </div>
+            <div class="product__content">
+              <span class="product__category">Trà Sữa</span>
+              <a href="#" onclick="alert('Chi tiết sản phẩm không có trong mini project')">
+                <h3 class="product__title">Hương Socola</h3>
+              </a>
+              <div class="product__rating">
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i id="product-rating-text">4.5</i>
+              </div>
+              <div class="product__price flex">
+                <span class="new__price">30.000 vnđ</span>
+                <span class="old__price">50.000 vnđ</span>
+              </div>
+              <a
+                href="#" onclick="alert('Thêm vào giỏ hàng - Chức năng demo')"
+                class="action__btn cart__btn"
+                aria-label="Thêm vào giỏ hàng"
+              >
+                <i class="fi fi-rs-shopping-bag-add"></i>
+              </a>
+            </div>
+          </div>
+          <!--SẢN PHẨM 3-->
+          <div class="product__item" data-stock="in" data-categories="Cà Phê" data-price="35" data-rating="4.2" data-discount="yes" data-date="2024-11-12">
+            <div class="product__banner">
+              <a href="#" onclick="alert('Chi tiết sản phẩm không có trong mini project')" class="product__images">
+                <img
+                src="./assets/img/cf_p1_bg.png"
+                  alt=""
+                  class="product__img default"
+                />
+                <img
+                  src="./assets/img/cf_p1_bg.png"
+                  alt=""
+                  class="product__img hover"
+                />
+              </a>
+              <div class="product__actions">
+                <a href="#" onclick="alert('Xem nhanh không có trong mini project')" class="action__btn" aria-label="Xem Nhanh">
+                  <i class="fi fi-rs-eye"></i>
+                </a>
+                <a
+                  href="#" onclick="alert('Wishlist không có trong mini project')"
+                  class="action__btn"
+                  aria-label="Thêm vào Wishlist"
+                >
+                  <i class="fi fi-rs-heart"></i>
+                </a>
+              </div>
+              <div class="product__badge ">-15%</div>
+            </div>
+            <div class="product__content">
+              <span class="product__category">Cà Phê</span>
+              <a href="#" onclick="alert('Chi tiết sản phẩm không có trong mini project')">
+                <h3 class="product__title">Vị Sài Gòn</h3>
+              </a>
+              <div class="product__rating">
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i id="product-rating-text">4.2</i>
+              </div>
+              <div class="product__price flex">
+                <span class="new__price">35.000 vnđ</span>
+                <span class="old__price">55.000 vnđ</span>
+              </div>
+              <a
+                href="#" onclick="alert('Thêm vào giỏ hàng - Chức năng demo')"
+                class="action__btn cart__btn"
+                aria-label="Thêm vào giỏ hàng"
+              >
+                <i class="fi fi-rs-shopping-bag-add"></i>
+              </a>
+            </div>
+          </div>
+          <!--SẢN PHẨM 4-->
+          <div class="product__item" data-stock="in" data-categories="Trà Thảo Mộc" data-price="25" data-rating="4.6" data-discount="yes" data-date="2024-11-10">
+            <div class="product__banner">
+              <a href="#" onclick="alert('Chi tiết sản phẩm không có trong mini project')" class="product__images">
+                <img
+                src="./assets/img/ht_p1_bg.png"
+                  alt=""
+                  class="product__img default"
+                />
+                <img
+                src="./assets/img/ht_p1_bg.png"
+                  alt=""
+                  class="product__img hover"
+                />
+              </a>
+              <div class="product__actions">
+                <a href="#" onclick="alert('Xem nhanh không có trong mini project')" class="action__btn" aria-label="Xem Nhanh">
+                  <i class="fi fi-rs-eye"></i>
+                </a>
+                <a
+                  href="#" onclick="alert('Wishlist không có trong mini project')"
+                  class="action__btn"
+                  aria-label="Thêm vào Wishlist"
+                >
+                  <i class="fi fi-rs-heart"></i>
+                </a>
+              </div>
+              <div class="product__badge light-orange">Giảm Giá</div>
+            </div>
+            <div class="product__content">
+              <span class="product__category">Trà Thảo Mộc</span>
+              <a href="#" onclick="alert('Chi tiết sản phẩm không có trong mini project')">
+                <h3 class="product__title">Hương Chanh</h3>
+              </a>
+              <div class="product__rating">
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i id="product-rating-text">4.6</i>
+              </div>
+              <div class="product__price flex">
+                <span class="new__price">25.000 vnđ</span>
+                <span class="old__price">35.000 vnđ</span>
+              </div>
+              <a
+                href="#" onclick="alert('Thêm vào giỏ hàng - Chức năng demo')"
+                class="action__btn cart__btn"
+                aria-label="Thêm vào giỏ hàng"
+              >
+                <i class="fi fi-rs-shopping-bag-add"></i>
+              </a>
+            </div>
+          </div>
+          <!--SẢN PHẨM 5-->
+          <div class="product__item"  data-stock="in" data-categories="Kombucha" data-price="35" data-rating="4.4" data-discount="yes" data-date="2024-11-11">
+            <div class="product__banner">
+              <a href="#" onclick="alert('Chi tiết sản phẩm không có trong mini project')" class="product__images">
+                <img
+                  src="./assets/img/kom_p1_bg.png"
+                  alt=""
+                  class="product__img default"
+                />
+                <img
+                  src="./assets/img/kom_p1_bg.png"
+                  alt=""
+                  class="product__img hover"
+                />
+              </a>
+              <div class="product__actions">
+                <a href="#" onclick="alert('Xem nhanh không có trong mini project')" class="action__btn" aria-label="Xem Nhanh">
+                  <i class="fi fi-rs-eye"></i>
+                </a>
+                <a
+                  href="#" onclick="alert('Wishlist không có trong mini project')"
+                  class="action__btn"
+                  aria-label="Thêm vào Wishlist"
+                >
+                  <i class="fi fi-rs-heart"></i>
+                </a>
+              </div>
+              <div class="product__badge ">-15%</div>
+            </div>
+            <div class="product__content">
+              <span class="product__category">Kombucha</span>
+              <a href="#" onclick="alert('Chi tiết sản phẩm không có trong mini project')">
+                <h3 class="product__title">Hương Lựu Đỏ</h3>
+              </a>
+              <div class="product__rating">
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i id="product-rating-text">4.4</i>
+              </div>
+              <div class="product__price flex">
+                <span class="new__price">35.000 vnđ</span>
+                <span class="old__price">50.000 vnđ</span>
+              </div>
+              <a
+                href="#" onclick="alert('Thêm vào giỏ hàng - Chức năng demo')"
+                class="action__btn cart__btn"
+                aria-label="Add To Cart"
+              >
+                <i class="fi fi-rs-shopping-bag-add"></i>
+              </a>
+            </div>
+          </div>
+          <!-- SẢN PHẨM 6 -->
+          <div class="product__item" data-stock="almost" data-categories="Mocktail" data-price="23" data-rating="4.3" data-discount="yes" data-date="2024-06-15">
+            <div class="product__banner">
+              <a href="#" onclick="alert('Chi tiết sản phẩm không có trong mini project')" class="product__images">
+                <img
+                  src="./assets/img/sm_p1_bg.png"
+                  alt=""
+                  class="product__img default"
+                />
+                <img
+                src="./assets/img/sm_p1_bg.png"
+                  alt=""
+                  class="product__img hover"
+                />
+              </a>
+              <div class="product__actions">
+                <a href="#" onclick="alert('Xem nhanh không có trong mini project')" class="action__btn" aria-label="Xem Nhanh">
+                  <i class="fi fi-rs-eye"></i>
+                </a>
+                <a
+                  href="#" onclick="alert('Wishlist không có trong mini project')"
+                  class="action__btn"
+                  aria-label="Thêm vào Wishlist"
+                >
+                  <i class="fi fi-rs-heart"></i>
+                </a>
+              </div>
+              <div class="product__badge light-green">-20%</div>
+            </div>
+            <div class="product__content">
+              <span class="product__category">Mocktail</span>
+              <a href="#" onclick="alert('Chi tiết sản phẩm không có trong mini project')">
+                <h3 class="product__title">Hương Dâu</h3>
+              </a>
+              <div class="product__rating">
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i id="product-rating-text">4.3</i>
+              </div>
+              <div class="product__price flex">
+                <span class="new__price">23.000 vnđ</span>
+                <span class="old__price">35.000 vnđ</span>
+              </div>
+              <a
+                href="#" onclick="alert('Thêm vào giỏ hàng - Chức năng demo')"
+                class="action__btn cart__btn"
+                aria-label="Thêm vào giỏ hàng"
+              >
+                <i class="fi fi-rs-shopping-bag-add"></i>
+              </a>
+            </div>
+          </div>
+          <!--SẢN PHẨM 7-->
+          <div class="product__item" data-stock="in" data-categories="Nước Tăng Lực" data-price="45" data-rating="4.7" data-discount="no" data-date="2024-12-01">
+            <div class="product__banner">
+              <a href="#" onclick="alert('Chi tiết sản phẩm không có trong mini project')" class="product__images">
+                <img
+                  src="./assets/img/ed_p1_bg.png"
+                  alt=""
+                  class="product__img default"
+                />
+                <img
+                src="./assets/img/ed_p1_bg.png"
+                  alt=""
+                  class="product__img hover"
+                />
+              </a>
+              <div class="product__actions">
+                <a href="#" onclick="alert('Xem nhanh không có trong mini project')" class="action__btn" aria-label="Xem Nhanh">
+                  <i class="fi fi-rs-eye"></i>
+                </a>
+                <a
+                  href="#" onclick="alert('Wishlist không có trong mini project')"
+                  class="action__btn"
+                  aria-label="Thêm vào Wishlist"
+                >
+                  <i class="fi fi-rs-heart"></i>
+                </a>
+              </div>
+            </div>
+            <div class="product__content">
+              <span class="product__category">Nước Tăng Lực</span>
+              <a href="#" onclick="alert('Chi tiết sản phẩm không có trong mini project')">
+                <h3 class="product__title">Energy Boost</h3>
+              </a>
+              <div class="product__rating">
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i id="product-rating-text">4.7</i>
+              </div>
+              <div class="product__price flex">
+                <span class="new__price">45.000 vnđ</span>
+              </div>
+              <a
+                href="#" onclick="alert('Thêm vào giỏ hàng - Chức năng demo')"
+                class="action__btn cart__btn"
+                aria-label="Thêm vào giỏ hàng"
+              >
+                <i class="fi fi-rs-shopping-bag-add"></i>
+              </a>
+            </div>
+          </div>
+          <!--SẢN PHẨM 8-->
+          <div class="product__item" data-stock="almost" data-categories="Sữa" data-price="25" data-rating="4.3" data-discount="yes" data-date="2024-10-15">
+            <div class="product__banner">
+              <a href="#" onclick="alert('Chi tiết sản phẩm không có trong mini project')" class="product__images">
+                <img
+                  src="./assets/img/mi_p1_bg.png"
+                  alt=""
+                  class="product__img default"
+                />
+                <img
+                src="./assets/img/mi_p1_bg.png"
+                  alt=""
+                  class="product__img hover"
+                />
+              </a>
+              <div class="product__actions">
+                <a href="#" onclick="alert('Xem nhanh không có trong mini project')" class="action__btn" aria-label="Xem Nhanh">
+                  <i class="fi fi-rs-eye"></i>
+                </a>
+                <a
+                  href="#" onclick="alert('Wishlist không có trong mini project')"
+                  class="action__btn"
+                  aria-label="Thêm vào Wishlist"
+                >
+                  <i class="fi fi-rs-heart"></i>
+                </a>
+              </div>
+              <div class="product__badge light-pink">Sắp hết</div>
+            </div>
+            <div class="product__content">
+              <span class="product__category">Sữa</span>
+              <a href="#" onclick="alert('Chi tiết sản phẩm không có trong mini project')">
+                <h3 class="product__title">Hương Dâu Tây</h3>
+              </a>
+              <div class="product__rating">
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i class="fi fi-rs-star"></i>
+                <i id="product-rating-text">4.3</i>
+              </div>
+              <div class="product__price flex">
+                <span class="new__price">25.000 vnđ</span>
+                <span class="old__price">HẾT HÀNG</span>
+              </div>
+              <a
+                href="#" onclick="alert('Thêm vào giỏ hàng - Chức năng demo')"
+                class="action__btn cart__btn"
+                aria-label="Thêm vào giỏ hàng"
+              >
+                <i class="fi fi-rs-shopping-bag-add"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <!--Danh sách các trang và nút chuyển trang-->
+        <ul class="pagination">
+          <li><a href="#" class="pagination__link active">01</a></li>
+          <li><a href="#" class="pagination__link">02</a></li>
+          <li><a href="#" class="pagination__link">03</a></li>
+          <li><a href="#" class="pagination__link">...</a></li>
+          <li><a href="#" class="pagination__link">16</a></li>
+          <li><a href="#" class="pagination__link icon">
+            <i class="fi-rs-angle-double-small-right"></i>
+          </a></li>
+        </ul>
+      </section>
+    </main>
+
+    <!-- =============== FOOTER ===============-->
+  <footer class="footer container">
+    <div class="footer__container grid">
+      <div class="footer__content">
+        <a href="shop.html" class="footer__logo">
+          <img src="./assets/img/logo_red.svg" alt="" class="footer__logo-img" />
+        </a>
+        <h4 class="footer__subtitle">LIÊN HỆ</h4>
+        <p class="footer__description">
+          <span>Địa chỉ:</span> 279 Nguyễn Tri Phương, Quận 10, Tp. Hồ Chí Minh
+        </p>
+        <p class="footer__description">
+          <span>Điện thoại:</span> +84 0335993276
+        </p>
+        <p class="footer__description">
+          <span>Giờ hoạt động:</span> 8:00 - 21:00, Thứ 2 - Thứ 7
+        </p>
+        <div class="footer__social">
+          <h4 class="footer__subtitle">Follow ngay</h4>
+          <div class="footer__links flex">
+            <a href="#">
+              <img src="./assets/img/icon-facebook.svg" alt="" class="footer__social-icon" />
+            </a>
+            <a href="#">
+              <img src="./assets/img/icon-twitter.svg" alt="" class="footer__social-icon" />
+            </a>
+            <a href="#">
+              <img src="./assets/img/icon-instagram.svg" alt="" class="footer__social-icon" />
+            </a>
+            <a href="#">
+              <img src="./assets/img/icon-pinterest.svg" alt="" class="footer__social-icon" />
+            </a>
+            <a href="#">
+              <img src="./assets/img/icon-youtube.svg" alt="" class="footer__social-icon" />
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="footer__content">
+        <h3 class="footer__title">Thông Tin</h3>
+        <ul class="footer__links">
+          <li><a href="#" onclick="alert('Trang này không có trong mini project')" class="footer__link">Về chúng tôi</a></li>
+          <li><a href="#" onclick="alert('Trang này không có trong mini project')" class="footer__link">Thông tin giao hàng</a></li>
+          <li><a href="#" onclick="alert('Trang này không có trong mini project')" class="footer__link">Chính sách </a></li>
+          <li><a href="#" onclick="alert('Trang này không có trong mini project')" class="footer__link">Điều khoản & Điều kiện</a></li>
+          <li><a href="#" onclick="alert('Trang này không có trong mini project')" class="footer__link">Liên hệ chúng tôi</a></li>
+          <li><a href="#" onclick="alert('Trang này không có trong mini project')" class="footer__link">Trung tâm hỗ trợ</a></li>
+        </ul>
+      </div>
+      <div class="footer__content">
+        <h3 class="footer__title">Tài khoản</h3>
+        <ul class="footer__links">
+          <li><a href="#" onclick="alert('Trang này không có trong mini project')" class="footer__link">Đăng nhập</a></li>
+          <li><a href="cart.html" class="footer__link">Xem giỏ hàng</a></li>
+          <li><a href="#" onclick="alert('Wishlist không có trong mini project')" class="footer__link">Wishlist</a></li>
+          <li><a href="#" onclick="alert('Trang này không có trong mini project')" class="footer__link">Theo dõi đơn hàng</a></li>
+          <li><a href="#" onclick="alert('Trang này không có trong mini project')" class="footer__link">Trợ giúp</a></li>
+          <li><a href="#" onclick="alert('Trang này không có trong mini project')" class="footer__link">Đặt hàng</a></li>
+        </ul>
+      </div>
+      <div class="footer__content">
+        <h3 class="footer__title">Cổng thanh toán bảo mật</h3>
+        <img src="./assets/img/thanhtoan.svg" alt="" class="payment__img" />
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p class="copyright">&copy; 2024 Sunkissed. All right reserved</p>
+      <span class="designer">Thiết kế bởi Nhóm 5 Coop.</span>
+    </div>
+  </footer> 
+
+    <!--=============== SWIPER JS ===============-->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!--=============== MAIN JS ===============-->
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/ct_main.js"></script>
+
+    <!-- ======== LỌC SẢN PHẨM =========== -->
+     <script>document.getElementById("filter-button").addEventListener("click", function () {
+      const category = document.getElementById("categories").value;
+      const discount = document.getElementById("discount").value;
+      const stock = document.getElementById("stock").value;
+      const price = document.getElementById("price").value;
+      const dateRange = document.getElementById("date").value;
+    
+      const products = document.querySelectorAll(".product__item");
+    
+      products.forEach((product) => {
+        const productCategory = product.dataset.categories;
+        const productDiscount = product.dataset.discount;
+        const productStock = product.dataset.stock;
+        const productPrice = parseInt(product.dataset.price, 10);
+        const productDate = new Date(product.dataset.date);
+    
+        let isVisible = true;
+    
+        // Lọc theo loại sản phẩm
+        if (category && productCategory !== category) isVisible = false;
+    
+        // Lọc theo giảm giá
+        if (discount && productDiscount !== discount) isVisible = false;
+    
+        // Lọc theo trạng thái
+        if (stock && productStock !== stock) isVisible = false;
+    
+        // Lọc theo giá
+        if (productPrice > parseInt(price, 10)) isVisible = false;
+    
+        // Lọc theo ngày sản xuất
+        if (dateRange) {
+          const currentDate = new Date();
+          const monthDifference = (currentDate.getFullYear() - productDate.getFullYear()) * 12 +
+                                  (currentDate.getMonth() - productDate.getMonth());
+          if (monthDifference > parseInt(dateRange, 10)) isVisible = false;
+        }
+    
+        // Hiển thị hoặc ẩn sản phẩm
+        product.style.display = isVisible ? "block" : "none";
+      });
+    });
+    
+    // Cập nhật giá trị hiển thị của thanh trượt
+    document.getElementById("price").addEventListener("input", function (event) {
+      document.getElementById("price-value").textContent = `${event.target.value}.000 vnđ`;
+    });
+    
+    // Đặt lại bộ lọc
+    document.getElementById("reset-button").addEventListener("click", function () {
+      const products = document.querySelectorAll(".product__item");
+      products.forEach((product) => (product.style.display = "block"));
+    });
+    </script>
+
+    <!-- ========== SẮP XẾP SẢN PHẨM ========== -->
+     <script>// Hàm sắp xếp
+      function sortProducts(criteria) {
+        const productsContainer = document.querySelector(".products__container");
+        const products = Array.from(document.querySelectorAll(".product__item"));
+      
+        const sortedProducts = products.sort((a, b) => {
+          const ratingA = parseFloat(a.dataset.rating);
+          const ratingB = parseFloat(b.dataset.rating);
+          const priceA = parseFloat(a.dataset.price);
+          const priceB = parseFloat(b.dataset.price);
+          const dateA = new Date(a.dataset.date);
+          const dateB = new Date(b.dataset.date);
+      
+          switch (criteria) {
+            case "rating-asc":
+              return ratingA - ratingB;
+            case "rating-desc":
+              return ratingB - ratingA;
+            case "price-asc":
+              return priceA - priceB;
+            case "price-desc":
+              return priceB - priceA;
+            case "date-newest":
+              return dateB - dateA;
+            case "date-oldest":
+              return dateA - dateB;
+            default:
+              return 0;
+          }
+        });
+      
+        // Làm trống danh sách sản phẩm và thêm các sản phẩm đã sắp xếp
+        productsContainer.innerHTML = "";
+        sortedProducts.forEach((product) => productsContainer.appendChild(product));
+      }
+      
+      // Lắng nghe sự kiện thay đổi từ dropdown sắp xếp
+      document.getElementById("sort-options").addEventListener("change", function () {
+        const criteria = this.value;
+        sortProducts(criteria);
+      });
+      </script>
+
+      <!-- ======== Nút hiện thị/đóng bộ lọc ======== -->
+    <script>document.getElementById("toggle-filter-button").addEventListener("click", function () {
+      const filterSection = document.getElementById("filter-section");
+      const filterContent = filterSection.querySelector(".filter__content");
+    
+      // Kiểm tra trạng thái hiện tại (mở/đóng)
+      const isOpen = filterSection.classList.contains("open");
+    
+      if (isOpen) {
+        // Đóng bộ lọc
+        filterSection.style.height = `${filterContent.scrollHeight}px`; // Đặt chiều cao hiện tại để kích hoạt hiệu ứng
+        setTimeout(() => {
+          filterSection.style.height = "0"; // Thu nhỏ chiều cao về 0
+          setTimeout(() => {
+            filterSection.style.visibility = "hidden"; // Ẩn phần tử sau khi hiệu ứng kết thúc
+          }, 300); // Chờ 300ms (thời gian của transition)
+        }, 10);
+      } else {
+        // Mở bộ lọc
+        filterSection.style.visibility = "visible"; // Hiển thị phần tử
+        filterSection.style.height = "0"; // Đảm bảo bắt đầu từ chiều cao 0
+        setTimeout(() => {
+          filterSection.style.height = `${filterContent.scrollHeight}px`; // Tính toán chiều cao thực tế
+        }, 10);
+      }
+    
+      // Cập nhật trạng thái lớp và nút
+      filterSection.classList.toggle("open");
+      this.textContent = isOpen ? "Hiển thị bộ lọc" : "Ẩn bộ lọc";
+    
+      // Xóa chiều cao về `auto` sau khi mở để xử lý linh hoạt nội dung
+      if (!isOpen) {
+        setTimeout(() => {
+          filterSection.style.height = "auto";
+        }, 300); // Sau khi hiệu ứng kết thúc
+      }
+    });
+    </script>
+
+    <!-- ========= Hiển thị số lượng sản phẩm sau khi lọc ========= -->
+     <script>function updateProductCount() {
+      const products = document.querySelectorAll(".product__item");
+      const visibleProducts = Array.from(products).filter(
+        (product) => product.style.display !== "none"
+      );
+    
+      // Cập nhật nội dung dòng "We found..."
+      const totalProductsElement = document.querySelector(".total__products span");
+      totalProductsElement.textContent = visibleProducts.length;
+    }
+    
+    // Gọi hàm này sau mỗi lần lọc
+    document.getElementById("filter-button").addEventListener("click", function () {
+      updateProductCount();
+    });
+    
+    // Cập nhật số lượng khi đặt lại bộ lọc
+    document.getElementById("reset-button").addEventListener("click", function () {
+      const products = document.querySelectorAll(".product__item");
+      products.forEach((product) => (product.style.display = "block"));
+      updateProductCount();
+    });
+    
+    // Gọi hàm này khi tải trang lần đầu
+    updateProductCount();
+    </script>
+</body>
+</html> 
