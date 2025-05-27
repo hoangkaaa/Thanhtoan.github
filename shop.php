@@ -329,12 +329,12 @@ function buildUrl($params = []) {
 
 <!-- Navigation -->
 <nav class="nav container">
-  <a href="index.html" class="nav__logo">
+  <a href="index.php" class="nav__logo">
     <img class="nav__logo-img" src="assets/img/logo_red.svg" alt="website logo" />
   </a>
   <div class="nav__menu" id="nav-menu">
     <div class="nav__menu-top">
-      <a href="index.html" class="nav__menu-logo">
+      <a href="index.php" class="nav__menu-logo">
         <img src="./assets/img/logo_red.svg" alt="">
       </a>
       <div class="nav__close" id="nav-close">
@@ -343,20 +343,19 @@ function buildUrl($params = []) {
     </div>
     <ul class="nav__list">
       <li class="nav__item">
-        <a href="index.php" class="nav__link ">Trang chủ</a>
+        <a href="index.php" class="nav__link">Trang chủ</a>
       </li>
       <li class="nav__item">
         <a href="shop.php" class="nav__link active-link">Cửa hàng</a>
       </li>
       <li class="nav__item">
-        <a href="aboutus.html" class="nav__link">Về chúng tôi</a>
-      </li>
-      
-      <li class="nav__item">
-        <a href="lienhe.html" class="nav__link">Liên hệ</a>
+        <a href="aboutus.php" class="nav__link">Về chúng tôi</a>
       </li>
       <li class="nav__item">
-        <a href="accounts.html" class="nav__link">Tài khoản</a>
+        <a href="contact.php" class="nav__link">Liên hệ</a>
+      </li>
+      <li class="nav__item">
+        <a href="accounts.php" class="nav__link">Tài khoản</a>
       </li>
     </ul>
 
@@ -393,9 +392,9 @@ function buildUrl($params = []) {
 
     <!-- Wishlist và Giỏ hàng -->
     <div class="header__user-actions">
-      <a href="wishlist.html" class="header__action-btn" title="Wishlist">
+      <a href="wishlist.php" class="header__action-btn" title="Wishlist">
         <img src="assets/img/icon-heart.svg" alt="" />
-        <span class="count">3</span>
+        <span class="count">0</span>
       </a>
       <a href="cart.php" class="header__action-btn" title="Cart">
         <img src="assets/img/icon-cart.svg" alt="" />
@@ -667,7 +666,7 @@ function buildUrl($params = []) {
   <footer class="footer container">
     <div class="footer__container grid">
       <div class="footer__content">
-        <a href="index.html" class="footer__logo">
+        <a href="index.php" class="footer__logo">
           <img src="./assets/img/logo_red.svg" alt="" class="footer__logo-img" />
         </a>
         <h4 class="footer__subtitle">LIÊN HỆ</h4>

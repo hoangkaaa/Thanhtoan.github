@@ -177,27 +177,101 @@ class Cart {
         
         return $stmt->execute();
     }
+    
+    public function updateQuantityDirect($item_id, $new_quantity) {
+        try {
+            $query = "UPDATE cart_items SET quantity = :quantity WHERE id = :item_id";
+            $stmt = $this->conn->prepare($query);
+            
+            $stmt->bindParam(':quantity', $new_quantity);
+            $stmt->bindParam(':item_id', $item_id);
+            
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Cart updateQuantityDirect error: " . $e->getMessage());
+            return false;
+        }
+    }
 }
 
-// Include file cấu hình database
-require_once 'config/database.php';
-
-// Tạo kết nối database
-$database = new Database();
-$db = $database->connect();
-
-// Kiểm tra kết nối
-if ($db) {
-    echo "Kết nối database thành công!";
+// Class để quản lý đơn hàng
+class Order {
+    private $conn;
+    private $table = 'orders';
+    private $order_items_table = 'order_items';
     
-    // Sử dụng các class để thao tác với database
-    $product = new Product($db);
-    $cart = new Cart($db);
+    public function __construct($db) {
+        $this->conn = $db;
+    }
     
-    // Ví dụ: Lấy tất cả sản phẩm
-    $products = $product->getAll();
+    // Tạo đơn hàng mới
+    public function createOrder($user_id, $customer_info, $cart_items, $total_amount) {
+        try {
+            // Bắt đầu transaction
+            $this->conn->beginTransaction();
+            
+            // Thêm đơn hàng vào bảng orders
+            $order_query = "INSERT INTO " . $this->table . " 
+                           (user_id, customer_name, customer_email, customer_phone, 
+                            customer_address, total_amount, order_status, created_at) 
+                           VALUES (:user_id, :customer_name, :customer_email, :customer_phone, 
+                                   :customer_address, :total_amount, 'pending', NOW())";
+            
+            $order_stmt = $this->conn->prepare($order_query);
+            $order_stmt->bindParam(':user_id', $user_id);
+            $order_stmt->bindParam(':customer_name', $customer_info['name']);
+            $order_stmt->bindParam(':customer_email', $customer_info['email']);
+            $order_stmt->bindParam(':customer_phone', $customer_info['phone']);
+            $order_stmt->bindParam(':customer_address', $customer_info['address']);
+            $order_stmt->bindParam(':total_amount', $total_amount);
+            
+            $order_stmt->execute();
+            
+            // Lấy ID của đơn hàng vừa tạo
+            $order_id = $this->conn->lastInsertId();
+            
+            // Thêm chi tiết đơn hàng vào bảng order_items
+            $item_query = "INSERT INTO " . $this->order_items_table . " 
+                          (order_id, product_id, product_name, product_price, quantity, subtotal) 
+                          VALUES (:order_id, :product_id, :product_name, :product_price, :quantity, :subtotal)";
+            
+            $item_stmt = $this->conn->prepare($item_query);
+            
+            foreach ($cart_items as $item) {
+                $subtotal = $item['product_price'] * $item['quantity'];
+                
+                $item_stmt->bindParam(':order_id', $order_id);
+                $item_stmt->bindParam(':product_id', $item['product_id']);
+                $item_stmt->bindParam(':product_name', $item['product_name']);
+                $item_stmt->bindParam(':product_price', $item['product_price']);
+                $item_stmt->bindParam(':quantity', $item['quantity']);
+                $item_stmt->bindParam(':subtotal', $subtotal);
+                
+                $item_stmt->execute();
+            }
+            
+            // Xóa giỏ hàng sau khi đặt hàng thành công
+            $this->clearCart($user_id);
+            
+            // Commit transaction
+            $this->conn->commit();
+            
+            return $order_id;
+            
+        } catch (Exception $e) {
+            // Rollback nếu có lỗi
+            $this->conn->rollback();
+            throw $e;
+        }
+    }
     
-} else {
-    echo "Lỗi kết nối database!";
+    // Xóa giỏ hàng sau khi đặt hàng
+    private function clearCart($user_id) {
+        $query = "DELETE FROM cart_items WHERE user_id = :user_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':user_id', $user_id);
+        
+        return $stmt->execute();
+    }
 }
 ?> 

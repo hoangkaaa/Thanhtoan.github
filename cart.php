@@ -22,6 +22,16 @@ $cart_items = $cart->getItems($user_id);
 $subtotal = $cart->getTotal($user_id);
 $shipping = 21000;
 $total = $subtotal + $shipping;
+
+// Helper function để định dạng giá tiền
+function formatPrice($price) {
+    return number_format($price, 0, ',', '.') . '₫';
+}
+
+// Helper function để lấy giá tiền dạng số
+function getNumericPrice($price) {
+    return intval(str_replace(['₫', ',', '.', ' '], '', $price));
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -69,12 +79,12 @@ $total = $subtotal + $shipping;
     </div>
 
     <nav class="nav container">
-      <a href="index.html" class="nav__logo">
+      <a href="index.php" class="nav__logo">
         <img class="nav__logo-img" src="assets/img/logo_red.svg" alt="website logo" />
       </a>
       <div class="nav__menu" id="nav-menu">
         <div class="nav__menu-top">
-          <a href="index.html" class="nav__menu-logo">
+          <a href="index.php" class="nav__menu-logo">
             <img src="./assets/img/logo_red.svg" alt="">
           </a>
           <div class="nav__close" id="nav-close">
@@ -83,20 +93,19 @@ $total = $subtotal + $shipping;
         </div>
         <ul class="nav__list">
           <li class="nav__item">
-            <a href="index.html" class="nav__link ">Trang chủ</a>
+            <a href="index.php" class="nav__link">Trang chủ</a>
           </li>
           <li class="nav__item">
             <a href="shop.php" class="nav__link">Cửa hàng</a>
           </li>
           <li class="nav__item">
-            <a href="aboutus.html" class="nav__link">Về chúng tôi</a>
-          </li>
-          
-          <li class="nav__item">
-            <a href="lienhe.html" class="nav__link" >Liên hệ</a>
+            <a href="aboutus.php" class="nav__link">Về chúng tôi</a>
           </li>
           <li class="nav__item">
-            <a href="accounts.html" class="nav__link">Tài khoản</a>
+            <a href="contact.php" class="nav__link">Liên hệ</a>
+          </li>
+          <li class="nav__item">
+            <a href="accounts.php" class="nav__link">Tài khoản</a>
           </li>
         </ul>
   
@@ -108,7 +117,7 @@ $total = $subtotal + $shipping;
   
         <!-- Wishlist và Giỏ hàng -->
         <div class="header__user-actions">
-          <a href="wishlist.html" class="header__action-btn" title="Wishlist">
+          <a href="wishlist.php" class="header__action-btn" title="Wishlist">
             <img src="assets/img/icon-heart.svg" alt="" />
             <span class="count">3</span>
           </a>
@@ -128,7 +137,7 @@ $total = $subtotal + $shipping;
     <!--=============== BREADCRUMB ===============-->
     <section class="breadcrumb">
       <ul class="breadcrumb__list flex container">
-        <li><a href="index.html" class="breadcrumb__link">Home</a></li>
+        <li><a href="index.php" class="breadcrumb__link">Trang chủ</a></li>
         <li><span class="breadcrumb__link">></span></li>
         <li><span class="breadcrumb__link">Giỏ hàng</span></li>
       </ul>
@@ -168,7 +177,7 @@ $total = $subtotal + $shipping;
                   </div>
                   <div class="w-r__price-wrapper">
                       <div class="w-r__price" data-price="<?php echo $item['product_price']; ?>">
-                        <?php echo number_format($item['product_price']); ?>₫
+                        <?php echo number_format($item['product_price'], 0, ',', '.'); ?>
                       </div>
                   </div>
                 </div>
@@ -189,9 +198,9 @@ $total = $subtotal + $shipping;
                     <!-- Subtotal cho từng sản phẩm -->
                     <div class="item-subtotal">
                       <span id="subtotal-<?php echo $item['product_id']; ?>">
-                        <?php echo number_format($item['product_price'] * $item['quantity']); ?>₫
+                        <?php echo number_format($item['product_price'] * $item['quantity'], 0, ',', '.'); ?>
                       </span>
-                  </div>
+                    </div>
                     
                   <!-- Các nút hành động cho sản phẩm -->
                     <div class="product-actions">
@@ -263,15 +272,15 @@ $total = $subtotal + $shipping;
               <table class="cart__total-table">
                 <tr>
                   <td><span class="cart__total-title">Tạm tính giỏ hàng</span></td>
-                  <td><span class="cart__total-price" id="cart-subtotal"><?php echo number_format($subtotal); ?>₫</span></td>
+                  <td><span class="cart__total-price" id="cart-subtotal"><?php echo number_format($subtotal, 0, ',', '.'); ?></span></td>
                 </tr>
                 <tr>
                   <td><span class="cart__total-title">Vận chuyển</span></td>
-                  <td><span class="cart__total-price"><?php echo number_format($shipping); ?>₫</span></td>
+                  <td><span class="cart__total-price"><?php echo number_format($shipping, 0, ',', '.'); ?></span></td>
                 </tr>
                 <tr>
                   <td><span class="cart__total-title">Tổng</span></td>
-                  <td><span class="cart__total-price" id="cart-total"><?php echo number_format($total); ?>₫</span></td>
+                  <td><span class="cart__total-price" id="cart-total"><?php echo number_format($total, 0, ',', '.'); ?></span></td>
                 </tr>
               </table>
               <!-- Nút thanh toán -->
@@ -289,7 +298,7 @@ $total = $subtotal + $shipping;
   <footer class="footer ">
     <div class="footer__container grid">
       <div class="footer__content">
-        <a href="index.html" class="footer__logo">
+        <a href="index.php" class="footer__logo">
           <img src="./assets/img/logo_red.svg" alt="" class="footer__logo-img" />
         </a>
         <h4 class="footer__subtitle">Liên hệ</h4>
@@ -373,7 +382,7 @@ $total = $subtotal + $shipping;
   <script src="assets/js/nhat_wishlist.js"></script>
   <script src="assets/js/ct_main.js"></script>
   
-  <!-- JavaScript cho các chức năng giỏ hàng - TỰ ĐỘNG LÀM MỚI -->
+  <!-- JavaScript cho các chức năng giỏ hàng - SỬA LỖI GIÁ TIỀN -->
   <script>
     // Biến để theo dõi trạng thái đang xử lý
     let isProcessing = false;
@@ -554,7 +563,7 @@ $total = $subtotal + $shipping;
         }
     }
 
-    // Hàm cập nhật subtotal cho từng sản phẩm
+    // Hàm cập nhật subtotal cho từng sản phẩm - KHÔNG THÊM ₫
     function updateItemSubtotal(productId) {
         const quantityInput = document.getElementById(`quantity-${productId}`);
         const quantity = parseInt(quantityInput.value) || 0;
@@ -567,14 +576,14 @@ $total = $subtotal + $shipping;
         // Tính subtotal
         const subtotal = price * quantity;
         
-        // Cập nhật hiển thị subtotal
+        // Cập nhật hiển thị subtotal - KHÔNG THÊM ₫ (CSS sẽ thêm)
         const subtotalElement = document.getElementById(`subtotal-${productId}`);
         if (subtotalElement) {
-            subtotalElement.textContent = subtotal.toLocaleString('vi-VN') + '₫';
+            subtotalElement.textContent = new Intl.NumberFormat('vi-VN').format(subtotal);
         }
     }
 
-    // Hàm cập nhật tổng giỏ hàng từ server
+    // Hàm cập nhật tổng giỏ hàng từ server - KHÔNG THÊM ₫
     function updateCartTotalsFromServer() {
         fetch('cart_actions.php', {
             method: 'POST',
@@ -586,13 +595,13 @@ $total = $subtotal + $shipping;
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                const subtotal = data.data.cart_total;
+                const subtotal = parseInt(data.data.cart_total) || 0;
                 const shipping = 21000;
                 const total = subtotal + shipping;
                 
-                // Cập nhật hiển thị
-                document.getElementById('cart-subtotal').textContent = subtotal.toLocaleString('vi-VN') + '₫';
-                document.getElementById('cart-total').textContent = total.toLocaleString('vi-VN') + '₫';
+                // Cập nhật hiển thị - CHỈ 1 KÝ HIỆU ₫
+                document.getElementById('cart-subtotal').textContent = new Intl.NumberFormat('vi-VN').format(subtotal);
+                document.getElementById('cart-total').textContent = new Intl.NumberFormat('vi-VN').format(total);
             }
         })
         .catch(error => {
@@ -606,7 +615,7 @@ $total = $subtotal + $shipping;
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                document.getElementById('cart-count').textContent = data.count;
+                document.getElementById('cart-count').textContent = data.count || 0;
             }
         })
         .catch(error => {
@@ -679,6 +688,55 @@ $total = $subtotal + $shipping;
         }, 2000);
     }
 
+    // Hàm cập nhật định dạng giá tiền ban đầu - SỬA LỖI ₫₫₫
+    function updateInitialPriceFormat() {
+        // Cập nhật tất cả subtotal
+        document.querySelectorAll('[id^="subtotal-"]').forEach(function(element) {
+            let text = element.textContent;
+            // Xóa tất cả ký hiệu ₫ cũ
+            text = text.replace(/₫/g, '');
+            const number = parseInt(text.replace(/[^\d]/g, ''));
+            if (!isNaN(number)) {
+                element.textContent = new Intl.NumberFormat('vi-VN').format(number);
+            }
+        });
+        
+        // Cập nhật tổng tiền
+        const subtotalElement = document.getElementById('cart-subtotal');
+        const totalElement = document.getElementById('cart-total');
+        
+        if (subtotalElement) {
+            let subtotalText = subtotalElement.textContent;
+            // Xóa tất cả ký hiệu ₫ cũ
+            subtotalText = subtotalText.replace(/₫/g, '');
+            const subtotalNumber = parseInt(subtotalText.replace(/[^\d]/g, ''));
+            if (!isNaN(subtotalNumber)) {
+                subtotalElement.textContent = new Intl.NumberFormat('vi-VN').format(subtotalNumber);
+            }
+        }
+        
+        if (totalElement) {
+            let totalText = totalElement.textContent;
+            // Xóa tất cả ký hiệu ₫ cũ
+            totalText = totalText.replace(/₫/g, '');
+            const totalNumber = parseInt(totalText.replace(/[^\d]/g, ''));
+            if (!isNaN(totalNumber)) {
+                totalElement.textContent = new Intl.NumberFormat('vi-VN').format(totalNumber);
+            }
+        }
+        
+        // Cập nhật giá sản phẩm đơn lẻ
+        document.querySelectorAll('.w-r__price').forEach(function(element) {
+            let text = element.textContent;
+            // Xóa tất cả ký hiệu ₫ cũ
+            text = text.replace(/₫/g, '');
+            const number = parseInt(text.replace(/[^\d]/g, ''));
+            if (!isNaN(number)) {
+                element.textContent = new Intl.NumberFormat('vi-VN').format(number);
+            }
+        });
+    }
+
     // Event listeners
     document.addEventListener('DOMContentLoaded', function() {
         // Lắng nghe thay đổi trực tiếp trong input số lượng
@@ -705,10 +763,29 @@ $total = $subtotal + $shipping;
                 }
             });
         });
+        
+        // Cập nhật định dạng giá tiền ban đầu
+        setTimeout(updateInitialPriceFormat, 100);
     });
   </script>
   
   <style>
+    /* Thêm ký hiệu ₫ bằng CSS */
+    .w-r__price::after,
+    .item-subtotal span::after,
+    .cart__total-price::after {
+        content: '₫';
+        margin-left: 2px;
+    }
+
+    /* Đảm bảo không có khoảng trắng thừa */
+    .w-r__price,
+    .item-subtotal span,
+    .cart__total-price {
+        display: inline-block;
+        white-space: nowrap;
+    }
+
     /* Loading indicator */
     .loading-indicator {
         position: fixed;

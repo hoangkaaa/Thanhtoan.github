@@ -1,6 +1,10 @@
 <?php
 // File xử lý các hành động liên quan đến giỏ hàng với database - TỰ ĐỘNG LƯU
-session_start();
+
+// Chỉ start session nếu chưa có session nào
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Include database
 require_once 'config/database.php';
@@ -89,6 +93,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $response['data']['items'] = $items;
                 $response['data']['cart_total'] = $cart->getTotal($user_id);
                 $response['data']['cart_count'] = $cart->getItemCount($user_id);
+                break;
+
+            case 'update_quantity_direct':
+                $item_id = (int)$_POST['item_id'];
+                $new_quantity = (int)$_POST['new_quantity'];
+                
+                if ($new_quantity < 1) {
+                    echo json_encode(['success' => false, 'message' => 'Số lượng phải lớn hơn 0']);
+                    exit;
+                }
+                
+                try {
+                    $success = $cart->updateQuantityDirect($item_id, $new_quantity);
+                    
+                    if ($success) {
+                        $total = $cart->getTotal($user_id);
+                        $count = $cart->getItemCount($user_id);
+                        
+                        echo json_encode([
+                            'success' => true,
+                            'total' => $total,
+                            'count' => $count,
+                            'message' => 'Cập nhật số lượng thành công'
+                        ]);
+                    } else {
+                        echo json_encode(['success' => false, 'message' => 'Không thể cập nhật số lượng']);
+                    }
+                } catch (Exception $e) {
+                    echo json_encode(['success' => false, 'message' => 'Lỗi: ' . $e->getMessage()]);
+                }
                 break;
         }
     } catch (Exception $e) {
