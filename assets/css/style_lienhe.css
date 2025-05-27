@@ -21,8 +21,10 @@
 
 
   /*========== Font and typography ==========*/
+  /* Font chính */
   --body-font: "Lexend", sans-serif;
-  --second-font: "Raleway" sans-serif;
+  /* Font phụ */
+  --second-font: "Raleway" ,sans-serif; 
   --big-font-size: 3.5rem;
   --h1-font-size: 2.75rem;
   --h2-font-size: 2rem;
@@ -189,7 +191,6 @@ table {
   resize: none;
 }
 
-
 /*=============== HEADER & NAV ===============*/
 .header__top {
   background-color: var(--first-color);
@@ -342,7 +343,6 @@ table {
   -moz-transition: all 0.4s var(--transition);
   -ms-transition: all 0.4s var(--transition);
   -o-transition: all 0.4s var(--transition);
-  border-radius: 20px;
 }
 
 .btn:hover {
@@ -373,14 +373,97 @@ table {
   column-gap: 0.5rem;
 }
 
+/* Liên hệ */
+/* Các box thông tin */
+.tong_quan {
+    display:flex;
+    flex-direction: column;
+    background-color: #f8f9fa;
+    margin: 0 200px; /* Giữa trang */
+    padding: 20px;
+    text-align: center; /* Căn giữa nội dung */
+    justify-content: center;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+.tong_quan_tittle {
+  font-size: 2em; /* Kích thước chữ mặc định */
+  color:var(--first-color);
+  text-align: center; /* Căn giữa tiêu đề */
+  margin-bottom: 20px; /* Khoảng cách dưới tiêu đề */
+}
+
+.tong_quan_tittle:hover {
+  color: #ff6600; /* Màu sắc khi hover */
+  transform: scale(1.1); /* Phóng to chữ khi hover */
+}
+.info_box_tong {
+   display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+}   
+.info-box {
+  display: inline-block;
+  padding: 20px;
+  margin: 10px auto; /* Căn giữa mỗi box */
+  border: 1px solid hsl(115, 67%, 13%);
+  border-radius: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  gap: 200px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Thêm hiệu ứng chuyển đổi */
+}
+
+.info-box:hover {
+  transform: translateY(-20px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Tăng bóng đổ khi di chuột */
+}
+.tong_quan_tittle {
+    color: var(--first-color);
+    margin-bottom: 20px; /* Thêm khoảng cách dưới tiêu đề */
+    text-align: center;
+    font-weight: bold;
+    font-size: 30px;
+}
+/*n/ Các box thông tin */
+/* Bản đồ */
+.map {
+    width: 100%;
+    height: 300px;
+    border: 1px solid hsl(115, 67%, 13%);
+    display: block; /* Đảm bảo iframe hiển thị đúng */
+    margin: 20px auto; /* Căn giữa iframe */
+}
+/* Bản đồ */
+
+/*/n Liên hệ */
+/* Responsive Styles */
+@media (max-width: 738px) {
+  .tong_quan {
+      margin: 0 20px; /* Giảm khoảng cách bên trái và bên phải */
+  }
+  
+  .info_box_tong {
+      flex-direction: column; /* Đặt các box thành cột */
+      align-items: stretch; /* Căn chỉnh các box đầy chiều rộng */
+  }
+  
+  .info-box {
+      width: 100%; /* Đặt chiều rộng của các box là 100% */
+      margin: 10px 0; /* Thay đổi khoảng cách giữa các box */
+      gap: 0; /* Bỏ khoảng cách bên trong */
+  }
+
+  .tong_quan_tittle {
+      font-size: 24px; /* Giảm kích thước font cho tiêu đề */
+      transform: translateX(0); /* Bỏ hiệu ứng dịch trái */
+  }
+}
 
 /*=============== FOOTER ===============*/
 .footer__container {
   grid-template-columns: 4.5fr repeat(2, 2fr) 3.5fr;
   padding-block: 2.5rem;
-  margin: 0 100px;
-  margin-top: 50px;
-  
 }
 
 .footer__logo-img {
@@ -465,378 +548,15 @@ table {
 }
 
 /*=============== CART ===============*/
-/* Định dạng tiêu đề khung cho phần sản phẩm */
-.giohang_title{
-  color: var(--first-color);
-  font-weight: bold;
-  font-size: 24px;
-  margin-top: 50px;
-  text-align: center;
-}
 
-/* Thiết lập khung chứa toàn bộ trang */
-.giohang{
-  margin-top: 50px;
-  margin: 0 250px;
-}
+.table__title,
 
 
-/* Thiết lập khung cho phần sản phẩm trong giỏ hàng */
-.w-r__container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 25px 0px;
- 
-  border-bottom: 1px solid #075309;
-  margin-bottom: 15px;
-  border-radius: 8px; /* Thêm viền bo tròn cho góc */
-}
-
-/* Thiết lập cho ảnh sản phẩm */
-.w-r__img-wrap {
-  width: 100px; /* Kích thước ảnh nhỏ */
-  height: 100px; /* Kích thước ảnh nhỏ */
-  margin-right: 15px;
-}
-
-.w-r__img-wrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 8px; /* Viền bo tròn cho ảnh sản phẩm */
-}
-
-/* Thông tin sản phẩm */
-.w-r__info {
-  flex: 1;
-}
-
-/* Tên sản phẩm */
-.w-r__name {
-  font-size: 1.1rem;
-  color: var(--title-color);
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-/* Chi tiết sản phẩm: danh mục và biến thể */
-.w-r__details {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.w-r__category {
-  font-size: 0.8rem;
-  color: var(--text-color);
-}
-
-.w-r__variant {
-  font-size: 0.8rem;
-  color: var(--text-color-light);
-}
-
-/* Giá sản phẩm và giảm giá nằm trên các dòng riêng biệt */
-.w-r__price-wrapper {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  margin-top: 5px;
-}
-
-.w-r__price {
-  font-size: 1rem;
-  color: var(--first-color);
-}
-
-.w-r__discount {
-  font-size: 1rem;
-  color: var(--text-color-light);
-  text-decoration: line-through;
-}
-
-/* Khung bao quanh nút hành động */
-.w-r__wrap-2 {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
-  margin-top: 10px; /* Thêm khoảng cách giữa giá và các nút hành động */
-}
-
-.w-r__link {
-  font-family: var(--body-font); 
-  font-size: 14px;               
-  font-weight: 500;              
-  background-color: var(--first-color);
-  color: #fefefe;
-  border: 1px solid;
-  padding: 15px 20px;            
-  border-radius: 20px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  white-space: nowrap;
-}
-
-/* Hiệu ứng hover */
-.w-r__link:hover {
-  background-color: transparent;
-  color: var(--first-color);
-}
-
-/* Các nút hành động trong giỏ hàng */
-.cart__actions {
-  display: flex;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
-}
-
-/* Dấu phân cách giữa các phần trong giỏ hàng */
-.divider {
-  position: relative;
-  text-align: center;
-  margin-block: 3rem;
-}
-
-.divider::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  border-top: 2px solid var(--border-color-alt);
-  z-index: -1;
-}
-
-.divider i {
-  color: var(--text-color-light);
-  background-color: var(--body-color);
-  font-size: 1.5rem;
-  padding-inline: 1.25rem;
-}
-
-/* Nhóm các sản phẩm trong giỏ hàng */
-.cart__group {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  align-items: flex-start;
-}
-
-.cart__shipping .section__title,
-.cart__coupon .section__title,
-.cart__total .section__title {
-  margin-bottom: 1rem;
-}
-
-.cart__coupon {
-  margin-top: 3rem;
-}
-
-.coupon__form .form__group {
-  align-items: center;
-}
-
-/* Tổng giá trị giỏ hàng */
-.cart__total {
-  border: 1px solid var(--border-color-alt);
-  padding: 1.75rem;
-  border-radius: 0.25rem;
-}
-
-.cart__total-table {
-  margin-bottom: 1rem;
-}
-
-.cart__total-table tr td {
-  border: 1px solid var(--border-color-alt);
-  padding: 0.75rem 0.5rem;
-  width: 50%;
-}
-
-.cart__total-title {
+.table__trash,
+.table__stock {
   font-size: var(--small-font-size);
 }
-
-.cart__total-price {
-  font-size: 1rem;
+.table__title,
+.table__stock {
   color: var(--first-color);
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.cart__total-table tr td:last-child .cart__total-price {
-  font-size: 1.1rem;
-  color: #000;
-  font-weight: bold;
-}
-
-.cart__total-price::after {
-  content: "₫";
-}
-
-/* Nút trong tổng giỏ hàng */
-.cart__total .btn {
-  display: inline-flex;
-}
-
-/* Điều khiển số lượng sản phẩm */
-.quantity-control {
-  
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid #9E2A2F;
-  background-color: rgb(255, 255, 255);
-  border-radius: 50px;
-  padding: 5px 0px;
-  font-size: 16px;
-  width: 120px;
-}
-
-.quantity-btn {
- 
-  border: none;
-  background-color: transparent;
-  padding: 0;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0;
-  width: 30px;
-  height: 30px;
-}
-
-/* Responsive cho các thiết bị di động */
-
-/* Điều chỉnh cho các thiết bị có màn hình nhỏ hơn hoặc bằng 768px (tablet, điện thoại lớn) */
-/* Responsive cho màn hình dưới 768px */
-@media (max-width: 768px) {
-  .giohang {
-    margin: 0 10px;
-  }
-
-  .giohang_title {
-    font-size: 18px;
-    margin-top: 20px;
-  }
-
-  .w-r__container {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 10px;
-    gap: 15px;
-  }
-
-  .w-r__img-wrap {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto;
-  }
-
-  .w-r__info {
-    width: 100%;
-    text-align: center;
-  }
-
-  .w-r__name {
-    font-size: 16px;
-  }
-
-  .w-r__details {
-    justify-content: center;
-    gap: 5px;
-  }
-
-  .w-r__price-wrapper {
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-  }
-
-  .w-r__wrap-2 {
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-    text-align: center;
-  }
-
-  .quantity-control {
-    width: 100%;
-    justify-content: space-between;
-    padding: 5px;
-  }
-
-  .cart__actions {
-    flex-direction: column;
-    gap: 10px;
-    text-align: center;
-  }
-
-  .divider {
-    margin-block: 2rem;
-  }
-
-  .cart__group {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .cart__total {
-    padding: 15px;
-    font-size: 14px;
-  }
-
-  .cart__total-table tr td {
-    padding: 5px;
-  }
-
-  .cart__total-price {
-    font-size: 16px;
-  }
-
-  .cart__total .btn {
-    width: 100%;
-    justify-content: center;
-  }
-  .quantity-control {
-    width: 110px;
-    margin: auto;
-    padding: 5px;
-    font-size: 14px;
-  }
-}
-
-/* Điều chỉnh cho các thiết bị có màn hình nhỏ hơn hoặc bằng 480px (điện thoại nhỏ) */
-@media (max-width: 480px) {
-  .container {
-    width: 100%;
-    padding: 15px;
-  }
-
-  .w-r__container {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 10px;
-  }
-
-  .w-r__img-wrap {
-    width: 60px;
-    height: 60px;
-  }
-
-  .cart__group {
-    grid-template-columns: 1fr;
-  }
-
-  .cart__total {
-    padding: 1.5rem;
-  }
 }

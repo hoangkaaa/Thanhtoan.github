@@ -1,0 +1,769 @@
+/*=============== GOOGLE FONTS ===============*/
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Spartan:wght@400;500;600;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Kablammo:MORF@7&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Oi&family=Pacifico&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Potta+One&family=Raleway:ital,wght@0,100..900;1,100..900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Kablammo:MORF@7&family=Lexend:wght@100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Oi&family=Pacifico&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Potta+One&family=Raleway:ital,wght@0,100..900;1,100..900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+/*=============== VARIABLES CSS ===============*/
+:root {
+  --header-height: 4rem;
+
+  /*========== Colors ==========*/
+  --first-color: 	hsl(0, 75%, 33%);
+  --first-color-alt: hsl(129, 44%, 94%);
+  --second-color: hsl(45, 65%, 90%);
+  --title-color: hsl(115, 67%, 13%);
+  --text-color: hsl(154, 13%, 32%);
+  --text-color-light: hsl(60, 1%, 56%);
+  --body-color: hsl(0, 0%, 100%);
+  --container-color: hsl(0, 0%, 93%);
+  --border-color: hsl(129, 36%, 85%);
+  --border-color-alt: hsl(113, 15%, 90%);
+  --btn-color: 	hsl(46, 75%, 81%);
+
+
+  /*========== Font and typography ==========*/
+  /* Font chính */
+  --body-font: "Lexend", sans-serif;
+  /* Font phụ */
+  --second-font: "Raleway" ,sans-serif; 
+  --big-font-size: 3.5rem;
+  --h1-font-size: 2.75rem;
+  --h2-font-size: 2rem;
+  --h3-font-size: 1.75rem;
+  --h4-font-size: 1.375rem;
+  --large-font-size: 1.125rem;
+  --normal-font-size: 1rem;
+  --small-font-size: 0.875rem;
+  --smaller-font-size: 0.75rem;
+  --tiny-font-size: 0.6875rem;
+
+  /*========== Font weight ==========*/
+  --weight-400: 400;
+  --weight-500: 500;
+  --weight-600: 600;
+  --weight-700: 700;
+
+  /*========== Transition ==========*/
+  --transition: cubic-bezier(0, 0, 0.05, 1);
+}
+
+/* Responsive typography */
+@media screen and (max-width: 1200px) {
+  :root {
+    --big-font-size: 2.25rem;
+    --h1-font-size: 2rem;
+    --h2-font-size: 1.375rem;
+    --h3-font-size: 1.25rem;
+    --h4-font-size: 1.125rem;
+    --large-font-size: 1rem;
+    --normal-font-size: 0.9375rem;
+    --small-font-size: 0.8125rem;
+    --smaller-font-size: 0.6875rem;
+    --tiny-font-size: 0.625rem;
+  }
+}
+
+/*=============== BASE ===============*/
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+input,
+textarea,
+body {
+  color: var(--text-color);
+  font-family: var(--body-font);
+  font-size: var(--normal-font-size);
+  font-weight: var(--weight-400);
+}
+
+body {
+  background-color: var(--body-color);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--second-font);
+  color: var(--title-color);
+  font-weight: var(--weight-600);
+}
+
+ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+p {
+  line-height: 1.5rem;
+}
+
+img {
+  max-width: 100%;
+}
+
+button,
+textarea,
+input {
+  background-color: transparent;
+  border: none;
+  outline: none;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/*=============== REUSABLE CSS CLASSES ===============*/
+.container {
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: 0.75rem;
+}
+
+.grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.section {
+  padding-block: 2rem;
+}
+
+.section--lg {
+  padding-block: 4rem;
+}
+
+.section__title {
+  font-size: var(--h4-font-size);
+  margin-bottom: 1.5rem;
+}
+
+.section__title span {
+  color: var(--first-color);
+}
+
+.form__input {
+  border: 1px solid var(--border-color-alt);
+  padding-inline: 1rem;
+  height: 45px;
+  font-size: var(--small-font-size);
+  border-radius: 0.25rem;
+  -webkit-border-radius: 0.25rem;
+  -moz-border-radius: 0.25rem;
+  -ms-border-radius: 0.25rem;
+  -o-border-radius: 0.25rem;
+}
+
+.new__price {
+  color: var(--first-color);
+  font-weight: var(--weight-600);
+}
+
+.old__price {
+  color: var(--text-color-light);
+  font-size: var(--small-font-size);
+  text-decoration: line-through;
+}
+
+.form {
+  row-gap: 1rem;
+}
+
+.form__group {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.textarea {
+  height: 200px;
+  padding-block: 1rem;
+  resize: none;
+}
+
+/*=============== HEADER & NAV ===============*/
+.header__top {
+  background-color: var(--first-color);
+  border-bottom: 1px solid var(--first-color);
+  padding-block: 0.875rem;
+}
+
+.header__container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header__contact span:first-child {
+  margin-right: 2rem;
+  color: #fefefe;
+}
+
+.header__contact span,
+.header__alert-news,
+.header__alert-top-action {
+  font-size: var(--small-font-size);
+}
+
+.header__alert-news {
+  color: #fefefe;
+  font-weight: var(--weight-600);
+}
+
+.header__top-action {
+  color: #fefefe;
+}
+
+.nav,
+.nav__menu,
+.nav__list,
+.header__user-actions {
+  display: flex;
+  align-items: center;
+}
+
+.nav {
+  height: calc(var(--header-height) + 2.5rem);
+  justify-content: space-between;
+  column-gap: 1rem;
+}
+
+.nav__logo-img {
+  width: 120px;
+}
+
+.nav__menu {
+  flex-grow: 1;
+  margin-left: 2.5rem;
+}
+
+.nav__list {
+  column-gap: 2.5rem;
+  margin-right: auto;
+}
+
+.nav__link {
+  color: var(--title-color);
+  font-weight: var(--weight-700);
+  transform: all 0.3s var(--transition);
+  -webkit-transform: all 0.3s var(--transition);
+  -moz-transform: all 0.3s var(--transition);
+  -ms-transform: all 0.3s var(--transition);
+  -o-transform: all 0.3s var(--transition);
+}
+
+.header__search {
+  width: 340px;
+  position: relative;
+}
+
+.header__search .form__input {
+  width: 100%;
+}
+
+.search__btn {
+  position: absolute;
+  top: 24%;
+  right: 1.25rem;
+  cursor: pointer;
+}
+
+.header__user-actions {
+  column-gap: 1.25rem;
+}
+
+.header__action-btn {
+  position: relative;
+}
+
+.header__action-btn img {
+  width: 24px;
+}
+
+.header__action-btn span.count {
+  position: absolute;
+  top: -0.625rem;
+  right: -0.625rem;
+  background-color: var(--first-color);
+  color: var(--body-color);
+  height: 18px;
+  width: 18px;
+  text-align: center;
+  font-size: var(--tiny-font-size);
+  line-height: 18px;
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -ms-border-radius: 50%;
+  -o-border-radius: 50%;
+}
+
+.nav__menu-top,
+.nav__toggle {
+  display: none;
+}
+
+/* Active link */
+.active-link,
+.nav__link:hover {
+  color: var(--first-color);
+}
+
+
+/*=============== BUTTONS ===============*/
+.btn {
+  display: inline-block;
+  background-color: var(--first-color);
+  border: 2px solid var(--first-color);
+  color: var(--body-color);
+  padding-inline: 1.75rem;
+  /* padding: 0.75rem 1.75rem; */
+  height: 49px;
+  line-height: 43px;
+  font-family: var(--second-font);
+  font-size: var(--small-font-size);
+  font-weight: var(--weight-700);
+  border-radius: 0.25rem;
+  -webkit-border-radius: 0.25rem;
+  -moz-border-radius: 0.25rem;
+  -ms-border-radius: 0.25rem;
+  -o-border-radius: 0.25rem;
+  transition: all 0.4s var(--transition);
+  -webkit-transition: all 0.4s var(--transition);
+  -moz-transition: all 0.4s var(--transition);
+  -ms-transition: all 0.4s var(--transition);
+  -o-transition: all 0.4s var(--transition);
+}
+
+.btn:hover {
+  background-color: transparent;
+  color: var(--first-color);
+}
+
+.btn--md,
+.btn--sm {
+  font-family: var(--body-font);
+}
+
+.btn--md {
+  height: 45px;
+  line-height: 40px;
+}
+
+.btn--sm {
+  height: 40px;
+  line-height: 35px;
+}
+
+/*=============== CATEGORIES ===============*/
+
+.flex {
+  display: flex;
+  align-items: center;
+  column-gap: 0.5rem;
+}
+
+/* Css nghi làm ở đây */
+/*Giới thiệu sản phẩm Sunkissed */
+.info_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--body-font);
+  margin-bottom: 100px;
+  margin-top: 50px; 
+}
+/* Căn chỉnh vị trí, màu cho tiêu đề */
+.tieude {
+  text-align:center ;
+  color: var(--first-color);
+  margin-bottom: 30px;
+}
+.tieude .title {
+  font-weight: bold;
+font-size: 40px;
+font-family: var(--second-font);
+}
+/*n/ Căn chỉnh vị trí, màu cho tiêu đề */
+
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  gap: 70px;
+}
+/* Vị trí bên trái */
+.ben_trai{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+}
+/*n/ Vị trí bên trái */
+
+/* Vị trí bên phải */
+.ben_phai {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.lon_cam {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/*n/ Vị trí bên phải */
+
+/* Vị trí lon cam */
+.lon_cam img {
+
+  max-width: 250px; /* Điều chỉnh kích thước hình ảnh lon cam */
+}
+.lon_cam img{
+  align-items: center;
+ 
+}
+.lon_cam img {
+  transition: transform 0.3s ease, filter 0.3s ease; /* Hiệu ứng chuyển đổi cho hình ảnh */
+}
+
+.lon_cam img:hover {
+  transform: scale(1.1); /* Phóng to hình ảnh khi hover */
+  filter: brightness(1.1); /* Tăng độ sáng hình ảnh khi hover */
+}
+/*n/ Vị trí lon cam */
+
+.thanh_phan p {
+  width: 300px;
+  font-size: 20px;
+}
+.tac_dong {
+ 
+  font-size: 20px;
+} 
+.dong_goi {
+  padding-top: 20px;
+}
+.dong_goi p{
+  width: 300px;
+  font-size:20px;
+}
+.dong_goi p {
+  width: 300px;
+}
+.tac_dong p {
+width: 300px;
+font-size: 18px;
+}
+.thanh_phan h3 {
+  
+  font-weight: bold;
+  font-size: 30px;
+
+}
+
+.dong_goi h3 {
+ 
+  font-weight: bold;
+  font-size: 30px;
+  transform: translateY(1px);
+}
+
+.dong_goi p {
+  transform: translateY(10px);
+}
+
+.tac_dong h3 {
+  font-weight: bold;
+  font-size: 30px;
+}
+.social {
+  padding-top: 70px;
+}
+.social h3 {
+ 
+  font-weight: bold;
+  font-size: 30px;
+}
+
+h3 {
+  transition: color 0.3s ease; /* Hiệu ứng chuyển màu mượt mà */
+}
+
+h3:hover {
+  color: #ff6600; /* Màu sắc khi hover (có thể thay đổi theo ý muốn) */
+}
+.social img {
+  margin: 0 10px; /* Điều chỉnh khoảng cách giữa các icon */
+}
+@media (max-width: 768px) { /* Điều chỉnh cho màn hình nhỏ hơn 768px */
+  .info_container {
+    flex-direction: column; /* Chuyển sang chiều dọc */
+    align-items: center; /* Căn giữa nội dung */
+  }
+
+  .content {
+    flex-direction: column; /* Chuyển sang chiều dọc */
+    align-items: center; /* Căn giữa các phần tử */
+  }
+
+  .ben_trai, .ben_phai {
+    width: 100%; /* Chiếm toàn bộ chiều rộng */
+  
+  }
+
+  .lon_cam {
+    margin: 20px 0; /* Thêm khoảng cách trên và dưới cho lon nước */
+  }
+
+  .thanh_phan, .dong_goi, .tac_dong, .social {
+    width: 90%; /* Giảm chiều rộng xuống 90% */
+    margin: 10px 0; /* Thêm khoảng cách giữa các phần */
+    align-items:center;
+  }
+
+  .lon_cam img {
+    max-width: 200px; /* Đảm bảo hình ảnh không vượt quá chiều rộng */
+    height: auto; /* Giữ tỷ lệ khung hình */
+    
+ 
+ }
+ .thanh_phan, .dong_goi {
+  text-align: center; /* Căn giữa văn bản */
+  width: 100%; /* Đảm bảo chiếm toàn bộ chiều rộng */
+  margin: 20px 0; /* Thêm khoảng cách trên và dưới */
+}
+
+.thanh_phan h3, .dong_goi h3 {
+  font-weight: bold; /* Đậm tiêu đề */
+  font-size: 30px; /* Kích thước tiêu đề */
+}
+
+.thanh_phan p, .dong_goi p {
+  width: 80%; /* Đặt chiều rộng đoạn văn */
+  margin: 0 auto; /* Căn giữa đoạn văn */
+  font-size: 18px; /* Kích thước chữ cho đoạn văn */
+}
+.tac_dong, .social {
+  text-align: center; /* Căn giữa văn bản */
+  width: 100%; /* Đảm bảo chiếm toàn bộ chiều rộng */
+  margin: 20px 0; /* Thêm khoảng cách trên và dưới */
+}
+
+.tac_dong h3, .social h3 {
+  font-weight: bold; /* Đậm tiêu đề */  
+  font-size: 30px; /* Kích thước tiêu đề */
+}
+
+.tac_dong p, .social img {
+  width: 80%; /* Đặt chiều rộng đoạn văn */
+  margin: 0 auto; /* Căn giữa đoạn văn */
+}
+
+.social img {
+  width: 40px; /* Kích thước biểu tượng mạng xã hội */
+  margin: 10px; /* Khoảng cách giữa các biểu tượng */
+}
+}
+
+/*n/Giới thiệu sản phẩm Sunkissed */
+/* Giới thiệu thành viên */
+.introduce_mem {
+  text-align: center;
+  margin-bottom: 50px; 
+}
+/* Tiêu đề giới thiệu thành viên */
+.introduce_mem h2{
+  font-weight: bold;
+  font-size: 50px;
+  font-family: var(--second-font);
+  color: var(--first-color);
+  text-align: center;
+   margin-bottom: 50px; 
+}
+/*n/ Tiêu đề giới thiệu thành viên */
+.tong_thanh_vien{
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+/* 6 thành viên */
+.ba_thanh_vien_1, .ba_thanh_vien_2 {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+.ba_thanh_vien_1 div, .ba_thanh_vien_2 div {
+  text-align: center;
+}
+.tong_thanh_vien {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* Căn giữa các thành viên */
+  gap: 20px; /* Khoảng cách giữa các thành viên */
+}
+.profile-image {
+  width: 300px; /* Chiều rộng đồng nhất */
+  height: 400px; /* Chiều cao đồng nhất */
+  object-fit: cover; /* Đảm bảo hình ảnh không bị méo */
+  border-radius: 10px; /* Tùy chọn: làm bo góc hình ảnh */
+  margin-bottom: 50px;
+}
+.profile-image {
+  border-radius: 50%; /* Để hình ảnh tròn */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hiệu ứng chuyển đổi */
+  width: 150px; /* Đặt kích thước cho hình ảnh */
+  height: 150px; /* Đặt kích thước cho hình ảnh */
+}
+
+.profile-image:hover {
+  transform: scale(1.1); /* Phóng to hình ảnh khi hover */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Thêm bóng cho hình ảnh khi hover */
+}
+/*n/ 6 thành viên */
+
+ h3 {
+  transform: translateY(-30px);
+}
+.hover-title {
+  font-size: 2.5em; /* Kích thước chữ mặc định */
+  transition: color 0.3s ease, transform 0.3s ease; /* Hiệu ứng chuyển màu và phóng to */
+}
+
+.hover-title {
+  font-size: 2.5em; /* Kích thước chữ mặc định */
+  color: black; /* Màu chữ mặc định */
+  transition: color 0.3s ease, transform 0.3s ease; /* Hiệu ứng chuyển màu và phóng to */
+  text-align: center; /* Căn giữa tiêu đề */
+}
+
+.hover-title:hover {
+  color: #ff6600; /* Màu sắc khi hover */
+  transform: scale(1.1); /* Phóng to chữ khi hover */
+}
+
+@media (max-width: 768px) {
+  .profile-image {
+    width: 80px; /* Kích thước hình ảnh nhỏ hơn */
+    height: 80px; /* Kích thước hình ảnh nhỏ hơn */
+  }
+  .ba_thanh_vien_1, .ba_thanh_vien_2 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+  }
+  
+}
+/*=============== FOOTER ===============*/
+.footer__container {
+  grid-template-columns: 4.5fr repeat(2, 2fr) 3.5fr;
+  padding-block: 2.5rem;
+}
+
+.footer__logo-img {
+  width: 120px;
+}
+
+.footer__subtitle {
+  color: var(--text-color-light);
+  font-size: var(--small-font-size);
+  margin-block: 1.25rem 0.625rem;
+}
+
+.footer__description {
+  margin-bottom: 0.25rem;
+}
+
+.footer__description span {
+  font-weight: var(--weight-600);
+}
+
+.footer__social .footer__subtitle {
+  margin-top: 1.875rem;
+}
+
+.footer__social-links {
+  column-gap: 0.25rem;
+}
+
+.footer__social-icon {
+  width: 20px;
+  opacity: 0.7;
+}
+
+.footer__title {
+  font-size: var(--large-font-size);
+  margin-block: 1rem 1.25rem;
+}
+
+.footer__link {
+  color: var(--title-color);
+  font-size: var(--small-font-size);
+  margin-bottom: 1rem;
+  display: block;
+  transition: all 0.3s var(--transition);
+  -webkit-transition: all 0.3s var(--transition);
+  -moz-transition: all 0.3s var(--transition);
+  -ms-transition: all 0.3s var(--transition);
+  -o-transition: all 0.3s var(--transition);
+}
+
+.footer__link:hover {
+  color: var(--first-color);
+  margin-left: 0.25rem;
+}
+
+.footer__bottom {
+  display: flex;
+  justify-content: space-between;
+  padding-block: 1.25rem;
+  border-top: 1px solid var(--border-color-alt);
+}
+
+.copyright,
+.designer {
+  color: var(--text-color-light);
+  font-size: var(--small-font-size);
+}
+
+/*=============== BREADCRUMBS ===============*/
+.breadcrumb {
+  background-color: var(--container-color);
+  padding-block: 1.5rem;
+}
+
+.breadcrumb__list {
+  column-gap: 0.75rem;
+}
+
+.breadcrumb__link {
+  color: var(--text-color);
+  font-size: var(--small-font-size);
+}
+
+/*=============== CART ===============*/
+
+.table__title,
+
+
+.table__trash,
+.table__stock {
+  font-size: var(--small-font-size);
+}
+.table__title,
+.table__stock {
+  color: var(--first-color);
+}

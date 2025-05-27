@@ -1,0 +1,775 @@
+/*=============== GOOGLE FONTS ===============*/
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Spartan:wght@400;500;600;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Kablammo:MORF@7&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Oi&family=Pacifico&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Potta+One&family=Raleway:ital,wght@0,100..900;1,100..900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Kablammo:MORF@7&family=Lexend:wght@100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Oi&family=Pacifico&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Potta+One&family=Raleway:ital,wght@0,100..900;1,100..900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+/*=============== VARIABLES CSS ===============*/
+:root {
+  --header-height: 4rem;
+
+  /*========== Colors ==========*/
+  --first-color: 	hsl(0, 75%, 33%);
+  --first-color-alt: hsl(129, 44%, 94%);
+  --second-color: hsl(45, 65%, 90%);
+  --title-color: hsl(115, 67%, 13%);
+  --text-color: hsl(154, 13%, 32%);
+  --text-color-light: hsl(60, 1%, 56%);
+  --body-color: hsl(0, 0%, 100%);
+  --container-color: hsl(0, 0%, 93%);
+  --border-color: hsl(129, 36%, 85%);
+  --border-color-alt: hsl(113, 15%, 90%);
+  --btn-color: 	hsl(46, 75%, 81%);
+
+
+  /*========== Font and typography ==========*/
+  --body-font: "Lexend", sans-serif;
+  --second-font: "Raleway" sans-serif;
+  --big-font-size: 3.5rem;
+  --h1-font-size: 2.75rem;
+  --h2-font-size: 2rem;
+  --h3-font-size: 1.75rem;
+  --h4-font-size: 1.375rem;
+  --large-font-size: 1.125rem;
+  --normal-font-size: 1rem;
+  --small-font-size: 0.875rem;
+  --smaller-font-size: 0.75rem;
+  --tiny-font-size: 0.6875rem;
+
+  /*========== Font weight ==========*/
+  --weight-400: 400;
+  --weight-500: 500;
+  --weight-600: 600;
+  --weight-700: 700;
+
+  /*========== Transition ==========*/
+  --transition: cubic-bezier(0, 0, 0.05, 1);
+}
+
+/* Responsive typography */
+@media screen and (max-width: 1200px) {
+  :root {
+    --big-font-size: 2.25rem;
+    --h1-font-size: 2rem;
+    --h2-font-size: 1.375rem;
+    --h3-font-size: 1.25rem;
+    --h4-font-size: 1.125rem;
+    --large-font-size: 1rem;
+    --normal-font-size: 0.9375rem;
+    --small-font-size: 0.8125rem;
+    --smaller-font-size: 0.6875rem;
+    --tiny-font-size: 0.625rem;
+  }
+}
+
+/*=============== BASE ===============*/
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+input,
+textarea,
+body {
+  color: var(--text-color);
+  font-family: var(--body-font);
+  font-size: var(--normal-font-size);
+  font-weight: var(--weight-400);
+}
+
+body {
+  background-color: var(--body-color);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--second-font);
+  color: var(--title-color);
+  font-weight: var(--weight-600);
+}
+
+ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+p {
+  line-height: 1.5rem;
+}
+
+img {
+  max-width: 100%;
+}
+
+button,
+textarea,
+input {
+  background-color: transparent;
+  border: none;
+  outline: none;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/*=============== REUSABLE CSS CLASSES ===============*/
+.container {
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: 0.75rem;
+}
+
+.grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.section {
+  padding-block: 2rem;
+}
+
+.section--lg {
+  padding-block: 1rem;
+}
+
+.section__title {
+  font-size: var(--h4-font-size);
+  margin-bottom: 1.5rem;
+}
+
+.section__title span {
+  color: var(--first-color);
+}
+
+.form__input {
+  border: 1px solid var(--border-color-alt);
+  padding-inline: 1rem;
+  height: 45px;
+  font-size: var(--small-font-size);
+  border-radius: 0.25rem;
+  -webkit-border-radius: 0.25rem;
+  -moz-border-radius: 0.25rem;
+  -ms-border-radius: 0.25rem;
+  -o-border-radius: 0.25rem;
+}
+
+.new__price {
+  color: var(--first-color);
+  font-weight: var(--weight-600);
+}
+
+.old__price {
+  color: var(--text-color-light);
+  font-size: var(--small-font-size);
+  text-decoration: line-through;
+}
+
+.form {
+  row-gap: 1rem;
+}
+
+.form__group {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.textarea {
+  height: 200px;
+  padding-block: 1rem;
+  resize: none;
+}
+
+/*=============== HEADER & NAV ===============*/
+.header__top {
+  background-color: var(--first-color);
+  border-bottom: 1px solid var(--first-color);
+  padding-block: 0.875rem;
+}
+
+.header__container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header__contact span:first-child {
+  margin-right: 2rem;
+  color: #fefefe;
+}
+
+.header__contact span,
+.header__alert-news,
+.header__alert-top-action {
+  font-size: var(--small-font-size);
+
+}
+
+.header__alert-news {
+  color: #fefefe;
+  font-weight: var(--weight-600);
+}
+
+.header__top-action {
+  color: #fefefe;
+  visibility: hidden;
+}
+
+
+.nav,
+.nav__menu,
+.nav__list,
+.header__user-actions {
+  display: flex;
+  align-items: center;
+}
+
+.nav {
+  height: calc(var(--header-height) + 2.5rem);
+  justify-content: space-between;
+  column-gap: 1rem;
+}
+
+.nav__logo-img {
+  width: 120px;
+}
+
+.nav__menu {
+  flex-grow: 1;
+  margin-left: 2.5rem;
+}
+
+.nav__list {
+  column-gap: 2.5rem;
+  margin-right: auto;
+}
+
+.nav__link {
+  color: var(--title-color);
+  font-weight: var(--weight-700);
+  transform: all 0.3s var(--transition);
+  -webkit-transform: all 0.3s var(--transition);
+  -moz-transform: all 0.3s var(--transition);
+  -ms-transform: all 0.3s var(--transition);
+  -o-transform: all 0.3s var(--transition);
+}
+
+.header__search {
+  width: 340px;
+  position: relative;
+}
+
+.header__search .form__input {
+  width: 100%;
+}
+
+.search__btn {
+  position: absolute;
+  top: 24%;
+  right: 1.25rem;
+  cursor: pointer;
+}
+
+.header__user-actions {
+  column-gap: 1.25rem;
+}
+
+.header__action-btn {
+  position: relative;
+}
+
+.header__action-btn img {
+  width: 24px;
+}
+
+.header__action-btn span.count {
+  position: absolute;
+  top: -0.625rem;
+  right: -0.625rem;
+  background-color: var(--first-color);
+  color: var(--body-color);
+  height: 18px;
+  width: 18px;
+  text-align: center;
+  font-size: var(--tiny-font-size);
+  line-height: 18px;
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -ms-border-radius: 50%;
+  -o-border-radius: 50%;
+}
+
+.nav__menu-top,
+.nav__toggle {
+  display: none;
+}
+
+/* Active link */
+.active-link,
+.nav__link:hover {
+  color: var(--first-color);
+}
+
+/*=============== CATEGORIES ===============*/
+
+.flex {
+  display: flex;
+  align-items: center;
+  column-gap: 0.5rem;
+}
+
+
+
+
+/*=============== FOOTER ===============*/
+.footer__container {
+  grid-template-columns: 4.5fr repeat(2, 2fr) 3.5fr;
+  padding-block: 2.5rem;
+}
+
+.footer__logo-img {
+  width: 120px;
+}
+
+.footer__subtitle {
+  color: var(--text-color-light);
+  font-size: var(--small-font-size);
+  margin-block: 1.25rem 0.625rem;
+}
+
+.footer__description {
+  margin-bottom: 0.25rem;
+}
+
+.footer__description span {
+  font-weight: var(--weight-600);
+}
+
+.footer__social .footer__subtitle {
+  margin-top: 1.875rem;
+}
+
+.footer__social-links {
+  column-gap: 0.25rem;
+}
+
+.footer__social-icon {
+  width: 20px;
+  opacity: 0.7;
+}
+
+.footer__title {
+  font-size: var(--large-font-size);
+  margin-block: 1rem 1.25rem;
+}
+
+.footer__link {
+  color: var(--title-color);
+  font-size: var(--small-font-size);
+  margin-bottom: 1rem;
+  display: block;
+  transition: all 0.3s var(--transition);
+  -webkit-transition: all 0.3s var(--transition);
+  -moz-transition: all 0.3s var(--transition);
+  -ms-transition: all 0.3s var(--transition);
+  -o-transition: all 0.3s var(--transition);
+}
+
+.footer__link:hover {
+  color: var(--first-color);
+  margin-left: 0.25rem;
+}
+
+.footer__bottom {
+  display: flex;
+  justify-content: space-between;
+  padding-block: 1.25rem;
+  border-top: 1px solid var(--border-color-alt);
+}
+
+.copyright,
+.designer {
+  color: var(--text-color-light);
+  font-size: var(--small-font-size);
+}
+
+
+
+/*=============== BREADCRUMBS ===============*/
+.breadcrumb {
+  background-color: var(--container-color);
+  padding-block: 1.5rem;
+  margin-bottom: 30px;
+}
+
+.breadcrumb__list {
+  column-gap: 0.75rem;
+}
+
+.breadcrumb__link {
+  color: var(--text-color);
+  font-size: var(--small-font-size);
+}
+
+/* Dòng chữ Hồ sơ người dùng */
+.user-profile-title-container { 
+  text-align: center; 
+  align-items: center;
+  justify-content: center;
+}
+
+.user-profile-title { 
+  font-size: 36px; /* Kích thước chữ lớn */ 
+  color: var(--first-color); /* Màu chữ đỏ */ 
+  font-weight: bold;
+  
+
+}
+
+
+
+/*=============== ACCOUNTS ===============*/
+.accounts__container {
+  display: flex; /* Sử dụng layout flexbox */
+  flex-direction: column; /* Chia thành các mục dọc */
+  gap: 1rem; /* Khoảng cách giữa các mục */
+  align-items: center; /* Căn giữa các mục theo chiều ngang */
+  background-color: #ffffff; /* Màu nền trắng */
+  border-radius: 1rem; /* Tạo góc bo mềm */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+  margin-top: 10px; /* Khoảng cách trên */
+  width: 100%; /* Chiều rộng 100% */
+  max-width: 1200px; /* Giới hạn chiều rộng */
+}
+
+/* Các tab của trang tài khoản */
+.account__tabs {
+  display: flex; /* Sử dụng layout flexbox */
+  justify-content: space-around; /* Căn đều khoảng cách giữa các tab */
+  gap: 1rem; /* Khoảng cách giữa các mục */
+  background-color: #f9f9f9; /* Màu nền của tab */
+  padding: 0.5rem; /* Khoảng cách bên trong */
+  border-radius: 1rem; /* Tạo góc bo mềm */
+  border: 1px solid var(--border-color-alt); /* Đường viền */
+  flex-wrap: nowrap; /* Đảm bảo các tab nằm trên một hàng */
+  width: 100%; /* Chiều rộng 100% */
+  overflow: hidden; /* Ẩn phần tràn ra ngoài */
+}
+
+/* Các tab riêng lẻ của trang tài khoản */
+.account__tab {
+  padding: 1rem 2rem; /* Khoảng cách bên trong */
+  color: var(--title-color);  /* Màu chữ */
+  font-size: var(--small-font-size); /* Kích thước chữ */
+  display: inline-flex; /* Hiển thị các mục trong cùng một hàng */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  gap: 0.5rem; /* Khoảng cách giữa các mục */
+  cursor: pointer; /* Con trỏ chuột khi hover */
+  transition: all 0.2s var(--transition);
+  border-radius: 15px; /* Tạo góc bo mềm */
+  white-space: nowrap; /* Ngăn không cho chữ xuống dòng */
+  text-align: center; /* Căn giữa văn bản bên trong */
+}
+
+/* Tab được nhấn vào */
+.account__tab.active-tab {
+  background-color: var(--first-color); /* Màu nền khi active */
+  color: var(--body-color); /* Màu chữ khi active */
+}
+
+/* Những tab mà không phải tab cuối cùng */
+.account__tab:not(:last-child) {
+  margin-inline-start: 0.3rem; /* Khoảng cách giữa các tab trừ tab cuối */
+}
+
+/* Menu responsive ở mobile */
+.menu-toggle {
+  display: none; /* Ẩn đi mặc định */
+  background-color: var(--first-color); /* Màu nền */
+  color: var(--body-color); /* Màu chữ */
+  padding: 0.5rem 1rem; /* Khoảng cách bên trong */
+  border: none; /* Không có đường viền */
+  border-radius: 5px; /* Tạo góc bo mềm */
+  cursor: pointer; /* Con trỏ chuột khi hover */
+  margin: 0.5rem 0; /* Khoảng cách trên và dưới */
+}
+
+/* Các thông tin bên trong các tab */
+.tabs__content {
+  width: 100%; /* Chiều rộng đầy đủ */
+  max-width: 1300px; /* Giới hạn chiều rộng */
+  border: 1px solid var(--border-color-alt); /* Đường viền */
+  background-color: #ffffff; /* Màu nền */
+  border-radius: 1rem; /* Tạo góc bo mềm cho nội dung tab */
+  padding: 1rem; /* Khoảng cách bên trong */
+}
+
+/* Thông tin bên trong một tab */
+.tab__content {
+  display: none; /* Ẩn nội dung tab mặc định, chỉ hiển thị khi active */
+  width: 100%; /* Chiều rộng 100% */
+  background-color: #ffffff; /* Màu nền */
+}
+
+/* Nội dung tab được chọn */
+.tab__content.active-tab {
+  display: block; /* Hiển thị nội dung tab khi active */
+}
+
+/* Tiêu đề nội dung bên trong tab được chọn */
+.tab__header {
+  background-color: var(--container-color); /* Màu nền của header */
+  border-bottom: 1px solid var(--border-color-alt); /* Đường viền dưới */
+  padding: 1rem; /* Khoảng cách bên trong */
+  font-size: var(--small-font-size); /* Kích thước chữ */
+}
+
+/* Body nội dung bên trong tab được chọn */
+.tab__body {
+  padding: 1rem; /* Khoảng cách bên trong */
+  border-top: 1px solid var(--border-color-alt); /* Đảm bảo viền trên khớp với header */
+}
+
+.centered-text {
+  text-align: center; /* Căn giữa văn bản */
+  color: var(--first-color); /* Màu chữ */
+  margin-bottom: 20px; /* Khoảng cách dưới */
+}
+
+/* Nội dung tab thông tin */
+.tab__details {
+  display: flex; /* Sử dụng layout flexbox */
+  flex-direction: row; /* Chia thành 2 cột */
+  gap: 2rem; /* Khoảng cách giữa các mục email và password */
+  width: 100%; /* Chiều rộng 100% */
+}
+
+/* Email và mật khẩu trong tab tài khoản */
+.tab__email, 
+.tab__password { 
+  display: flex; 
+  flex-direction: column; /* Chia thành các mục dọc */
+  margin-bottom: 1rem; /* Khoảng cách dưới */ 
+}
+
+.tab__email label, 
+.tab__password label { 
+  font-weight: bold; /* Chữ đậm */
+  margin-bottom: 0.5rem; /* Khoảng cách dưới chữ */
+} 
+
+.tab__email div, 
+.tab__password div { 
+  padding: 0.5rem; /* Khoảng cách bên trong */
+  border: 1px solid #ccc; /* Đường viền */
+  border-radius: 5px; /* Tạo góc bo mềm */
+  font-size: 1rem; /* Kích thước chữ */
+  background-color: #f5f5f5; /* Màu nền cho ô email và mật khẩu */ 
+} 
+
+.edit-email, 
+.edit-password { 
+  color: var(--first-color); /* Màu chữ */
+  text-decoration: none; /* Không gạch chân */
+  margin-top: 0.5rem; /* Khoảng cách trên */
+  font-size: 0.875rem; /* Kích thước chữ nhỏ */
+}
+.form__btn {
+  transition: all 0.3s ease; /* Chuyển đổi tất cả với thời gian 0.3 giây */
+}
+
+.form__btn .btn--md {
+  border-radius: 15px; /* Tạo góc bo mềm */
+  padding: 10px 16px; /* Khoảng cách bên trong */
+  background-color: var(--first-color); /* Màu nền */
+  color: #fefefe; /* Màu chữ */
+  border: none; /* Xóa đường viền mặc định */
+  transition: background-color 0.3s ease, color 0.3s ease, border 0.3s ease;
+}
+.btn--md{
+  cursor: pointer;
+}
+.form__btn .btn--md:hover {
+  background-color: #fefefe; /* Đổi màu nền */
+  color: var(--first-color); /* Đổi màu chữ */
+  border: 1px solid var(--first-color); /* Thêm đường viền */
+}
+.dangxuat{
+  color: var(--first-color);
+}
+.tab__info, 
+.tab__credentials { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 1rem; /* Khoảng cách giữa các mục thông tin cá nhân */
+  width: 50%; /* Chiều rộng 50% */
+} 
+
+.tab__info-item { 
+  display: flex; 
+  flex-direction: column; /* Chia thành các mục dọc */
+}
+
+.tab__info label, 
+.tab__email label, 
+.tab__password label { 
+  font-weight: bold; /* Chữ đậm */
+  margin-bottom: 0.5rem; /* Khoảng cách dưới chữ */
+}
+
+.tab__info div, 
+.tab__email div, 
+.tab__password div { 
+  padding: 0.5rem; /* Khoảng cách bên trong */
+  border: 1px solid #ccc; /* Đường viền */
+  border-radius: 5px; /* Tạo góc bo mềm */
+  font-size: 1rem; /* Kích thước chữ */
+  background-color: #f5f5f5; /* Màu nền cho ô thông tin cá nhân và email, mật khẩu */
+}
+
+/* Bảng đơn hàng */
+.filter__orders {
+  display: flex; /* Sử dụng layout flexbox */
+  justify-content: flex-start; /* Căn về phía trước */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  margin: 1rem; /* Khoảng cách dưới thanh lọc */
+}
+
+.filter__label {
+  font-size: 1rem; /* Kích thước chữ */
+  margin-right: 0.5rem; /* Khoảng cách bên phải */
+  font-family: var(--body-font); /* Font chữ */
+}
+
+.filter__dropdown {
+  padding: 0.5rem; /* Khoảng cách bên trong */
+  font-size: 1rem; /* Kích thước chữ */
+  border: 1px solid #ccc; /* Đường viền */
+  border-radius: 4px; /* Tạo góc bo mềm */
+  width: auto; /* Chiều rộng tự động */
+  background-color: #fff; /* Màu nền */
+}
+.order__image {
+  width: 50px; /* Đặt chiều rộng cho hình ảnh */
+  height: 50px; /* Đặt chiều cao cho hình ảnh */
+  object-fit: cover; /* Cắt và căn chỉnh hình ảnh đẹp */
+  border-radius: 4px; /* Bo tròn nhẹ */
+  display: block; /* Hiển thị như một khối */
+  margin: 0 auto; /* Căn giữa hình ảnh */
+}
+
+.placed__order-table th,
+.placed__order-table td {
+  text-align: center; /* Căn giữa nội dung bảng */
+  vertical-align: middle; /* Căn giữa theo chiều dọc */
+}
+.placed__order-table thead tr th {
+  color: var(--title-color); /* Màu chữ của tiêu đề cột */
+  text-align: middle; /* Căn giữa nội dung tiêu đề cột */
+}
+
+.placed__order-table thead tr th,
+.placed__order-table tbody tr td {
+  border: 1px solid var(--border-color-alt); /* Thêm đường viền cho các ô trong bảng */
+  padding: 1.5rem; /* Khoảng cách bên trong ô */
+  font-size: var(--small-font-size); /* Kích thước chữ */
+}
+
+.view__order,
+.edit {
+  color: var(--first-color); /* Màu chữ của liên kết "View" và "Edit" */
+}
+
+.delete__order {
+  background-color: var(--first-color); /* Màu nền nút xóa */
+  color: #fff; /* Màu chữ */
+  border: none; /* Xóa đường viền */
+  border-radius: 4px; /* Bo góc mềm */
+  padding: 0.5rem 1rem; /* Khoảng cách trong nút */
+  cursor: pointer; /* Thay đổi con trỏ khi hover */
+  font-size: var(--small-font-size); /* Kích thước chữ */
+}
+
+.delete__order:hover {
+  background-color: #ff1a1a; /* Màu khi hover */
+}
+
+
+.address {
+  font-style: normal; /* Kiểu chữ thông thường */
+  font-size: var(--small-font-size); /* Kích thước chữ nhỏ */
+  line-height: 1.5; /* Chiều cao dòng */
+}
+
+.city {
+  margin-bottom: 0.25rem; /* Khoảng cách dưới của thành phố */
+}
+
+.edit {
+  font-size: var(--small-font-size); /* Kích thước chữ nhỏ */
+}
+.dangxuat{
+  color: var(--first-color);
+}
+
+
+/* Ẩn menu trên màn hình nhỏ */
+@media (max-width: 768px) {
+  .account__tabs {
+    display: none; /* Ẩn tab mặc định */
+    flex-direction: column; /* Chuyển thành dọc nếu cần */
+    position: absolute; /* Vị trí tuyệt đối */
+    top: 4rem; /* Cách trên 4rem */
+    left: 0; /* Cách trái 0 */
+    right: 0; /* Cách phải 0 */
+    background-color: #ffffff; /* Màu nền trắng */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+    border-radius: 8px; /* Tạo góc bo mềm */
+    z-index: 1000; /* Đảm bảo nằm trên các phần tử khác */
+  }
+
+  .account__tabs.active {
+    display: flex; /* Hiển thị khi menu được kích hoạt */
+  }
+
+  .menu-toggle {
+    display: block; /* Hiển thị nút mở menu */
+    background-color: var(--first-color); /* Màu nền */
+    color: var(--body-color); /* Khoảng cách bên trong */
+    padding: 0.8rem 1.5rem; /* Khoảng cách bên trong */
+    border: none; /* Không có đường viền */
+    border-radius: 8px; /* Tạo góc bo mềm */
+    cursor: pointer; /* Con trỏ chuột khi hover */
+    font-size: var(--small-font-size); /* Kích thước chữ */
+  }
+
+  .tab__email div {
+    word-wrap: break-word; /* Ngắt dòng nếu từ quá dài */
+    word-break: break-word; /* Ngắt từ nếu quá dài */
+    overflow-wrap: break-word; /* Xử lý ngắt dòng trong mọi trình duyệt */
+    white-space: normal; /* Cho phép ngắt dòng */
+    width: 100%; /* Đảm bảo chiếm toàn bộ chiều rộng container */
+    box-sizing: border-box; /* Bao gồm padding và border trong tính toán kích thước */
+  }
+
+  .tab__credentials {
+    flex-direction: column; /* Chuyển từ 2 cột thành 1 cột */
+    gap: 1rem; /* Tăng khoảng cách giữa các mục */
+  }
+
+  .tab__email,
+  .tab__password {
+    width: 100%; /* Đảm bảo chiếm đủ chiều rộng container */
+  }
+}
+
