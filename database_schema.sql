@@ -160,4 +160,4 @@ INSERT INTO products (name, category, price, original_price, rating, stock_statu
 ('Hương Socola', 'Trà Sữa', 30000, 50000, 4.5, 'in', 'yes', 15, 'assets/img/mt_p1_bg.png', 'Trà sữa hương socola thơm ngon'),
 ('Vị Sài Gòn', 'Cà Phê', 35000, 55000, 4.2, 'in', 'yes', 15, 'assets/img/cf_p1_bg.png', 'Cà phê đậm đà hương vị Sài Gòn'),
 ('Hương Chanh', 'Trà Thảo Mộc', 25000, 35000, 4.6, 'in', 'no', 0, 'assets/img/ht_p1_bg.png', 'Trà thảo mộc hương chanh tươi mát'),
-('Hương Lựu Đỏ', 'Kombucha', 35000, 50000, 4.4, 'in', 'yes', 15, 'assets/img/kom_p1_bg.png', 'Kombucha hương lựu đỏ tự nhiên'); 
+('Hương Lựu Đỏ', 'Kombucha', 35000, 50000, 4.4, 'in', 'yes', 15, 'assets/img/kom_p1_bg.png', 'Kombucha hương lựu đỏ tự nhiên');         

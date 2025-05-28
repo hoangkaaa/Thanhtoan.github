@@ -192,6 +192,19 @@ class Cart {
             return false;
         }
     }
+
+    public function removeItemDirect($item_id) {
+        try {
+            $query = "DELETE FROM cart_items WHERE id = :item_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':item_id', $item_id);
+            
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Cart removeItemDirect error: " . $e->getMessage());
+            return false;
+        }
+    }
 }
 
 // Class để quản lý đơn hàng - CẢI TIẾN

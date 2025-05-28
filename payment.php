@@ -217,7 +217,7 @@ $total = $subtotal + $shipping;
                         <a href="index.php" class="nav__link">Trang chủ</a>
                     </li>
                     <li class="nav__item">
-                        <a href="shop.php" class="nav__link">Cửa hàng</a>
+                        <a href="index.php" class="nav__link">Cửa hàng</a>
                     </li>
                     <li class="nav__item">
                         <a href="aboutus.php" class="nav__link">Về chúng tôi</a>
@@ -1692,6 +1692,80 @@ $total = $subtotal + $shipping;
         .delivery-container {
             transition: all 0.3s ease;
         }
+
+        /* Cart item styles for better UX */
+        .cart-item {
+            transition: all 0.3s ease;
+        }
+
+        .cart-item:hover {
+            background-color: rgba(38, 85, 29, 0.02);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .qty-btn {
+            width: 25px;
+            height: 25px;
+          
+          
+            cursor: pointer;
+     
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .qty-btn:hover {
+      
+            border-color: #adb5bd;
+        }
+
+        .qty-number {
+            min-width: 40px;
+            text-align: center;
+            font-weight: normal;
+            padding: 2px 5px;
+            font-size: 14px;
+        }
+
+        .remove-link {
+            color: #dc3545;
+            text-decoration: none;
+            font-size: 0.9em;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .remove-link:hover {
+            background-color: #dc3545;
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Cart item being removed animation */
+        .cart-item.removing {
+            opacity: 0;
+            transform: translateX(-100%);
+            transition: all 0.3s ease;
+        }
+
+        /* Empty cart message */
+        .empty-cart-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+            font-style: italic;
+        }
     </style>
 
     <script>
@@ -1783,6 +1857,175 @@ $total = $subtotal + $shipping;
 
         // Rest of your existing JavaScript code...
     });
+
+    // Function to update quantity
+    function updateQuantity(itemId, change) {
+        console.log('Updating quantity for item:', itemId, 'change:', change);
+        
+        const cartItem = document.querySelector(`.cart-item[data-id="${itemId}"]`);
+        if (!cartItem) {
+            console.error('Cart item not found:', itemId);
+            return;
+        }
+        
+        const qtyElement = cartItem.querySelector('.qty-number');
+        const currentQty = parseInt(qtyElement.textContent);
+        const newQty = currentQty + change;
+        
+        // If quantity becomes 0 or less, remove the item directly
+        if (newQty < 1) {
+            removeItem(itemId);
+            return;
+        }
+        
+        // Send AJAX request to update quantity
+        const formData = new FormData();
+        formData.append('action', 'update_quantity_direct');
+        formData.append('item_id', itemId);
+        formData.append('quantity', newQty);
+        
+        fetch('cart_actions.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Update quantity response:', data);
+            if (data.success) {
+                // Update quantity display
+                qtyElement.textContent = newQty;
+                
+                // Update item price
+                const price = parseFloat(cartItem.getAttribute('data-price'));
+                const itemPriceElement = cartItem.querySelector('.item-price');
+                itemPriceElement.textContent = new Intl.NumberFormat('vi-VN').format(price * newQty) + ' đ';
+                
+                // Update totals
+                updateTotals();
+                updateHeaderCartCount();
+                
+                console.log('Quantity updated successfully');
+            } else {
+                console.error('Failed to update quantity:', data.message);
+                alert('Có lỗi xảy ra khi cập nhật số lượng: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error updating quantity:', error);
+            alert('Có lỗi xảy ra khi cập nhật số lượng');
+        });
+    }
+    
+    // Function to remove item
+    function removeItem(itemId) {
+        console.log('Removing item:', itemId);
+        
+        const cartItem = document.querySelector(`.cart-item[data-id="${itemId}"]`);
+        if (!cartItem) {
+            console.error('Cart item not found:', itemId);
+            return;
+        }
+        
+        // Send AJAX request to remove item
+        const formData = new FormData();
+        formData.append('action', 'remove_item_direct');
+        formData.append('item_id', itemId);
+        
+        fetch('cart_actions.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Remove item response:', data);
+            if (data.success) {
+                // Remove item from DOM with animation
+                cartItem.style.opacity = '0';
+                cartItem.style.transform = 'translateX(-100%)';
+                cartItem.style.transition = 'all 0.3s ease';
+                
+                setTimeout(() => {
+                    cartItem.remove();
+                    updateTotals();
+                    updateHeaderCartCount();
+                    
+                    // Check if cart is empty
+                    const remainingItems = document.querySelectorAll('.cart-item');
+                    if (remainingItems.length === 0) {
+                        location.reload(); // Reload to show empty cart message
+                    }
+                }, 300);
+                
+                console.log('Item removed successfully');
+            } else {
+                console.error('Failed to remove item:', data.message);
+                alert('Có lỗi xảy ra khi xóa sản phẩm: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error removing item:', error);
+            alert('Có lỗi xảy ra khi xóa sản phẩm');
+        });
+    }
+    
+    // Function to update totals
+    function updateTotals() {
+        let subtotal = 0;
+        const cartItems = document.querySelectorAll('.cart-item');
+        
+        cartItems.forEach(item => {
+            const price = parseFloat(item.getAttribute('data-price'));
+            const qty = parseInt(item.querySelector('.qty-number').textContent);
+            subtotal += price * qty;
+        });
+        
+        // Update shipping fee (basic logic)
+        const isDelivery = document.querySelector('.delivery-btn')?.classList.contains('active');
+        let shippingFee = 0;
+        
+        if (isDelivery) {
+            const citySelect = document.getElementById('city-select');
+            if (citySelect && citySelect.value) {
+                const selectedOption = citySelect.options[citySelect.selectedIndex];
+                shippingFee = parseInt(selectedOption.getAttribute('data-fee') || '0');
+            }
+        }
+        
+        const total = subtotal + shippingFee;
+        
+        // Update display
+        const shippingDisplay = document.getElementById('shipping-fee-display');
+        const totalDisplay = document.getElementById('total-display');
+        
+        if (shippingDisplay) {
+            shippingDisplay.textContent = shippingFee > 0 ? 
+                new Intl.NumberFormat('vi-VN').format(shippingFee) + ' đ' : 'Miễn phí';
+        }
+        
+        if (totalDisplay) {
+            totalDisplay.textContent = new Intl.NumberFormat('vi-VN').format(total) + ' vnd';
+        }
+        
+        console.log('Totals updated - Subtotal:', subtotal, 'Shipping:', shippingFee, 'Total:', total);
+    }
+
+    // Function to update header cart count
+    function updateHeaderCartCount() {
+        fetch('cart_actions.php?action=get_cart_count')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const cartCountElements = document.querySelectorAll('.header__action-btn .count');
+                    cartCountElements.forEach(element => {
+                        element.textContent = data.count;
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error updating cart count:', error);
+            });
+    }
+
     </script>
 </body>
 </html>

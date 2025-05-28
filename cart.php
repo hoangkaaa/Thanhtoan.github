@@ -96,7 +96,7 @@ function getNumericPrice($price) {
             <a href="index.php" class="nav__link">Trang chủ</a>
           </li>
           <li class="nav__item">
-            <a href="shop.php" class="nav__link">Cửa hàng</a>
+            <a href="index.php" class="nav__link">Cửa hàng</a>
           </li>
           <li class="nav__item">
             <a href="aboutus.php" class="nav__link">Về chúng tôi</a>

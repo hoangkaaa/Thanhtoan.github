@@ -97,11 +97,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
             case 'update_quantity_direct':
                 $item_id = (int)$_POST['item_id'];
-                $new_quantity = (int)$_POST['new_quantity'];
+                $new_quantity = (int)$_POST['quantity'];
                 
                 if ($new_quantity < 1) {
-                    echo json_encode(['success' => false, 'message' => 'Số lượng phải lớn hơn 0']);
-                    exit;
+                    $response['success'] = false;
+                    $response['message'] = 'Số lượng phải lớn hơn 0';
+                    break;
                 }
                 
                 try {
@@ -111,17 +112,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         $total = $cart->getTotal($user_id);
                         $count = $cart->getItemCount($user_id);
                         
-                        echo json_encode([
-                            'success' => true,
-                            'total' => $total,
-                            'count' => $count,
-                            'message' => 'Cập nhật số lượng thành công'
-                        ]);
+                        $response['success'] = true;
+                        $response['data']['total'] = $total;
+                        $response['data']['count'] = $count;
+                        $response['message'] = 'Cập nhật số lượng thành công';
                     } else {
-                        echo json_encode(['success' => false, 'message' => 'Không thể cập nhật số lượng']);
+                        $response['success'] = false;
+                        $response['message'] = 'Không thể cập nhật số lượng';
                     }
                 } catch (Exception $e) {
-                    echo json_encode(['success' => false, 'message' => 'Lỗi: ' . $e->getMessage()]);
+                    $response['success'] = false;
+                    $response['message'] = 'Lỗi: ' . $e->getMessage();
+                }
+                break;
+
+            case 'remove_item_direct':
+                $item_id = (int)$_POST['item_id'];
+                
+                try {
+                    $success = $cart->removeItemDirect($item_id);
+                    
+                    if ($success) {
+                        $total = $cart->getTotal($user_id);
+                        $count = $cart->getItemCount($user_id);
+                        
+                        $response['success'] = true;
+                        $response['data']['total'] = $total;
+                        $response['data']['count'] = $count;
+                        $response['message'] = 'Xóa sản phẩm thành công';
+                    } else {
+                        $response['success'] = false;
+                        $response['message'] = 'Không thể xóa sản phẩm';
+                    }
+                } catch (Exception $e) {
+                    $response['success'] = false;
+                    $response['message'] = 'Lỗi: ' . $e->getMessage();
                 }
                 break;
         }
