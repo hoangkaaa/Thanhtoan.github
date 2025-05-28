@@ -265,26 +265,68 @@ $total = $subtotal + $shipping;
 
     <!--=============== MAIN CONTENT ===============-->
     <main class="main">
-        <!-- Hiển thị lỗi nếu có -->
+        <!-- Hiển thị lỗi nếu có - THÔNG BÁO GIỮA TRANG -->
         <?php if (!empty($errors) || isset($_SESSION['payment_error'])): ?>
-            <div class="alert alert-error container">
-                <h4>Có lỗi xảy ra:</h4>
-                <ul>
-                    <?php if (!empty($errors)): ?>
-                    <?php foreach ($errors as $error): ?>
-                        <li><?php echo htmlspecialchars($error); ?></li>
-                    <?php endforeach; ?>
-                    <?php endif; ?>
-                    
-                    <?php if (isset($_SESSION['payment_error']) && isset($_SESSION['error_message'])): ?>
-                        <li><?php echo htmlspecialchars($_SESSION['error_message']); ?></li>
-                        <?php 
-                        unset($_SESSION['payment_error']);
-                        unset($_SESSION['error_message']);
-                        ?>
-                    <?php endif; ?>
-                </ul>
+            <div class="alert-overlay" id="alert-overlay">
+                <div class="alert-center">
+                    <div class="alert-icon">⚠️</div>
+                    <h4 class="alert-title">Có lỗi xảy ra:</h4>
+                    <div class="alert-content">
+                        <?php if (!empty($errors)): ?>
+                        <?php foreach ($errors as $error): ?>
+                            <p class="alert-message"><?php echo htmlspecialchars($error); ?></p>
+                        <?php endforeach; ?>
+                        <?php endif; ?>
+                        
+                        <?php if (isset($_SESSION['payment_error']) && isset($_SESSION['error_message'])): ?>
+                            <p class="alert-message"><?php echo htmlspecialchars($_SESSION['error_message']); ?></p>
+                            <?php 
+                            unset($_SESSION['payment_error']);
+                            unset($_SESSION['error_message']);
+                            ?>
+                        <?php endif; ?>
+                    </div>
+                    <div class="alert-timer">
+                        <div class="timer-bar" id="timer-bar"></div>
+                    </div>
+                </div>
             </div>
+            
+            <script>
+                // Tự động ẩn thông báo sau 4 giây
+                document.addEventListener('DOMContentLoaded', function() {
+                    const alertOverlay = document.getElementById('alert-overlay');
+                    const timerBar = document.getElementById('timer-bar');
+                    
+                    if (alertOverlay) {
+                        // Bắt đầu animation cho thanh thời gian
+                        setTimeout(() => {
+                            timerBar.style.width = '0%';
+                        }, 100);
+                        
+                        // Ẩn thông báo sau 4 giây
+                        setTimeout(() => {
+                            alertOverlay.style.opacity = '0';
+                            alertOverlay.style.transform = 'translate(-50%, -50%) scale(0.9)';
+                            
+                            setTimeout(() => {
+                                alertOverlay.style.display = 'none';
+                            }, 300);
+                        }, 4000);
+                        
+                        // Cho phép click để đóng sớm
+                        alertOverlay.addEventListener('click', function(e) {
+                            if (e.target === alertOverlay) {
+                                this.style.opacity = '0';
+                                this.style.transform = 'translate(-50%, -50%) scale(0.9)';
+                                setTimeout(() => {
+                                    this.style.display = 'none';
+                                }, 300);
+                            }
+                        });
+                    }
+                });
+            </script>
         <?php endif; ?>
 
         <!-- Kiểm tra giỏ hàng trống -->
@@ -1429,8 +1471,147 @@ $total = $subtotal + $shipping;
         .toast-notification {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
+        
+        /* Alert overlay styles - THÔNG BÁO GIỮA TRANG */
+        .alert-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 1;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
 
-        /* Thêm vào phần <style> trong file */
+        .alert-center {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transform: scale(1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alert-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 60%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            80% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .alert-title {
+            color: #d32f2f;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .alert-content {
+            margin-bottom: 25px;
+        }
+
+        .alert-message {
+            color: #555;
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 10px;
+            padding: 8px 15px;
+            background: rgba(211, 47, 47, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #d32f2f;
+        }
+
+        .alert-message:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Timer bar */
+        .alert-timer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(211, 47, 47, 0.2);
+            overflow: hidden;
+        }
+
+        .timer-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #d32f2f, #f44336);
+            width: 100%;
+            transition: width 4s linear;
+            box-shadow: 0 0 10px rgba(211, 47, 47, 0.5);
+        }
+
+        /* Animation khi ẩn */
+        .alert-overlay.hiding {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .alert-center {
+                padding: 25px 20px;
+                margin: 20px;
+            }
+
+            .alert-icon {
+                font-size: 40px;
+                margin-bottom: 12px;
+            }
+
+            .alert-title {
+                font-size: 20px;
+                margin-bottom: 15px;
+            }
+
+            .alert-message {
+                font-size: 14px;
+                padding: 6px 12px;
+            }
+        }
+
+        /* Hiệu ứng xuất hiện */
+        @keyframes slideInScale {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .alert-overlay {
+            animation: slideInScale 0.3s ease-out;
+        }
+
         /* Validation error highlight */
         .validation-error {
             border-color: #ff6b35 !important;
