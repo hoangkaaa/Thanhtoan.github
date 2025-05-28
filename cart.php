@@ -20,7 +20,7 @@ $cart_items = $cart->getItems($user_id);
 
 // Tính tổng giỏ hàng
 $subtotal = $cart->getTotal($user_id);
-$shipping = 21000;
+$shipping = 15000; // Phí vận chuyển mặc định TP.HCM
 $total = $subtotal + $shipping;
 
 // Helper function để định dạng giá tiền
@@ -353,7 +353,7 @@ function getNumericPrice($price) {
                 </tr>
                 <tr>
                   <td><span class="cart__total-title">Vận chuyển</span></td>
-                  <td><span class="cart__total-price" id="shipping-fee">21.000</span></td>
+                  <td><span class="cart__total-price" id="shipping-fee">15.000</span></td>
                 </tr>
                 <tr id="discount-row" style="display: none;">
                   <td><span class="cart__total-title">Giảm giá</span></td>
@@ -468,6 +468,10 @@ function getNumericPrice($price) {
     // Biến để theo dõi trạng thái đang xử lý
     let isProcessing = false;
     
+    // Biến lưu trữ thông tin giảm giá và phí vận chuyển
+    let currentCoupon = null;
+    let currentShippingFee = 15000; // Mặc định TP.HCM
+    
     // Hàm hiển thị loading
     function showLoading() {
         document.getElementById('loading-indicator').style.display = 'flex';
@@ -478,6 +482,137 @@ function getNumericPrice($price) {
         document.getElementById('loading-indicator').style.display = 'none';
     }
     
+    // Hàm cập nhật phí vận chuyển
+    function updateShippingFee() {
+        const citySelect = document.getElementById('city-select');
+        const selectedOption = citySelect.options[citySelect.selectedIndex];
+        
+        if (selectedOption.value) {
+            // Lấy phí vận chuyển từ data-fee
+            currentShippingFee = parseInt(selectedOption.getAttribute('data-fee')) || 15000;
+            
+            // Cập nhật hiển thị phí vận chuyển
+            document.getElementById('shipping-fee').textContent = new Intl.NumberFormat('vi-VN').format(currentShippingFee);
+            
+            // Hiển thị thông báo
+            const cityName = selectedOption.text;
+            showNotification(`Đã cập nhật phí vận chuyển cho ${cityName}: ${new Intl.NumberFormat('vi-VN').format(currentShippingFee)}₫`, 'success');
+            
+            // Tính lại tổng với mã giảm giá nếu có
+            recalculateTotal();
+        } else {
+            showNotification('Vui lòng chọn Tỉnh/Thành phố', 'error');
+        }
+    }
+
+    // Hàm áp dụng mã giảm giá
+    function applyCoupon() {
+        const couponSelect = document.getElementById('coupon-select');
+        const selectedCoupon = couponSelect.value;
+        
+        if (!selectedCoupon) {
+            showNotification('Vui lòng chọn mã giảm giá', 'error');
+            return;
+        }
+        
+        // Lấy subtotal hiện tại
+        const subtotalElement = document.getElementById('cart-subtotal');
+        const subtotalText = subtotalElement.textContent;
+        const subtotal = parseInt(subtotalText.replace(/[^\d]/g, '')) || 0;
+        
+        let discountAmount = 0;
+        let discountDescription = '';
+        
+        switch (selectedCoupon) {
+            case 'GIAIKHATHE':
+                // Giảm 10% phí vận chuyển, tối đa 10.000đ
+                discountAmount = Math.min(currentShippingFee * 0.1, 10000);
+                discountDescription = 'Giảm 10% phí vận chuyển (tối đa 10.000đ)';
+                break;
+                
+            case 'GIAIKHAT':
+                // Giảm 15% giá trị đơn hàng
+                discountAmount = subtotal * 0.15;
+                discountDescription = 'Giảm 15% giá trị đơn hàng';
+                break;
+        }
+        
+        // Lưu thông tin mã giảm giá
+        currentCoupon = {
+            code: selectedCoupon,
+            type: selectedCoupon === 'GIAIKHATHE' ? 'shipping' : 'order',
+            discount: discountAmount,
+            description: discountDescription
+        };
+        
+        // Hiển thị thông tin mã giảm giá đã áp dụng
+        document.getElementById('coupon-name').textContent = `${selectedCoupon}: ${discountDescription}`;
+        document.getElementById('coupon-discount-amount').textContent = new Intl.NumberFormat('vi-VN').format(Math.round(discountAmount));
+        document.getElementById('applied-coupon').style.display = 'block';
+        
+        // Hiển thị dòng giảm giá trong bảng tổng
+        document.getElementById('discount-row').style.display = 'table-row';
+        document.getElementById('discount-amount').textContent = '- ' + new Intl.NumberFormat('vi-VN').format(Math.round(discountAmount));
+        
+        // Tính lại tổng
+        recalculateTotal();
+        
+        // Reset dropdown
+        couponSelect.value = '';
+        
+        showNotification('Đã áp dụng mã giảm giá thành công!', 'success');
+    }
+
+    // Hàm xóa mã giảm giá
+    function removeCoupon() {
+        currentCoupon = null;
+        
+        // Ẩn thông tin mã giảm giá
+        document.getElementById('applied-coupon').style.display = 'none';
+        document.getElementById('discount-row').style.display = 'none';
+        
+        // Tính lại tổng
+        recalculateTotal();
+        
+        showNotification('Đã xóa mã giảm giá', 'success');
+    }
+
+    // Hàm tính lại tổng tiền
+    function recalculateTotal() {
+        // Lấy subtotal
+        const subtotalElement = document.getElementById('cart-subtotal');
+        const subtotalText = subtotalElement.textContent;
+        const subtotal = parseInt(subtotalText.replace(/[^\d]/g, '')) || 0;
+        
+        // Tính giảm giá nếu có
+        let discountAmount = 0;
+        if (currentCoupon) {
+            if (currentCoupon.code === 'GIAIKHATHE') {
+                // Tính lại giảm giá phí vận chuyển với phí mới
+                discountAmount = Math.min(currentShippingFee * 0.1, 10000);
+                currentCoupon.discount = discountAmount;
+                
+                // Cập nhật hiển thị giảm giá
+                document.getElementById('coupon-discount-amount').textContent = new Intl.NumberFormat('vi-VN').format(Math.round(discountAmount));
+                document.getElementById('discount-amount').textContent = '- ' + new Intl.NumberFormat('vi-VN').format(Math.round(discountAmount));
+            } else if (currentCoupon.code === 'GIAIKHAT') {
+                // Giảm 15% giá trị đơn hàng
+                discountAmount = subtotal * 0.15;
+                currentCoupon.discount = discountAmount;
+                
+                // Cập nhật hiển thị giảm giá
+                document.getElementById('coupon-discount-amount').textContent = new Intl.NumberFormat('vi-VN').format(Math.round(discountAmount));
+                document.getElementById('discount-amount').textContent = '- ' + new Intl.NumberFormat('vi-VN').format(Math.round(discountAmount));
+            }
+        }
+        
+        // Tính tổng cuối cùng
+        const total = subtotal + currentShippingFee - discountAmount;
+        
+        // Cập nhật hiển thị tổng
+        document.getElementById('cart-total').textContent = new Intl.NumberFormat('vi-VN').format(Math.round(total));
+    }
+
     // Hàm tăng số lượng - TỰ ĐỘNG LƯU
     function increaseQuantity(productId) {
         if (isProcessing) return;
@@ -677,12 +812,12 @@ function getNumericPrice($price) {
         .then(data => {
             if (data.success) {
                 const subtotal = parseInt(data.data.cart_total) || 0;
-                const shipping = 21000;
-                const total = subtotal + shipping;
                 
                 // Cập nhật hiển thị - CHỈ 1 KÝ HIỆU ₫
                 document.getElementById('cart-subtotal').textContent = new Intl.NumberFormat('vi-VN').format(subtotal);
-                document.getElementById('cart-total').textContent = new Intl.NumberFormat('vi-VN').format(total);
+                
+                // Tính lại tổng với phí vận chuyển và giảm giá
+                recalculateTotal();
             }
         })
         .catch(error => {

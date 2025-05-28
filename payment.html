@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <!--=============== FLATICON ===============-->
+    <link rel="icon" href="./assets/img/logo_hinh_red.svg" type="image/png">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.0.0/uicons-regular-straight/css/uicons-regular-straight.css" />
+
+    <!--=============== SWIPER CSS ===============-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+    <!--=============== CSS ===============-->
+    <link rel="stylesheet" href="assets/css/payment.css" />
+    <link rel="stylesheet" href="assets/css/breakpoint.css" />
+
+    <title>Sunkissed | Thanh toán</title>
+    <style>
+        /* Header styling */
+        .header__top {
+            background-color: #941212;
+            padding: 8px 0;
+            color: white;
+        }
+
+        /* Update payment button color to #26551D */
+        .payment-left-side {
+          background-color: #26551D;
+          width: 80px;
+          height: 80px;
+          border-radius: 12px;
+          position: relative;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          cursor: pointer;
+          transition: 0.3s;
+          flex-shrink: 0;
+          overflow: hidden;
+        }
+
+        /* Update card colors to match new green theme */
+        .payment-card {
+          width: 50px;
+          height: 34px;
+          background-color: #78e997;
+          border-radius: 6px;
+          position: absolute;
+          display: flex;
+          z-index: 10;
+          flex-direction: column;
+          align-items: center;
+          box-shadow: 7px 7px 7px -2px rgba(38, 85, 29, 0.4);
+        }
+
+        .payment-card-line {
+          width: 45px;
+          height: 8px;
+          background-color: #55d97c;
+          border-radius: 2px;
+          margin-top: 6px;
+        }
+
+        .payment-buttons {
+          width: 6px;
+          height: 6px;
+          background-color: #1f9e45;
+          box-shadow: 0 -8px 0 0 #0e850c, 0 8px 0 0 #3ebe50;
+          border-radius: 50%;
+          margin-top: 4px;
+          transform: rotate(90deg);
+          margin: 8px 0 0 -25px;
+        }
+
+        /* Update dollar color */
+        .payment-dollar {
+          position: absolute;
+          font-size: 12px;
+          font-family: inherit;
+          width: 100%;
+          left: 0;
+          top: 3px;
+          color: #26551D;
+          text-align: center;
+          font-weight: bold;
+        }
+
+        /* Increase spacing between store options by 1.5x (from 20px to 30px) */
+        .store-options {
+          display: grid;
+          gap: 30px;
+        }
+
+        /* Improve store option selection behavior */
+        .store-option {
+          border: 1.6px solid #ddd;
+          border-radius: 12px;
+          padding: 15px;
+          display: flex;
+          align-items: center;
+          transition: border-color 0.3s ease, background-color 0.2s ease;
+          cursor: pointer;
+          position: relative;
+        }
+
+        .store-option:hover {
+          border-color: #26551D;
+          background-color: rgba(38, 85, 29, 0.05);
+        }
+
+        /* Hide the default radio button */
+        .store-option input[type="radio"] {
+          position: absolute;
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+
+        /* Custom radio button */
+        .store-option .custom-radio {
+          width: 18px;
+          height: 18px;
+          border: 1.6px solid #e0e0e0;
+          border-radius: 50%;
+          display: inline-block;
+          position: relative;
+          margin-right: 15px;
+          flex-shrink: 0;
+        }
+
+        /* The dot inside the custom radio button when selected */
+        .store-option input[type="radio"]:checked ~ .custom-radio:after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background-color: #26551D;
+        }
+
+        /* Style for when radio is checked */
+        .store-option input[type="radio"]:checked ~ .custom-radio {
+          border-color: #26551D;
+        }
+
+        .store-option input[type="radio"]:checked ~ .store-info .store-name {
+          color: #26551D;
+        }
+
+        .store-option input[type="radio"]:checked {
+          border-color: #26551D;
+          background-color: white;
+        }
+
+        .store-option:hover .custom-radio {
+          border-color: #26551D;
+        }
+
+        /* Selected store option */
+        .store-option.selected {
+          border-color: #26551D;
+          background-color: rgba(38, 85, 29, 0.05);
+        }
+
+        /* New payment button styles */
+        .payment-container {
+          background-color: #ffffff;
+          display: flex;
+          width: 80%;
+          max-width: 300px;
+          height: 80px;
+          position: relative;
+          border-radius: 12px;
+          transition: 0.3s ease-in-out;
+          margin: 20px auto;
+          border: 1px solid #e0e0e0;
+        }
+
+        .payment-container:hover {
+          transform: scale(1.02);
+          width: 140px;
+          margin: 20px auto;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .payment-container:hover .payment-left-side {
+          width: 100%;
+        }
+
+        .payment-right-side {
+          width: calc(100% - 80px);
+          display: flex;
+          align-items: center;
+          overflow: hidden;
+          cursor: pointer;
+          justify-content: space-between;
+          white-space: nowrap;
+          transition: 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <!--=============== HEADER ===============-->
+    <header class="header">
+        <div class="header__top">
+            <div class="header__container container">
+                <div class="header__contact">
+                    <span>(+84)335993276</span>
+                </div>
+                <p class="header__alert-news">
+                    Giảm 15% trên mọi đơn hàng từ 20-24/12
+                </p>
+                <a href="login-register.html" class="header__top-action">
+                    Đăng nhập/ Đăng kí
+                </a>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="container">
+            <div class="nav">
+                <a href="index.html" class="nav__logo">
+                    <img class="nav__logo-img" src="assets/img/logo_red.svg" alt="Sunkissed logo" />
+                </a>
+                    
+                    <ul class="nav__list">
+                        <li class="nav__item">
+                            <a href="index.html" class="nav__link">Trang chủ</a>
+                        </li>
+                        <li class="nav__item">
+                            <a href="shop.html" class="nav__link">Cửa hàng</a>
+                        </li>
+                        <li class="nav__item">
+                            <a href="aboutus.html" class="nav__link">Về chúng tôi</a>
+                        </li>
+                        <li class="nav__item">
+                            <a href="lienhe.html" class="nav__link">Liên hệ</a>
+                        </li>
+                        <li class="nav__item">
+                            <a href="accounts.html" class="nav__link">Tài khoản</a>
+                        </li>
+                    </ul>
+                    
+                <!-- Search box -->
+                    <div class="header__search">
+                        <input type="text" placeholder="Tìm kiếm sản phẩm" class="form__input" />
+                </div>
+
+                <!-- Wishlist và Giỏ hàng -->
+                <div class="header__user-actions">
+                    <a href="wishlist.html" class="header__action-btn" title="Wishlist">
+                        <img src="assets/img/icon-heart.svg" alt="Wishlist" />
+                        <span class="count">3</span>
+                    </a>
+                    <a href="cart.html" class="header__action-btn" title="Cart">
+                        <img src="assets/img/icon-cart.svg" alt="Cart" />
+                        <span class="count">2</span>
+                    </a>
+                    </div>
+                </div>
+        </div>
+    </header>
+
+    <!--=============== BREADCRUMB ===============-->
+    <section class="breadcrumb">
+        <div class="container">
+            <ul class="breadcrumb__list">
+                <li><a href="index.html" class="breadcrumb__link">Trang chủ</a></li>
+                <li><span class="breadcrumb__link">></span></li>
+                <li><a href="cart.html" class="breadcrumb__link">Giỏ hàng</a></li>
+                <li><span class="breadcrumb__link">></span></li>
+                <li><span class="breadcrumb__link">Thanh toán</span></li>
+            </ul>
+        </div>
+    </section>
+
+    <!--=============== MAIN CONTENT ===============-->
+    <main class="main">
+        <section class="payment section--lg">
+            <div class="payment__container container">
+                <section class="payment-form">
+                    <h2><span class="back-arrow">&#8592;</span> Thanh toán</h2>
+                    <form>
+                        <div class="section">
+                            <h3>1. Thông tin khách hàng</h3>
+                            <div class="form-row">
+                                <div>
+                                    <label>Tên <span class="required">*Bắt buộc</span></label>
+                                    <input type="text" class="form__input" required>
+                                </div>
+                                <div>
+                                    <label>Họ và tên lót <span class="required">*Bắt buộc</span></label>
+                                    <input type="text" class="form__input" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div>
+                                    <label>Số điện thoại <span class="required">*Bắt buộc</span></label>
+                                    <div class="phone-input-container">
+                                        <div class="phone-country-code">
+                                            <button type="button" class="phone-dropdown-btn" id="country-selector">
+                                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Flag_of_Vietnam.svg/2000px-Flag_of_Vietnam.svg.png" alt="VN" class="country-flag">
+                                            <span>+84</span>
+                                                <span class="dropdown-arrow">&#9662;</span>
+                                            </button>
+                                            <div class="country-dropdown" id="country-dropdown">
+                                                <div class="country-option" data-code="+84" data-country="VN">
+                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Flag_of_Vietnam.svg/2000px-Flag_of_Vietnam.svg.png" alt="VN" class="country-flag">
+                                                    <span class="country-name">Việt Nam</span>
+                                                    <span class="country-code">+84</span>
+                                                </div>
+                                                <div class="country-option" data-code="+1" data-country="US">
+                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Flag_of_the_United_States.svg/2000px-Flag_of_the_United_States.svg.png" alt="US" class="country-flag">
+                                                    <span class="country-name">United States</span>
+                                                    <span class="country-code">+1</span>
+                                                </div>
+                                                <div class="country-option" data-code="+44" data-country="GB">
+                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg/2000px-Flag_of_the_United_Kingdom_%283-5%29.svg.png" alt="GB" class="country-flag">
+                                                    <span class="country-name">United Kingdom</span>
+                                                    <span class="country-code">+44</span>
+                                                </div>
+                                                <div class="country-option" data-code="+86" data-country="CN">
+                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Flag_of_the_People%27s_Republic_of_China.svg/2000px-Flag_of_the_People%27s_Republic_of_China.svg.png" alt="CN" class="country-flag">
+                                                    <span class="country-name">China</span>
+                                                    <span class="country-code">+86</span>
+                                                </div>
+                                                <div class="country-option" data-code="+81" data-country="JP">
+                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Flag_of_Japan.svg/2000px-Flag_of_Japan.svg.png" alt="JP" class="country-flag">
+                                                    <span class="country-name">Japan</span>
+                                                    <span class="country-code">+81</span>
+                                                </div>
+                                                <div class="country-option" data-code="+82" data-country="KR">
+                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Flag_of_South_Korea.svg/2000px-Flag_of_South_Korea.svg.png" alt="KR" class="country-flag">
+                                                    <span class="country-name">South Korea</span>
+                                                    <span class="country-code">+82</span>
+                                                </div>
+                                                <div class="country-option" data-code="+33" data-country="FR">
+                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/2000px-Flag_of_France.svg.png" alt="FR" class="country-flag">
+                                                    <span class="country-name">France</span>
+                                                    <span class="country-code">+33</span>
+                                                </div>
+                                                <div class="country-option" data-code="+49" data-country="DE">
+                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Flag_of_Germany.svg/2000px-Flag_of_Germany.svg.png" alt="DE" class="country-flag">
+                                                    <span class="country-name">Germany</span>
+                                                    <span class="country-code">+49</span>
+                                                </div>
+                                                <div class="country-option" data-code="+39" data-country="IT">
+                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Flag_of_Italy.svg/2000px-Flag_of_Italy.svg.png" alt="IT" class="country-flag">
+                                                    <span class="country-name">Italy</span>
+                                                    <span class="country-code">+39</span>
+                                                </div>
+                                                <div class="country-option" data-code="+34" data-country="ES">
+                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Flag_of_Spain.svg/2000px-Flag_of_Spain.svg.png" alt="ES" class="country-flag">
+                                                    <span class="country-name">Spain</span>
+                                                    <span class="country-code">+34</span>
+                                                </div>
+                                                <div class="country-option" data-code="+61" data-country="AU">
+                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Flag_of_Australia_%28converted%29.svg/2000px-Flag_of_Australia_%28converted%29.svg.png" alt="AU" class="country-flag">
+                                                    <span class="country-name">Australia</span>
+                                                    <span class="country-code">+61</span>
+                                                </div>
+                                                <div class="country-option" data-code="+65" data-country="SG">
+                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Flag_of_Singapore.svg/2000px-Flag_of_Singapore.svg.png" alt="SG" class="country-flag">
+                                                    <span class="country-name">Singapore</span>
+                                                    <span class="country-code">+65</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input type="text" class="form__input phone-number-input" required>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label>Email <span class="required">*Bắt buộc</span></label>
+                                    <input type="email" class="form__input" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <h3>2. Phương thức giao hàng</h3>
+                            <div class="shipping-methods">
+                                <button type="button" class="store-btn active">Cửa hàng</button>
+                                <button type="button" class="delivery-btn">Giao hàng</button>
+                            </div>
+                            
+                            <!-- Giao diện cho phương thức Cửa hàng -->
+                            <div class="store-pickup-container">
+                                <div class="form-row">
+                                    <div>
+                                        <label>Ngày lấy hàng <span class="required">*Bắt buộc</span></label>
+                                        <input type="date" class="form__input" required>
+                                    </div>
+                                    <div>
+                                        <label>Thời gian lấy <span class="required">*Bắt buộc</span></label>
+                                        <input type="text" class="form__input" placeholder="13h-16h" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="store-location">
+                                    <h4>Chọn cửa hàng</h4>
+                                    <div class="store-options">
+                                        <div class="store-option">
+                                            <input type="radio" id="store1" name="store" checked>
+                                            <span class="custom-radio"></span>
+                                            <div class="store-info">
+                                                <div class="store-name">Sunkissed - Chi nhánh 1</div>
+                                                <div class="store-address">219 Nguyễn Tri Phương, Quận 10, TP. HCM</div>
+                                                <div class="store-hours">Giờ mở cửa: 8:00 - 21:00, Thứ 2 - Thứ 7</div>
+                                            </div>
+                                        </div>
+                                        <div class="store-option">
+                                            <input type="radio" id="store2" name="store">
+                                            <span class="custom-radio"></span>
+                                            <div class="store-info">
+                                                <div class="store-name">Sunkissed - Chi nhánh 2</div>
+                                                <div class="store-address">78 Nguyễn Văn Linh, Quận 7, TP. HCM</div>
+                                                <div class="store-hours">Giờ mở cửa: 8:00 - 21:00, Thứ 2 - Chủ Nhật</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Giao diện cho phương thức Giao hàng (ẩn ban đầu) -->
+                            <div class="delivery-container" style="display: none;">
+                                <div class="form-row">
+                                    <div>
+                                        <label>Ngày giao hàng <span class="required">*Bắt buộc</span></label>
+                                        <input type="date" class="form__input" required>
+                                    </div>
+                                    <div>
+                                        <label>Thời gian giao <span class="required">*Bắt buộc</span></label>
+                                        <input type="text" class="form__input" placeholder="13h-16h" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div>
+                                        <label>Thành phố/Tỉnh <span class="required">*Bắt buộc</span></label>
+                                        <input type="text" class="form__input" required>
+                                    </div>
+                                    <div>
+                                        <label>Quận/Huyện <span class="required">*Bắt buộc</span></label>
+                                        <input type="text" class="form__input" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div>
+                                        <label>Số nhà/Đường <span class="required">*Bắt buộc</span></label>
+                                        <input type="text" class="form__input" required>
+                                    </div>
+                                    <div>
+                                        <label>Mã Zip <span class="required">*Bắt buộc</span></label>
+                                        <input type="text" class="form__input" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <h3>3. Phương thức thanh toán</h3>
+                            <div class="payment-options-container">
+                                <div class="payment-option-wrapper">
+                                    <button type="button" class="payment-option" data-method="mastercard">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" alt="Mastercard">
+                                    </button>
+                                    <span class="payment-label">Mastercard</span>
+                                </div>
+                                <div class="payment-option-wrapper">
+                                    <button type="button" class="payment-option active" data-method="visa">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/1200px-Visa_Inc._logo.svg.png" alt="Visa">
+                                    </button>
+                                    <span class="payment-label">Visa</span>
+                                </div>
+                                <div class="payment-option-wrapper">
+                                    <button type="button" class="payment-option" data-method="momo">
+                                        <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" alt="Momo">
+                                    </button>
+                                    <span class="payment-label">Momo E-wallet</span>
+                                </div>
+                                <div class="payment-option-wrapper">
+                                    <button type="button" class="payment-option" data-method="cod">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/1554/1554401.png" alt="COD">
+                                    </button>
+                                    <span class="payment-label">COD</span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+
+                <aside class="order-summary">
+                    <h3>Đơn hàng của bạn</h3>
+                    
+                    <div class="cart-items-container">
+                    <div class="cart-item" data-price="35000">
+                            <img src="./assets/img/td_p1_bg.png" alt="Tropical Hương Cam" class="product-image">
+                        <div class="cart-item-details">
+                            <div class="item-title">Tropical Hương Cam</div>
+                                <div class="item-info">
+                                    <span class="item-info-label">Số lượng</span>
+                                    <div class="qty-controls">
+                                        <button class="qty-btn" aria-label="Giảm">-</button>
+                                        <span class="qty-number">1</span>
+                                        <button class="qty-btn" aria-label="Tăng">+</button>
+                            </div>
+                            <a href="#" class="remove-link">Xóa</a>
+                                </div>
+                                <div class="item-price">35.000 đ</div>
+                        </div>
+                    </div>
+                    
+                    <div class="cart-item" data-price="35000">
+                            <img src="./assets/img/td_p1_bg.png" alt="Tropical Hương Cam" class="product-image">
+                        <div class="cart-item-details">
+                            <div class="item-title">Tropical Hương Cam</div>
+                                <div class="item-info">
+                                    <span class="item-info-label">Số lượng</span>
+                                    <div class="qty-controls">
+                                        <button class="qty-btn" aria-label="Giảm">-</button>
+                                        <span class="qty-number">1</span>
+                                        <button class="qty-btn" aria-label="Tăng">+</button>
+                            </div>
+                            <a href="#" class="remove-link">Xóa</a>
+                                </div>
+                                <div class="item-price">35.000 đ</div>
+                        </div>
+                    </div>
+                    
+                    <div class="cart-item" data-price="35000">
+                            <img src="./assets/img/td_p1_bg.png" alt="Tropical Hương Cam" class="product-image">
+                        <div class="cart-item-details">
+                            <div class="item-title">Tropical Hương Cam</div>
+                                <div class="item-info">
+                                    <span class="item-info-label">Số lượng</span>
+                                    <div class="qty-controls">
+                                        <button class="qty-btn" aria-label="Giảm">-</button>
+                                        <span class="qty-number">1</span>
+                                        <button class="qty-btn" aria-label="Tăng">+</button>
+                            </div>
+                                    <a href="#" class="remove-link">Xóa</a>
+                        </div>
+                                <div class="item-price">35.000 đ</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="shipping-fee">
+                        <span>Phí vận chuyển:</span>
+                        <span class="fee-value">Miễn phí</span>
+                    </div>
+                    <div class="total">
+                        <span>Tổng tiền:</span>
+                        <span class="total-value">210.000 vnd</span>
+                    </div>
+                    <div class="terms">
+                        <label class="check-box" for="terms-checkbox">
+                            <input type="checkbox" id="terms-checkbox" required>
+                            <span class="checkbox-custom"></span>
+                            <span>Tôi đồng ý với <a href="#">Điều khoản và dịch vụ</a></span>
+                        </label>
+                            </div>
+                    
+                    <!-- Replace the checkout button with new animated button -->
+                    <div class="payment-container">
+                     <div class="payment-left-side">
+                      <div class="payment-card">
+                       <div class="payment-card-line"></div>
+                       <div class="payment-buttons"></div>
+                      </div>
+                      <div class="payment-post">
+                       <div class="payment-post-line"></div>
+                       <div class="payment-screen">
+                        <div class="payment-dollar">VND</div>
+                       </div>
+                       <div class="payment-numbers"></div>
+                       <div class="payment-numbers-line2"></div>
+                      </div>
+                     </div>
+                     <div class="payment-right-side">
+                      <div class="payment-new">Tiến hành thanh toán</div>
+                     
+                     </div>
+                    </div>
+                </aside>
+            </div>
+        </section>
+    </main>
+
+    <!--=============== FOOTER ===============-->
+    <footer class="footer">
+        <div class="footer__container container">
+            <div class="footer__row">
+                <div class="footer__column">
+                    <a href="index.html" class="footer__logo">
+                        <img src="./assets/img/logo_red.svg" alt="Sunkissed" class="footer__logo-img">
+                    </a>
+                    
+                    <h4 class="footer__heading">LIÊN HỆ</h4>
+                    
+                    <p class="footer__info">
+                        Địa chỉ: 279 Nguyễn Tri Phương, Quận 10, Tp. Hồ Chí Minh
+                    </p>
+                    <p class="footer__info">
+                        Điện thoại: +84 0335993276
+                    </p>
+                    <p class="footer__info">
+                        Giờ hoạt động: 8:00 - 21:00, Thứ 2 - Thứ 7
+                    </p>
+                    
+                    <div class="footer__social">
+                        <h4 class="footer__social-title">Follow ngay</h4>
+                        <div class="footer__social-links">
+                            <a href="#" class="footer__social-link">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="footer__social-link">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="footer__social-link">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#" class="footer__social-link">
+                                <i class="fab fa-pinterest-p"></i>
+                            </a>
+                            <a href="#" class="footer__social-link">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer__column">
+                    <h3 class="footer__title">Thông Tin</h3>
+                    <ul class="footer__links">
+                        <li><a href="aboutus.html" class="footer__link">Về chúng tôi</a></li>
+                        <li><a href="#" class="footer__link">Thông tin giao hàng</a></li>
+                        <li><a href="#" class="footer__link">Chính sách</a></li>
+                        <li><a href="#" class="footer__link">Điều khoản & Điều kiện</a></li>
+                        <li><a href="#" class="footer__link">Liên hệ chúng tôi</a></li>
+                        <li><a href="#" class="footer__link">Trung tâm hỗ trợ</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer__column">
+                    <h3 class="footer__title">Tài khoản</h3>
+                    <ul class="footer__links">
+                        <li><a href="login-register.html" class="footer__link">Đăng nhập</a></li>
+                        <li><a href="cart.html" class="footer__link">Xem giỏ hàng</a></li>
+                        <li><a href="wishlist.html" class="footer__link">Wishlist</a></li>
+                        <li><a href="#" class="footer__link">Theo dõi đơn hàng</a></li>
+                        <li><a href="#" class="footer__link">Trợ giúp</a></li>
+                        <li><a href="#" class="footer__link">Đặt hàng</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer__column">
+                    <h3 class="footer__title">Cổng thanh toán bảo mật</h3>
+                    <div class="footer__payment">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/1200px-Visa_Inc._logo.svg.png" alt="Visa" class="payment-logo">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" alt="Mastercard" class="payment-logo">
+                        <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" alt="Momo" class="payment-logo">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer__bottom">
+            <div class="container">
+                <div class="footer__bottom-content">
+                    <p class="copyright">© 2024 Sunkissed. All right reserved</p>
+                    <p class="designer">Thiết kế bởi Nhóm 5 Coop.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!--=============== SWIPER JS ===============-->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!--=============== MAIN JS ===============-->
+    <script src="assets/js/main.js"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Country dropdown functionality
+        const countrySelector = document.getElementById('country-selector');
+        const countryDropdown = document.getElementById('country-dropdown');
+        const countryOptions = document.querySelectorAll('.country-option');
+        
+        // Toggle dropdown
+        if (countrySelector) {
+            countrySelector.addEventListener('click', function(e) {
+                e.stopPropagation();
+                countryDropdown.classList.toggle('show');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.phone-country-code')) {
+                    countryDropdown.classList.remove('show');
+                }
+            });
+            
+            // Select country option
+            countryOptions.forEach(option => {
+                option.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const code = this.getAttribute('data-code');
+                    const flag = this.querySelector('.country-flag').src;
+                    
+                    // Update button content
+                    const codeSpan = countrySelector.querySelector('span:first-of-type');
+                    if (codeSpan) {
+                        codeSpan.textContent = code;
+                    }
+                    const flagImg = countrySelector.querySelector('.country-flag');
+                    if (flagImg) {
+                        flagImg.src = flag;
+                    }
+                    
+                    // Hide dropdown
+                    countryDropdown.classList.remove('show');
+                });
+            });
+        }
+        
+        // Xử lý chuyển đổi giữa phương thức Cửa hàng và Giao hàng
+        const storeBtn = document.querySelector('.store-btn');
+        const deliveryBtn = document.querySelector('.delivery-btn');
+        const storeContainer = document.querySelector('.store-pickup-container');
+        const deliveryContainer = document.querySelector('.delivery-container');
+        
+        if (storeBtn && deliveryBtn) {
+        storeBtn.addEventListener('click', function() {
+            storeBtn.classList.add('active');
+            deliveryBtn.classList.remove('active');
+            storeContainer.style.display = 'block';
+            deliveryContainer.style.display = 'none';
+        });
+        
+        deliveryBtn.addEventListener('click', function() {
+            deliveryBtn.classList.add('active');
+            storeBtn.classList.remove('active');
+            deliveryContainer.style.display = 'block';
+            storeContainer.style.display = 'none';
+        });
+        }
+        
+        // Xử lý phương thức thanh toán
+        const paymentBtns = document.querySelectorAll('.payment-btn');
+        
+        paymentBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Bỏ active tất cả các nút
+                paymentBtns.forEach(b => b.classList.remove('active'));
+                // Thêm active cho nút được chọn
+                this.classList.add('active');
+            });
+        });
+        
+        // Handle new payment options
+        const paymentOptions = document.querySelectorAll('.payment-option');
+        
+        paymentOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove active from all options
+                paymentOptions.forEach(o => o.classList.remove('active'));
+                // Add active to selected option
+                this.classList.add('active');
+            });
+        });
+        
+        // Xử lý tăng giảm số lượng và cập nhật giá tiền
+        const minusBtns = document.querySelectorAll('.qty-btn:first-child');
+        const plusBtns = document.querySelectorAll('.qty-btn:last-child');
+        const totalValueEl = document.querySelector('.total-value');
+        
+        function formatPrice(price) {
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' đ';
+        }
+        
+        function updateTotalPrice() {
+            let total = 0;
+            const cartItems = document.querySelectorAll('.cart-item');
+            
+            cartItems.forEach(item => {
+                const qty = parseInt(item.querySelector('.qty-number').textContent);
+                const unitPrice = parseInt(item.getAttribute('data-price'));
+                total += qty * unitPrice;
+            });
+            
+            totalValueEl.textContent = (total).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' vnd';
+        }
+        
+        minusBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const cartItem = this.closest('.cart-item');
+                const qtyNumberEl = cartItem.querySelector('.qty-number');
+                const itemPriceEl = cartItem.querySelector('.item-price');
+                const unitPrice = parseInt(cartItem.getAttribute('data-price'));
+                
+                let qty = parseInt(qtyNumberEl.textContent);
+                if (qty > 1) {
+                    qty--;
+                    qtyNumberEl.textContent = qty;
+                    
+                    // Cập nhật giá tiền của sản phẩm
+                    const newPrice = qty * unitPrice;
+                    itemPriceEl.textContent = formatPrice(newPrice);
+                    
+                    // Cập nhật tổng tiền
+                    updateTotalPrice();
+                }
+            });
+        });
+        
+        plusBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const cartItem = this.closest('.cart-item');
+                const qtyNumberEl = cartItem.querySelector('.qty-number');
+                const itemPriceEl = cartItem.querySelector('.item-price');
+                const unitPrice = parseInt(cartItem.getAttribute('data-price'));
+                
+                let qty = parseInt(qtyNumberEl.textContent);
+                qty++;
+                qtyNumberEl.textContent = qty;
+                
+                // Cập nhật giá tiền của sản phẩm
+                const newPrice = qty * unitPrice;
+                itemPriceEl.textContent = formatPrice(newPrice);
+                
+                // Cập nhật tổng tiền
+                updateTotalPrice();
+            });
+        });
+        
+        // Khởi tạo tổng tiền ban đầu
+        updateTotalPrice();
+        
+        // Xử lý nút xóa sản phẩm
+        const removeLinks = document.querySelectorAll('.remove-link');
+        
+        removeLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const cartItem = this.closest('.cart-item');
+                cartItem.remove();
+                
+                // Cập nhật tổng tiền sau khi xóa
+                updateTotalPrice();
+            });
+        });
+        
+        // Xử lý checkbox terms
+        const termsCheckbox = document.getElementById('terms-checkbox');
+        const checkboxLabel = termsCheckbox.closest('label');
+        
+        if (checkboxLabel) {
+            checkboxLabel.addEventListener('click', function(e) {
+                // Prevent default only if clicking the label but not the checkbox directly
+                if (e.target !== termsCheckbox) {
+                    e.preventDefault();
+                    termsCheckbox.checked = !termsCheckbox.checked;
+                }
+            });
+        }
+        
+        // Make entire store option clickable
+        const storeOptions = document.querySelectorAll('.store-option');
+        
+        storeOptions.forEach(option => {
+            option.addEventListener('click', function(e) {
+                // Find the radio button within this store option
+                const radio = this.querySelector('input[type="radio"]');
+                
+                // Check the radio button
+                radio.checked = true;
+                
+                // Remove selected class from all options
+                storeOptions.forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                
+                // Prevent click event if clicking on the radio button directly
+                // (to prevent double toggling)
+                if (e.target !== radio) {
+                    e.preventDefault();
+                }
+            });
+        });
+        
+        // Initialize selected state for pre-checked radio
+        storeOptions.forEach(option => {
+            const radio = option.querySelector('input[type="radio"]');
+            if (radio.checked) {
+                option.classList.add('selected');
+            }
+        });
+        
+        // Make entire payment button clickable
+        const paymentContainer = document.querySelector('.payment-container');
+        if (paymentContainer) {
+            paymentContainer.addEventListener('click', function() {
+                // Here you can add form submission logic
+                const termsCheckbox = document.getElementById('terms-checkbox');
+                if (termsCheckbox && termsCheckbox.checked) {
+                    // Submit the form or redirect to payment processing
+                    const form = document.querySelector('form');
+                    if (form) {
+                        form.submit();
+                    }
+                } else {
+                    // Alert user to accept terms
+                    alert('Vui lòng đồng ý với Điều khoản dịch vụ trước khi thanh toán');
+                    const termsElement = document.querySelector('.terms');
+                    if (termsElement) {
+                        termsElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        }
+    });
+    </script>
+</body>
+</html>

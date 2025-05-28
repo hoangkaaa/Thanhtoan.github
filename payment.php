@@ -263,6 +263,12 @@ $total = $subtotal + $shipping;
         </div>
     </section>
 
+    <!--=============== LOADING INDICATOR ===============-->
+    <div id="loading-indicator" class="loading-indicator" style="display: none;">
+        <div class="spinner"></div>
+        <span>Đang xử lý...</span>
+    </div>
+
     <!--=============== MAIN CONTENT ===============-->
     <main class="main">
         <!-- Hiển thị lỗi nếu có -->
@@ -357,8 +363,22 @@ $total = $subtotal + $shipping;
                                         </div>
                                         <div>
                                             <label>Thời gian lấy <span class="required">*Bắt buộc</span></label>
-                                            <input type="text" name="pickup_time" class="form__input" placeholder="13h-16h" required 
-                                                   value="<?php echo htmlspecialchars($_POST['pickup_time'] ?? ''); ?>">
+                                            <select name="pickup_time" class="form__input" required>
+                                                <option value="">Chọn thời gian</option>
+                                                <option value="8:00-9:00" <?php echo (isset($_POST['pickup_time']) && $_POST['pickup_time'] === '8:00-9:00') ? 'selected' : ''; ?>>8:00 - 9:00</option>
+                                                <option value="9:00-10:00" <?php echo (isset($_POST['pickup_time']) && $_POST['pickup_time'] === '9:00-10:00') ? 'selected' : ''; ?>>9:00 - 10:00</option>
+                                                <option value="10:00-11:00" <?php echo (isset($_POST['pickup_time']) && $_POST['pickup_time'] === '10:00-11:00') ? 'selected' : ''; ?>>10:00 - 11:00</option>
+                                                <option value="11:00-12:00" <?php echo (isset($_POST['pickup_time']) && $_POST['pickup_time'] === '11:00-12:00') ? 'selected' : ''; ?>>11:00 - 12:00</option>
+                                                <option value="12:00-13:00" <?php echo (isset($_POST['pickup_time']) && $_POST['pickup_time'] === '12:00-13:00') ? 'selected' : ''; ?>>12:00 - 13:00</option>
+                                                <option value="13:00-14:00" <?php echo (isset($_POST['pickup_time']) && $_POST['pickup_time'] === '13:00-14:00') ? 'selected' : ''; ?>>13:00 - 14:00</option>
+                                                <option value="14:00-15:00" <?php echo (isset($_POST['pickup_time']) && $_POST['pickup_time'] === '14:00-15:00') ? 'selected' : ''; ?>>14:00 - 15:00</option>
+                                                <option value="15:00-16:00" <?php echo (isset($_POST['pickup_time']) && $_POST['pickup_time'] === '15:00-16:00') ? 'selected' : ''; ?>>15:00 - 16:00</option>
+                                                <option value="16:00-17:00" <?php echo (isset($_POST['pickup_time']) && $_POST['pickup_time'] === '16:00-17:00') ? 'selected' : ''; ?>>16:00 - 17:00</option>
+                                                <option value="17:00-18:00" <?php echo (isset($_POST['pickup_time']) && $_POST['pickup_time'] === '17:00-18:00') ? 'selected' : ''; ?>>17:00 - 18:00</option>
+                                                <option value="18:00-19:00" <?php echo (isset($_POST['pickup_time']) && $_POST['pickup_time'] === '18:00-19:00') ? 'selected' : ''; ?>>18:00 - 19:00</option>
+                                                <option value="19:00-20:00" <?php echo (isset($_POST['pickup_time']) && $_POST['pickup_time'] === '19:00-20:00') ? 'selected' : ''; ?>>19:00 - 20:00</option>
+                                                <option value="20:00-21:00" <?php echo (isset($_POST['pickup_time']) && $_POST['pickup_time'] === '20:00-21:00') ? 'selected' : ''; ?>>20:00 - 21:00</option>
+                                            </select>
                                         </div>
                                     </div>
                                     
@@ -392,15 +412,93 @@ $total = $subtotal + $shipping;
                                         </div>
                                         <div>
                                             <label>Thời gian giao <span class="required">*Bắt buộc</span></label>
-                                            <input type="text" name="delivery_time" class="form__input" placeholder="13h-16h" 
-                                                   value="<?php echo htmlspecialchars($_POST['delivery_time'] ?? ''); ?>">
+                                            <select name="delivery_time" class="form__input">
+                                                <option value="">Chọn thời gian</option>
+                                                <option value="8:00-9:00" <?php echo (isset($_POST['delivery_time']) && $_POST['delivery_time'] === '8:00-9:00') ? 'selected' : ''; ?>>8:00 - 9:00</option>
+                                                <option value="9:00-10:00" <?php echo (isset($_POST['delivery_time']) && $_POST['delivery_time'] === '9:00-10:00') ? 'selected' : ''; ?>>9:00 - 10:00</option>
+                                                <option value="10:00-11:00" <?php echo (isset($_POST['delivery_time']) && $_POST['delivery_time'] === '10:00-11:00') ? 'selected' : ''; ?>>10:00 - 11:00</option>
+                                                <option value="11:00-12:00" <?php echo (isset($_POST['delivery_time']) && $_POST['delivery_time'] === '11:00-12:00') ? 'selected' : ''; ?>>11:00 - 12:00</option>
+                                                <option value="12:00-13:00" <?php echo (isset($_POST['delivery_time']) && $_POST['delivery_time'] === '12:00-13:00') ? 'selected' : ''; ?>>12:00 - 13:00</option>
+                                                <option value="13:00-14:00" <?php echo (isset($_POST['delivery_time']) && $_POST['delivery_time'] === '13:00-14:00') ? 'selected' : ''; ?>>13:00 - 14:00</option>
+                                                <option value="14:00-15:00" <?php echo (isset($_POST['delivery_time']) && $_POST['delivery_time'] === '14:00-15:00') ? 'selected' : ''; ?>>14:00 - 15:00</option>
+                                                <option value="15:00-16:00" <?php echo (isset($_POST['delivery_time']) && $_POST['delivery_time'] === '15:00-16:00') ? 'selected' : ''; ?>>15:00 - 16:00</option>
+                                                <option value="16:00-17:00" <?php echo (isset($_POST['delivery_time']) && $_POST['delivery_time'] === '16:00-17:00') ? 'selected' : ''; ?>>16:00 - 17:00</option>
+                                                <option value="17:00-18:00" <?php echo (isset($_POST['delivery_time']) && $_POST['delivery_time'] === '17:00-18:00') ? 'selected' : ''; ?>>17:00 - 18:00</option>
+                                                <option value="18:00-19:00" <?php echo (isset($_POST['delivery_time']) && $_POST['delivery_time'] === '18:00-19:00') ? 'selected' : ''; ?>>18:00 - 19:00</option>
+                                                <option value="19:00-20:00" <?php echo (isset($_POST['delivery_time']) && $_POST['delivery_time'] === '19:00-20:00') ? 'selected' : ''; ?>>19:00 - 20:00</option>
+                                                <option value="20:00-21:00" <?php echo (isset($_POST['delivery_time']) && $_POST['delivery_time'] === '20:00-21:00') ? 'selected' : ''; ?>>20:00 - 21:00</option>
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="form-row">
                                         <div>
                                             <label>Thành phố/Tỉnh <span class="required">*Bắt buộc</span></label>
-                                            <input type="text" name="city" class="form__input" 
-                                                   value="<?php echo htmlspecialchars($_POST['city'] ?? ''); ?>">
+                                            <select name="city" id="city-select" class="form__input" onchange="updateDeliveryShippingFee()">
+                                                <option value="">-- Chọn Tỉnh/Thành phố --</option>
+                                                <option value="ho-chi-minh" data-fee="15000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'ho-chi-minh') ? 'selected' : ''; ?>>TP. Hồ Chí Minh</option>
+                                                <option value="ha-noi" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'ha-noi') ? 'selected' : ''; ?>>Hà Nội</option>
+                                                <option value="da-nang" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'da-nang') ? 'selected' : ''; ?>>Đà Nẵng</option>
+                                                <option value="can-tho" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'can-tho') ? 'selected' : ''; ?>>Cần Thơ</option>
+                                                <option value="hai-phong" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'hai-phong') ? 'selected' : ''; ?>>Hải Phòng</option>
+                                                <option value="binh-duong" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'binh-duong') ? 'selected' : ''; ?>>Bình Dương</option>
+                                                <option value="dong-nai" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'dong-nai') ? 'selected' : ''; ?>>Đồng Nai</option>
+                                                <option value="long-an" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'long-an') ? 'selected' : ''; ?>>Long An</option>
+                                                <option value="ba-ria-vung-tau" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'ba-ria-vung-tau') ? 'selected' : ''; ?>>Bà Rịa - Vũng Tàu</option>
+                                                <option value="an-giang" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'an-giang') ? 'selected' : ''; ?>>An Giang</option>
+                                                <option value="bac-giang" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'bac-giang') ? 'selected' : ''; ?>>Bắc Giang</option>
+                                                <option value="bac-kan" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'bac-kan') ? 'selected' : ''; ?>>Bắc Kạn</option>
+                                                <option value="bac-lieu" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'bac-lieu') ? 'selected' : ''; ?>>Bạc Liêu</option>
+                                                <option value="bac-ninh" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'bac-ninh') ? 'selected' : ''; ?>>Bắc Ninh</option>
+                                                <option value="ben-tre" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'ben-tre') ? 'selected' : ''; ?>>Bến Tre</option>
+                                                <option value="binh-dinh" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'binh-dinh') ? 'selected' : ''; ?>>Bình Định</option>
+                                                <option value="binh-phuoc" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'binh-phuoc') ? 'selected' : ''; ?>>Bình Phước</option>
+                                                <option value="binh-thuan" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'binh-thuan') ? 'selected' : ''; ?>>Bình Thuận</option>
+                                                <option value="ca-mau" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'ca-mau') ? 'selected' : ''; ?>>Cà Mau</option>
+                                                <option value="cao-bang" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'cao-bang') ? 'selected' : ''; ?>>Cao Bằng</option>
+                                                <option value="dak-lak" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'dak-lak') ? 'selected' : ''; ?>>Đắk Lắk</option>
+                                                <option value="dak-nong" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'dak-nong') ? 'selected' : ''; ?>>Đắk Nông</option>
+                                                <option value="dien-bien" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'dien-bien') ? 'selected' : ''; ?>>Điện Biên</option>
+                                                <option value="dong-thap" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'dong-thap') ? 'selected' : ''; ?>>Đồng Tháp</option>
+                                                <option value="gia-lai" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'gia-lai') ? 'selected' : ''; ?>>Gia Lai</option>
+                                                <option value="ha-giang" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'ha-giang') ? 'selected' : ''; ?>>Hà Giang</option>
+                                                <option value="ha-nam" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'ha-nam') ? 'selected' : ''; ?>>Hà Nam</option>
+                                                <option value="ha-tinh" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'ha-tinh') ? 'selected' : ''; ?>>Hà Tĩnh</option>
+                                                <option value="hai-duong" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'hai-duong') ? 'selected' : ''; ?>>Hải Dương</option>
+                                                <option value="hau-giang" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'hau-giang') ? 'selected' : ''; ?>>Hậu Giang</option>
+                                                <option value="hoa-binh" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'hoa-binh') ? 'selected' : ''; ?>>Hòa Bình</option>
+                                                <option value="hung-yen" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'hung-yen') ? 'selected' : ''; ?>>Hưng Yên</option>
+                                                <option value="khanh-hoa" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'khanh-hoa') ? 'selected' : ''; ?>>Khánh Hòa</option>
+                                                <option value="kien-giang" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'kien-giang') ? 'selected' : ''; ?>>Kiên Giang</option>
+                                                <option value="kon-tum" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'kon-tum') ? 'selected' : ''; ?>>Kon Tum</option>
+                                                <option value="lai-chau" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'lai-chau') ? 'selected' : ''; ?>>Lai Châu</option>
+                                                <option value="lam-dong" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'lam-dong') ? 'selected' : ''; ?>>Lâm Đồng</option>
+                                                <option value="lang-son" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'lang-son') ? 'selected' : ''; ?>>Lạng Sơn</option>
+                                                <option value="lao-cai" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'lao-cai') ? 'selected' : ''; ?>>Lào Cai</option>
+                                                <option value="nam-dinh" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'nam-dinh') ? 'selected' : ''; ?>>Nam Định</option>
+                                                <option value="nghe-an" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'nghe-an') ? 'selected' : ''; ?>>Nghệ An</option>
+                                                <option value="ninh-binh" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'ninh-binh') ? 'selected' : ''; ?>>Ninh Bình</option>
+                                                <option value="ninh-thuan" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'ninh-thuan') ? 'selected' : ''; ?>>Ninh Thuận</option>
+                                                <option value="phu-tho" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'phu-tho') ? 'selected' : ''; ?>>Phú Thọ</option>
+                                                <option value="phu-yen" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'phu-yen') ? 'selected' : ''; ?>>Phú Yên</option>
+                                                <option value="quang-binh" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'quang-binh') ? 'selected' : ''; ?>>Quảng Bình</option>
+                                                <option value="quang-nam" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'quang-nam') ? 'selected' : ''; ?>>Quảng Nam</option>
+                                                <option value="quang-ngai" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'quang-ngai') ? 'selected' : ''; ?>>Quảng Ngãi</option>
+                                                <option value="quang-ninh" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'quang-ninh') ? 'selected' : ''; ?>>Quảng Ninh</option>
+                                                <option value="quang-tri" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'quang-tri') ? 'selected' : ''; ?>>Quảng Trị</option>
+                                                <option value="soc-trang" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'soc-trang') ? 'selected' : ''; ?>>Sóc Trăng</option>
+                                                <option value="son-la" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'son-la') ? 'selected' : ''; ?>>Sơn La</option>
+                                                <option value="tay-ninh" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'tay-ninh') ? 'selected' : ''; ?>>Tây Ninh</option>
+                                                <option value="thai-binh" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'thai-binh') ? 'selected' : ''; ?>>Thái Bình</option>
+                                                <option value="thai-nguyen" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'thai-nguyen') ? 'selected' : ''; ?>>Thái Nguyên</option>
+                                                <option value="thanh-hoa" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'thanh-hoa') ? 'selected' : ''; ?>>Thanh Hóa</option>
+                                                <option value="thua-thien-hue" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'thua-thien-hue') ? 'selected' : ''; ?>>Thừa Thiên Huế</option>
+                                                <option value="tien-giang" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'tien-giang') ? 'selected' : ''; ?>>Tiền Giang</option>
+                                                <option value="tra-vinh" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'tra-vinh') ? 'selected' : ''; ?>>Trà Vinh</option>
+                                                <option value="tuyen-quang" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'tuyen-quang') ? 'selected' : ''; ?>>Tuyên Quang</option>
+                                                <option value="vinh-long" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'vinh-long') ? 'selected' : ''; ?>>Vĩnh Long</option>
+                                                <option value="vinh-phuc" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'vinh-phuc') ? 'selected' : ''; ?>>Vĩnh Phúc</option>
+                                                <option value="yen-bai" data-fee="30000" <?php echo (isset($_POST['city']) && $_POST['city'] === 'yen-bai') ? 'selected' : ''; ?>>Yên Bái</option>
+                                            </select>
                                         </div>
                                         <div>
                                             <label>Quận/Huyện <span class="required">*Bắt buộc</span></label>
@@ -770,56 +868,35 @@ $total = $subtotal + $shipping;
 
         // Hàm tính lại tổng tiền
         function recalculateTotal() {
-            // Lấy subtotal
-            const subtotalElement = document.getElementById('cart-subtotal');
-            if (!subtotalElement) return;
-            
-            const subtotalText = subtotalElement.textContent;
-            const subtotal = parseInt(subtotalText.replace(/[^\d]/g, '')) || 0;
+            // Lấy tổng giá trị giỏ hàng
+            let subtotal = 0;
+            const cartItems = document.querySelectorAll('.cart-item');
+            cartItems.forEach(item => {
+                const price = parseInt(item.getAttribute('data-price')) || 0;
+                const quantity = parseInt(item.querySelector('.qty-number').textContent) || 1;
+                subtotal += price * quantity;
+            });
             
             // Tính giảm giá nếu có
             let discountAmount = 0;
             if (currentCoupon) {
                 if (currentCoupon.code === 'GIAIKHATHE') {
-                    // Tính lại giảm giá phí vận chuyển với phí mới
+                    // Giảm 10% phí vận chuyển, tối đa 10.000đ
                     discountAmount = Math.min(currentShippingFee * 0.1, 10000);
-                    currentCoupon.discount = discountAmount;
-                    
-                    // Cập nhật hiển thị giảm giá
-                    const couponDiscountElement = document.getElementById('coupon-discount-amount');
-                    const discountAmountElement = document.getElementById('discount-amount');
-                    
-                    if (couponDiscountElement) {
-                        couponDiscountElement.textContent = new Intl.NumberFormat('vi-VN').format(Math.round(discountAmount));
-                    }
-                    if (discountAmountElement) {
-                        discountAmountElement.textContent = '- ' + new Intl.NumberFormat('vi-VN').format(Math.round(discountAmount));
-                    }
                 } else if (currentCoupon.code === 'GIAIKHAT') {
                     // Giảm 15% giá trị đơn hàng
                     discountAmount = subtotal * 0.15;
-                    currentCoupon.discount = discountAmount;
-                    
-                    // Cập nhật hiển thị giảm giá
-                    const couponDiscountElement = document.getElementById('coupon-discount-amount');
-                    const discountAmountElement = document.getElementById('discount-amount');
-                    
-                    if (couponDiscountElement) {
-                        couponDiscountElement.textContent = new Intl.NumberFormat('vi-VN').format(Math.round(discountAmount));
-                    }
-                    if (discountAmountElement) {
-                        discountAmountElement.textContent = '- ' + new Intl.NumberFormat('vi-VN').format(Math.round(discountAmount));
-                    }
                 }
+                    currentCoupon.discount = discountAmount;
             }
             
             // Tính tổng cuối cùng
             const total = subtotal + currentShippingFee - discountAmount;
             
             // Cập nhật hiển thị tổng
-            const totalElement = document.getElementById('cart-total');
-            if (totalElement) {
-                totalElement.textContent = new Intl.NumberFormat('vi-VN').format(Math.round(total));
+            const totalDisplay = document.getElementById('total-display');
+            if (totalDisplay) {
+                totalDisplay.textContent = new Intl.NumberFormat('vi-VN').format(Math.round(total)) + ' vnd';
             }
         }
 
@@ -1034,6 +1111,160 @@ $total = $subtotal + $shipping;
 
         // Khởi tạo khi trang load
         document.addEventListener('DOMContentLoaded', function() {
+            // Thêm id cho form
+            const paymentForm = document.querySelector('form[method="POST"]');
+            if (paymentForm) {
+                paymentForm.id = 'payment-form';
+            }
+            
+            // Xử lý chọn phương thức giao hàng
+            const storeBtn = document.querySelector('.store-btn');
+            const deliveryBtn = document.querySelector('.delivery-btn');
+            const storeContainer = document.querySelector('.store-pickup-container');
+            const deliveryContainer = document.querySelector('.delivery-container');
+            
+            if (storeBtn && deliveryBtn) {
+                storeBtn.addEventListener('click', function() {
+                    storeBtn.classList.add('active');
+                    deliveryBtn.classList.remove('active');
+                    storeContainer.style.display = 'block';
+                    deliveryContainer.style.display = 'none';
+                    
+                    // Cập nhật input hidden
+                    const storeInput = storeContainer.querySelector('.delivery-method-input');
+                    if (storeInput) storeInput.value = 'store';
+                    
+                    // Disable required fields cho delivery
+                    deliveryContainer.querySelectorAll('input[required]').forEach(input => {
+                        input.removeAttribute('required');
+                    });
+                    
+                    // Enable required fields cho store
+                    storeContainer.querySelectorAll('input').forEach(input => {
+                        if (input.name === 'pickup_date' || input.name === 'pickup_time') {
+                            input.setAttribute('required', 'required');
+                        }
+                    });
+                    
+                    // Cập nhật phí vận chuyển
+                    document.getElementById('shipping-fee-display').textContent = 'Miễn phí';
+                    currentShippingFee = 0;
+                    recalculateTotal();
+                });
+                
+                deliveryBtn.addEventListener('click', function() {
+                    deliveryBtn.classList.add('active');
+                    storeBtn.classList.remove('active');
+                    deliveryContainer.style.display = 'block';
+                    storeContainer.style.display = 'none';
+                    
+                    // Cập nhật input hidden
+                    const deliveryInput = deliveryContainer.querySelector('.delivery-method-input');
+                    if (deliveryInput) deliveryInput.value = 'delivery';
+                    
+                    // Enable required fields cho delivery
+                    deliveryContainer.querySelectorAll('input').forEach(input => {
+                        if (['delivery_date', 'delivery_time', 'city', 'district', 'address', 'zipcode'].includes(input.name)) {
+                            input.setAttribute('required', 'required');
+                        }
+                    });
+                    
+                    // Disable required fields cho store
+                    storeContainer.querySelectorAll('input[required]').forEach(input => {
+                        input.removeAttribute('required');
+                    });
+                    
+                    // Cập nhật phí vận chuyển dựa trên tỉnh/thành phố đã chọn
+                    const citySelect = document.getElementById('city-select');
+                    if (citySelect && citySelect.value) {
+                        const selectedOption = citySelect.options[citySelect.selectedIndex];
+                        currentShippingFee = parseInt(selectedOption.getAttribute('data-fee')) || 30000;
+                    } else {
+                        // Mặc định nếu chưa chọn tỉnh/thành phố
+                        currentShippingFee = 30000;
+                    }
+                    
+                    document.getElementById('shipping-fee-display').textContent = new Intl.NumberFormat('vi-VN').format(currentShippingFee) + ' đ';
+                    recalculateTotal();
+                });
+            }
+            
+            // Xử lý click chọn cửa hàng
+            const storeOptions = document.querySelectorAll('.store-option');
+            storeOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Bỏ selected từ tất cả options
+                    storeOptions.forEach(opt => opt.classList.remove('selected'));
+                    
+                    // Thêm selected cho option được click
+                    this.classList.add('selected');
+                    
+                    // Check radio button tương ứng
+                    const radio = this.querySelector('input[type="radio"]');
+                    if (radio) {
+                        radio.checked = true;
+                    }
+                });
+            });
+            
+            // Xử lý click chọn phương thức thanh toán
+            const paymentOptions = document.querySelectorAll('.payment-option');
+            const selectedPaymentInput = document.getElementById('selected-payment-method');
+            
+            paymentOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Bỏ active từ tất cả options
+                    paymentOptions.forEach(opt => opt.classList.remove('active'));
+                    
+                    // Thêm active cho option được click
+                    this.classList.add('active');
+                    
+                    // Cập nhật giá trị input hidden
+                    const method = this.getAttribute('data-method');
+                    if (selectedPaymentInput) {
+                        selectedPaymentInput.value = method;
+                    }
+                    
+                    // Thêm hiệu ứng
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 100);
+                });
+            });
+            
+            // Xử lý country dropdown
+            const countrySelector = document.getElementById('country-selector');
+            const countryDropdown = document.getElementById('country-dropdown');
+            
+            if (countrySelector && countryDropdown) {
+                countrySelector.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    countryDropdown.classList.toggle('show');
+                });
+                
+                // Đóng dropdown khi click bên ngoài
+                document.addEventListener('click', function() {
+                    countryDropdown.classList.remove('show');
+                });
+                
+                // Xử lý chọn country
+                const countryOptions = countryDropdown.querySelectorAll('.country-option');
+                countryOptions.forEach(option => {
+                    option.addEventListener('click', function() {
+                        const code = this.getAttribute('data-code');
+                        const flag = this.querySelector('.country-flag').src;
+                        
+                        // Cập nhật button
+                        countrySelector.querySelector('.country-flag').src = flag;
+                        countrySelector.querySelector('span:nth-child(2)').textContent = code;
+                        
+                        // Đóng dropdown
+                        countryDropdown.classList.remove('show');
+                    });
+                });
+            }
+            
             // Set mặc định TP.HCM và phí vận chuyển 15.000đ
             const citySelect = document.getElementById('city-select');
             if (citySelect) {
@@ -1078,9 +1309,205 @@ $total = $subtotal + $shipping;
                 });
             }
             
-            // Các event listener khác...
-            // Code cũ giữ nguyên
+            // Xử lý thay đổi thời gian dựa trên ngày và cửa hàng được chọn
+            function updateTimeSlots() {
+                const selectedStore = document.querySelector('input[name="store"]:checked');
+                const pickupDate = document.querySelector('input[name="pickup_date"]').value;
+                const pickupTimeSelect = document.querySelector('select[name="pickup_time"]');
+                
+                if (!pickupDate || !pickupTimeSelect) return;
+                
+                // Kiểm tra xem ngày được chọn có phải là ngày trong quá khứ không
+                const selectedDate = new Date(pickupDate);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                if (selectedDate < today) {
+                    showNotification('Vui lòng chọn ngày từ hôm nay trở đi', 'error');
+                    document.querySelector('input[name="pickup_date"]').value = '';
+                    return;
+                }
+                
+                // Reset select options
+                const defaultOptions = `
+                    <option value="">Chọn thời gian</option>
+                    <option value="8:00-9:00">8:00 - 9:00</option>
+                    <option value="9:00-10:00">9:00 - 10:00</option>
+                    <option value="10:00-11:00">10:00 - 11:00</option>
+                    <option value="11:00-12:00">11:00 - 12:00</option>
+                    <option value="12:00-13:00">12:00 - 13:00</option>
+                    <option value="13:00-14:00">13:00 - 14:00</option>
+                    <option value="14:00-15:00">14:00 - 15:00</option>
+                    <option value="15:00-16:00">15:00 - 16:00</option>
+                    <option value="16:00-17:00">16:00 - 17:00</option>
+                    <option value="17:00-18:00">17:00 - 18:00</option>
+                    <option value="18:00-19:00">18:00 - 19:00</option>
+                    <option value="19:00-20:00">19:00 - 20:00</option>
+                    <option value="20:00-21:00">20:00 - 21:00</option>
+                `;
+                pickupTimeSelect.innerHTML = defaultOptions;
+                
+                // Kiểm tra ngày có phải Chủ Nhật không (cho cửa hàng 1)
+                if (selectedStore && selectedStore.value === 'store1') {
+                    const dayOfWeek = selectedDate.getDay();
+                    if (dayOfWeek === 0) { // Chủ Nhật
+                        pickupTimeSelect.innerHTML = '<option value="">Cửa hàng đóng cửa Chủ Nhật</option>';
+                        pickupTimeSelect.disabled = true;
+                        showNotification('Cửa hàng chi nhánh 1 đóng cửa vào Chủ Nhật', 'warning');
+                        return;
+                    } else {
+                        pickupTimeSelect.disabled = false;
+                    }
+                }
+                
+                // Nếu là ngày hôm nay, disable các khung giờ đã qua
+                if (selectedDate.toDateString() === today.toDateString()) {
+                    const currentHour = new Date().getHours();
+                    const currentMinute = new Date().getMinutes();
+                    const options = pickupTimeSelect.querySelectorAll('option');
+                    
+                    options.forEach(option => {
+                        if (option.value) {
+                            const startHour = parseInt(option.value.split(':')[0]);
+                            // Thêm 1 giờ buffer để khách hàng có thời gian chuẩn bị
+                            if (startHour <= currentHour + 1) {
+                                option.disabled = true;
+                                option.textContent = option.textContent + ' (Không khả dụng)';
+                            }
+                        }
+                    });
+                    
+                    // Nếu tất cả slots đều disabled (quá muộn trong ngày)
+                    const availableOptions = pickupTimeSelect.querySelectorAll('option:not(:disabled)');
+                    if (availableOptions.length <= 1) { // Chỉ có option "Chọn thời gian"
+                        showNotification('Đã quá muộn để đặt hàng trong ngày hôm nay. Vui lòng chọn ngày mai.', 'warning');
+                    }
+                }
+            }
+            
+            // Lắng nghe sự kiện thay đổi ngày
+            const pickupDateInput = document.querySelector('input[name="pickup_date"]');
+            if (pickupDateInput) {
+                pickupDateInput.addEventListener('change', updateTimeSlots);
+                
+                // Set min date là ngày hôm nay
+                const today = new Date().toISOString().split('T')[0];
+                pickupDateInput.min = today;
+                
+                // Set max date là 30 ngày từ hôm nay
+                const maxDate = new Date();
+                maxDate.setDate(maxDate.getDate() + 30);
+                pickupDateInput.max = maxDate.toISOString().split('T')[0];
+            }
+            
+            // Update lại event listener cho store options
+            const existingStoreOptions = document.querySelectorAll('.store-option');
+            existingStoreOptions.forEach(option => {
+                const existingClickHandler = option.onclick;
+                option.addEventListener('click', function() {
+                    // Gọi handler cũ nếu có
+                    if (existingClickHandler) existingClickHandler.call(this);
+                    
+                    // Update time slots khi chọn cửa hàng khác
+                    setTimeout(updateTimeSlots, 100);
+                });
+            });
+            
+            // Cũng xử lý cho delivery date
+            const deliveryDateInput = document.querySelector('input[name="delivery_date"]');
+            if (deliveryDateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                deliveryDateInput.min = today;
+                
+                const maxDate = new Date();
+                maxDate.setDate(maxDate.getDate() + 30);
+                deliveryDateInput.max = maxDate.toISOString().split('T')[0];
+                
+                deliveryDateInput.addEventListener('change', function() {
+                    const selectedDate = new Date(this.value);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    if (selectedDate < today) {
+                        showNotification('Vui lòng chọn ngày từ hôm nay trở đi', 'error');
+                        this.value = '';
+                    }
+                });
+            }
+            
+            // Set mặc định TP.HCM nếu chưa có giá trị
+            const citySelectElement = document.getElementById('city-select');
+            if (citySelectElement && !citySelectElement.value) {
+                citySelectElement.value = 'ho-chi-minh';
+                
+                // Nếu đang ở phương thức giao hàng, cập nhật phí vận chuyển
+                const deliveryBtn = document.querySelector('.delivery-btn');
+                if (deliveryBtn && deliveryBtn.classList.contains('active')) {
+                    currentShippingFee = 15000;
+                    document.getElementById('shipping-fee-display').textContent = '15.000 đ';
+                    recalculateTotal();
+                }
+            }
+            
+            // Lấy thông tin từ sessionStorage nếu có (từ trang cart)
+            const shippingInfo = sessionStorage.getItem('shippingInfo');
+            if (shippingInfo) {
+                const info = JSON.parse(shippingInfo);
+                if (info.city && citySelectElement) {
+                    citySelectElement.value = info.city;
+                    currentShippingFee = info.shippingFee || 15000;
+                    
+                    // Áp dụng mã giảm giá nếu có
+                    if (info.coupon) {
+                        currentCoupon = info.coupon;
+                        // Hiển thị thông tin mã giảm giá
+                        showNotification(`Đã áp dụng mã giảm giá ${info.coupon.code}`, 'success');
+                    }
+                    
+                    // Cập nhật hiển thị
+                    if (document.querySelector('.delivery-btn.active')) {
+                        document.getElementById('shipping-fee-display').textContent = new Intl.NumberFormat('vi-VN').format(currentShippingFee) + ' đ';
+                        recalculateTotal();
+                    }
+                }
+                
+                // Xóa thông tin từ sessionStorage sau khi sử dụng
+                sessionStorage.removeItem('shippingInfo');
+            }
         });
+
+        // Hàm cập nhật phí vận chuyển cho phương thức giao hàng
+        function updateDeliveryShippingFee() {
+            const deliveryBtn = document.querySelector('.delivery-btn');
+            
+            // Chỉ cập nhật nếu đang chọn phương thức giao hàng
+            if (!deliveryBtn || !deliveryBtn.classList.contains('active')) {
+                return;
+            }
+            
+            const citySelect = document.getElementById('city-select');
+            if (!citySelect) return;
+            
+            const selectedOption = citySelect.options[citySelect.selectedIndex];
+            
+            if (selectedOption && selectedOption.value) {
+                // Lấy phí vận chuyển từ data-fee
+                currentShippingFee = parseInt(selectedOption.getAttribute('data-fee')) || 15000;
+                
+                // Cập nhật hiển thị phí vận chuyển
+                const shippingFeeDisplay = document.getElementById('shipping-fee-display');
+                if (shippingFeeDisplay) {
+                    shippingFeeDisplay.textContent = new Intl.NumberFormat('vi-VN').format(currentShippingFee) + ' đ';
+                }
+                
+                // Hiển thị thông báo
+                const cityName = selectedOption.text;
+                showNotification(`Phí vận chuyển cho ${cityName}: ${new Intl.NumberFormat('vi-VN').format(currentShippingFee)}₫`, 'info');
+                
+                // Tính lại tổng
+                recalculateTotal();
+            }
+        }
     </script>
 
     <style>
@@ -1204,13 +1631,13 @@ $total = $subtotal + $shipping;
         
         .store-options {
             display: grid;
-            gap: 30px;
+            gap: 20px;
         }
         
         .store-option {
-            border: 1.6px solid #ddd;
+            border: 2px solid #e0e0e0;
             border-radius: 12px;
-            padding: 15px;
+            padding: 20px;
             display: flex;
             align-items: center;
             transition: all 0.3s ease;
@@ -1221,20 +1648,15 @@ $total = $subtotal + $shipping;
         
         .store-option:hover {
             border-color: #26551D;
-            background-color: rgba(38, 85, 29, 0.05);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(38, 85, 29, 0.1);
+            background-color: rgba(38, 85, 29, 0.03);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
         
         .store-option.selected {
             border-color: #26551D;
-            background-color: rgba(38, 85, 29, 0.08);
-            box-shadow: 0 2px 12px rgba(38, 85, 29, 0.15);
-        }
-        
-        .store-option:focus {
-            outline: 2px solid #26551D;
-            outline-offset: 2px;
+            background-color: rgba(38, 85, 29, 0.05);
+            box-shadow: 0 4px 16px rgba(38, 85, 29, 0.15);
         }
         
         .store-option input[type="radio"] {
@@ -1245,19 +1667,21 @@ $total = $subtotal + $shipping;
         }
         
         .custom-radio {
-            width: 18px;
-            height: 18px;
-            border: 2px solid #e0e0e0;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #d0d0d0;
             border-radius: 50%;
             display: inline-block;
             position: relative;
-            margin-right: 15px;
+            margin-right: 20px;
             flex-shrink: 0;
             transition: all 0.3s ease;
+            background-color: #fff;
         }
         
         .store-option:hover .custom-radio {
             border-color: #26551D;
+            box-shadow: 0 0 0 4px rgba(38, 85, 29, 0.1);
         }
         
         .store-option.selected .custom-radio {
@@ -1271,10 +1695,23 @@ $total = $subtotal + $shipping;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             background-color: white;
+            animation: radioCheck 0.3s ease;
+        }
+        
+        @keyframes radioCheck {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
         }
         
         .store-info {
@@ -1284,13 +1721,14 @@ $total = $subtotal + $shipping;
         .store-name {
             font-weight: 600;
             color: #2c3e50;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            font-size: 16px;
         }
         
         .store-address {
             color: #666;
             font-size: 14px;
-            margin-bottom: 2px;
+            margin-bottom: 4px;
         }
         
         .store-hours {
@@ -1300,6 +1738,209 @@ $total = $subtotal + $shipping;
         
         .store-option.selected .store-name {
             color: #26551D;
+        }
+        
+        /* Payment Options Styles */
+        .payment-options-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 25px 20px;
+            background-color: #fff;
+            border-radius: 12px;
+        }
+        
+        .payment-option-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .payment-option {
+            width: 75%;
+            height: 60px;
+            padding: 8px 10px;
+            background-color: #ffffff;
+            border: 1.6px solid #e6e6e6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .payment-option img {
+            max-height: 32px;
+            max-width: 80%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+            filter: grayscale(0);
+        }
+        
+        .payment-option:hover {
+            background-color: #ffffff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+        }
+        
+        .payment-option:hover img {
+            transform: scale(1.08);
+        }
+        
+        .payment-option.active {
+            border-color: #26551D;
+            border-width: 1.6px;
+            box-shadow: none;
+            background-color: #ffffff;
+            transform: translateY(0);
+        }
+        
+        .payment-option.active img {
+            transform: scale(1.1);
+            filter: brightness(1.05);
+        }
+        
+        /* Subtle animation for active state */
+        @keyframes subtlePulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .payment-option.active {
+            animation: subtlePulse 2s ease-in-out infinite;
+        }
+        
+        /* Click effect */
+        .payment-option:active {
+            transform: scale(0.98);
+            transition: transform 0.1s ease;
+        }
+        
+        .payment-label {
+            font-size: 0.8rem;
+            color: #555;
+            margin-top: 8px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        
+        .payment-option.active ~ .payment-label {
+            color: #26551D;
+            font-weight: 600;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .store-options {
+                gap: 15px;
+            }
+            
+            .store-option {
+                padding: 15px;
+            }
+            
+            .custom-radio {
+                width: 20px;
+                height: 20px;
+                margin-right: 15px;
+            }
+            
+            .payment-options-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .payment-option {
+                width: 100%;
+                height: 55px;
+            }
+            
+            .payment-option img {
+                max-height: 28px;
+            }
+        }
+        
+        /* Style for select dropdown */
+        select.form__input {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+            padding-right: 40px;
+            cursor: pointer;
+        }
+        
+        select.form__input:focus {
+            border-color: #26551D;
+            box-shadow: 0 0 0 3px rgba(38, 85, 29, 0.1);
+        }
+        
+        select.form__input option {
+            padding: 10px;
+        }
+        
+        /* Disabled state for unavailable time slots */
+        select.form__input option:disabled {
+            color: #999;
+            background-color: #f5f5f5;
+        }
+        
+        /* Time slot warning */
+        .time-slot-warning {
+            font-size: 12px;
+            color: #ff6b35;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        /* Loading indicator */
+        .loading-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            color: white;
+            font-size: 16px;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #ff6b35;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Toast notification */
+        .toast-notification {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
     </style>
 </body>
