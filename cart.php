@@ -156,9 +156,9 @@ function getNumericPrice($price) {
         <div class="giohang_title">GIỎ HÀNG CỦA BẠN</div>
         
         <?php if (empty($cart_items)): ?>
-          <div class="empty-cart">
-            <p>Giỏ hàng của bạn đang trống</p>
-            <a href="shop.php" class="btn">Tiếp tục mua sắm</a>
+          <div class="empty-cart" style="text-align: center; padding: 50px 0;">
+            <p style="margin-bottom: 20px; font-size: 18px; color: #666;">Giỏ hàng của bạn đang trống</p>
+            <a href="index.php" class="btn" style="display: inline-block; padding: 12px 24px; background-color: #d1002c; color: white; text-decoration: none; border-radius: 5px;">Tiếp tục mua sắm</a>
           </div>
         <?php else: ?>
           <!-- Danh sách sản phẩm trong giỏ hàng -->

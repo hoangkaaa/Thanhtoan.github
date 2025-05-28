@@ -364,6 +364,7 @@ $total = $subtotal + $shipping;
                                         <div>
                                             <label>Ngày lấy hàng <span class="required">*Bắt buộc</span></label>
                                             <input type="date" name="pickup_date" class="form__input" required 
+                                                   min="<?php echo date('Y-m-d'); ?>"
                                                    value="<?php echo htmlspecialchars($_POST['pickup_date'] ?? ''); ?>">
                                         </div>
                                         <div>
@@ -416,6 +417,7 @@ $total = $subtotal + $shipping;
                                         <div>
                                             <label>Ngày giao hàng <span class="required">*Bắt buộc</span></label>
                                             <input type="date" name="delivery_date" class="form__input" 
+                                                   min="<?php echo date('Y-m-d'); ?>"
                                                    value="<?php echo htmlspecialchars($_POST['delivery_date'] ?? ''); ?>">
                                         </div>
                                         <div>

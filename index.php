@@ -409,6 +409,32 @@ function buildUrl($params = []) {
 
     <!--=============== MAIN ===============-->
     <main class="main">
+        <!-- Hiển thị thông báo hủy thanh toán -->
+        <?php if (isset($_SESSION['payment_cancelled']) && isset($_SESSION['cancel_message'])): ?>
+            <div id="payment-alert" class="alert alert-info container" style="background-color: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; padding: 15px; margin: 20px auto; border-radius: 5px; max-width: 800px; transition: opacity 0.5s ease-out;">
+                <div style="display: flex; align-items: center;">
+                    <i class="fi fi-rs-info" style="margin-right: 10px; font-size: 18px;"></i>
+                    <span><?php echo htmlspecialchars($_SESSION['cancel_message']); ?></span>
+                </div>
+            </div>
+            <script>
+                // Tự động ẩn thông báo sau 4 giây
+                setTimeout(function() {
+                    const alert = document.getElementById('payment-alert');
+                    if (alert) {
+                        alert.style.opacity = '0';
+                        setTimeout(function() {
+                            alert.remove();
+                        }, 500); // Đợi animation fade-out hoàn thành
+                    }
+                }, 4000); // 4 giây
+            </script>
+            <?php 
+            unset($_SESSION['payment_cancelled']);
+            unset($_SESSION['cancel_message']);
+            ?>
+        <?php endif; ?>
+
       <!--=============== ĐƯỜNG DẪN HIỆN TẠI ===============-->
       <section class="breadcrumb">
         <ul class="breadcrumb__list flex container">

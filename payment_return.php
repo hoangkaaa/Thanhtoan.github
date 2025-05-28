@@ -98,12 +98,12 @@ if ($resultCode == '0') {
         exit;
     }
 } else {
-    // Thanh toán thất bại
-    $_SESSION['payment_error'] = true;
-    $_SESSION['error_message'] = 'Thanh toán MoMo thất bại: ' . $message;
+    // Thanh toán thất bại hoặc bị hủy
+    $_SESSION['payment_cancelled'] = true;
+    $_SESSION['cancel_message'] = 'Thanh toán không thành công. Đơn hàng đã bị hủy.';
     
-    // Chuyển hướng về trang thanh toán
-    header('Location: payment.php');
+    // Chuyển hướng về trang chủ thay vì trang thanh toán
+    header('Location: index.php');
     exit;
 }
 ?> 

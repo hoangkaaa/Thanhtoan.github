@@ -1770,3 +1770,30 @@ margin-bottom: 60px;
   pointer-events: none;
   z-index: 99999999; /*  luôn luôn hiển thị trên mọi đối tượng trên trang web*/
 }
+
+/* Alert styles */
+.alert {
+    padding: 15px;
+    margin: 20px auto;
+    border-radius: 5px;
+    max-width: 800px;
+    font-family: inherit;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    border: 1px solid #bee5eb;
+    color: #0c5460;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
