@@ -183,16 +183,10 @@ function getNumericPrice($price) {
                 </div>
                 <div class="w-r__wrap-2">
                   <!-- Điều chỉnh số lượng sản phẩm -->
-                  <div class="quantity-control">
-                      <button type="button" class="quantity-btn minus" onclick="decreaseQuantity(<?php echo $item['product_id']; ?>)">-</button>
-                      <input type="number" 
-                             id="quantity-<?php echo $item['product_id']; ?>" 
-                           value="<?php echo $item['quantity']; ?>" 
-                           min="1" 
-                           max="99" 
-                           class="quantity-input"
-                             onchange="updateQuantityInstant(<?php echo $item['product_id']; ?>, this.value)">
-                      <button type="button" class="quantity-btn plus" onclick="increaseQuantity(<?php echo $item['product_id']; ?>)">+</button>
+                  <div class="qty-controls">
+                      <button type="button" class="qty-btn" aria-label="Giảm" onclick="decreaseQuantity(<?php echo $item['product_id']; ?>)">-</button>
+                      <span class="qty-number" id="quantity-<?php echo $item['product_id']; ?>"><?php echo $item['quantity']; ?></span>
+                      <button type="button" class="qty-btn" aria-label="Tăng" onclick="increaseQuantity(<?php echo $item['product_id']; ?>)">+</button>
                     </div>
                     
                     <!-- Subtotal cho từng sản phẩm -->
@@ -617,8 +611,8 @@ function getNumericPrice($price) {
     function increaseQuantity(productId) {
         if (isProcessing) return;
         
-        const input = document.getElementById(`quantity-${productId}`);
-        const currentValue = parseInt(input.value) || 0;
+        const quantitySpan = document.getElementById(`quantity-${productId}`);
+        const currentValue = parseInt(quantitySpan.textContent) || 0;
         const newValue = currentValue + 1;
         
         updateQuantityInstant(productId, newValue);
@@ -628,8 +622,8 @@ function getNumericPrice($price) {
     function decreaseQuantity(productId) {
         if (isProcessing) return;
         
-        const input = document.getElementById(`quantity-${productId}`);
-        const currentValue = parseInt(input.value) || 0;
+        const quantitySpan = document.getElementById(`quantity-${productId}`);
+        const currentValue = parseInt(quantitySpan.textContent) || 0;
         
         if (currentValue > 1) {
             const newValue = currentValue - 1;
@@ -650,8 +644,8 @@ function getNumericPrice($price) {
         showLoading();
         
         // Cập nhật UI ngay lập tức
-        const input = document.getElementById(`quantity-${productId}`);
-        input.value = quantity;
+        const quantitySpan = document.getElementById(`quantity-${productId}`);
+        quantitySpan.textContent = quantity;
         updateItemSubtotal(productId);
         
         // Gửi request đến server để lưu vào database
@@ -781,8 +775,8 @@ function getNumericPrice($price) {
 
     // Hàm cập nhật subtotal cho từng sản phẩm - KHÔNG THÊM ₫
     function updateItemSubtotal(productId) {
-        const quantityInput = document.getElementById(`quantity-${productId}`);
-        const quantity = parseInt(quantityInput.value) || 0;
+        const quantitySpan = document.getElementById(`quantity-${productId}`);
+        const quantity = parseInt(quantitySpan.textContent) || 0;
         
         // Lấy giá sản phẩm
         const productElement = document.querySelector(`[data-product-id="${productId}"]`);
@@ -955,31 +949,6 @@ function getNumericPrice($price) {
 
     // Event listeners
     document.addEventListener('DOMContentLoaded', function() {
-        // Lắng nghe thay đổi trực tiếp trong input số lượng
-        document.querySelectorAll('.quantity-input').forEach(function(input) {
-            let timeout;
-            
-            input.addEventListener('input', function() {
-                const productId = this.id.replace('quantity-', '');
-                const quantity = parseInt(this.value) || 1;
-                
-                // Debounce để tránh gọi API quá nhiều
-                clearTimeout(timeout);
-                timeout = setTimeout(() => {
-                    updateQuantityInstant(productId, quantity);
-                }, 500);
-            });
-            
-            // Ngăn không cho nhập số âm hoặc 0
-            input.addEventListener('blur', function() {
-                if (parseInt(this.value) < 1) {
-                    this.value = 1;
-                    const productId = this.id.replace('quantity-', '');
-                    updateQuantityInstant(productId, 1);
-                }
-            });
-        });
-        
         // Cập nhật định dạng giá tiền ban đầu
         setTimeout(updateInitialPriceFormat, 100);
     });
@@ -1035,62 +1004,39 @@ function getNumericPrice($price) {
     }
     
     /* Quantity control styles */
-    .quantity-control {
+    .qty-controls {
         display: flex;
         align-items: center;
         gap: 5px;
-        background: #f8f9fa;
-        border-radius: 25px;
-        padding: 5px;
     }
     
-    .quantity-btn {
-        background: #ff6b35;
-        color: white;
-        border: none;
-        width: 35px;
-        height: 35px;
-        border-radius: 50%;
+    .qty-btn {
+        width: 25px;
+        height: 25px;
+        border: 1px solid #ddd;
+        background: white;
         cursor: pointer;
+        border-radius: 4px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
-        font-weight: bold;
+        font-size: 14px;
+        color: #333;
         transition: all 0.2s ease;
-        user-select: none;
     }
     
-    .quantity-btn:hover {
-        background: #e55a2b;
-        transform: scale(1.05);
+    .qty-btn:hover {
+        background: #f5f5f5;
+        border-color: #adb5bd;
     }
     
-    .quantity-btn:active {
-        transform: scale(0.95);
-    }
-    
-    .quantity-btn:disabled {
-        background: #ccc;
-        cursor: not-allowed;
-        transform: none;
-    }
-    
-    .quantity-input {
-        width: 60px;
+    .qty-number {
+        min-width: 40px;
         text-align: center;
-        border: none;
-        background: transparent;
-        font-size: 16px;
-        font-weight: bold;
-        color: #2c3e50;
-        padding: 5px;
-    }
-    
-    .quantity-input:focus {
-        outline: none;
-        background: white;
-        border-radius: 4px;
+        font-weight: normal;
+        padding: 2px 5px;
+        font-size: 14px;
+        color: #333;
     }
     
     /* Product list styles */

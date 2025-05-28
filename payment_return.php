@@ -99,11 +99,11 @@ if ($resultCode == '0') {
     }
 } else {
     // Thanh toán thất bại hoặc bị hủy
-    $_SESSION['payment_cancelled'] = true;
-    $_SESSION['cancel_message'] = 'Thanh toán không thành công. Đơn hàng đã bị hủy.';
+    $_SESSION['payment_error'] = true;
+    $_SESSION['error_message'] = 'Thanh toán không thành công. Đơn hàng đã bị hủy.';
     
-    // Chuyển hướng về trang chủ thay vì trang thanh toán
-    header('Location: index.php');
+    // Chuyển hướng về trang thanh toán thay vì trang chủ
+    header('Location: payment.php');
     exit;
 }
 ?> 

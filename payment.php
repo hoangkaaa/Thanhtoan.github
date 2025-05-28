@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['submit_payment']) ||
         $phone = trim($_POST['phone'] ?? '');
         $email = trim($_POST['email'] ?? '');
         $delivery_method = $_POST['delivery_method'] ?? 'store';
-        $payment_method = $_POST['payment_method'] ?? 'visa';
+        $payment_method = $_POST['payment_method'] ?? 'paypal';
         $terms_accepted = isset($_POST['terms_checkbox']) && $_POST['terms_checkbox'] == '1';
         
         writeLog("Extracted form data - First: $first_name, Last: $last_name, Phone: $phone, Email: $email, Payment: $payment_method");
@@ -292,7 +292,7 @@ $total = $subtotal + $shipping;
             <div class="empty-cart container">
                 <h2>Giỏ hàng của bạn đang trống</h2>
                 <p>Vui lòng thêm sản phẩm vào giỏ hàng trước khi thanh toán.</p>
-                <a href="shop.php" class="btn">Tiếp tục mua sắm</a>
+                <a href="index.php" class="btn">Tiếp tục mua sắm</a>
             </div>
         <?php else: ?>
             <section class="payment section--lg">
@@ -541,10 +541,10 @@ $total = $subtotal + $shipping;
                                         <span class="payment-label">Mastercard</span>
                                     </div>
                                     <div class="payment-option-wrapper">
-                                        <button type="button" class="payment-option active" data-method="visa">
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/1200px-Visa_Inc._logo.svg.png" alt="Visa">
+                                        <button type="button" class="payment-option active" data-method="paypal">
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/1200px-PayPal.svg.png" alt="PayPal">
                                         </button>
-                                        <span class="payment-label">Visa</span>
+                                        <span class="payment-label">PayPal</span>
                                     </div>
                                     <div class="payment-option-wrapper">
                                         <button type="button" class="payment-option" data-method="momo">
@@ -559,7 +559,7 @@ $total = $subtotal + $shipping;
                                         <span class="payment-label">COD</span>
                                     </div>
                                 </div>
-                                <input type="hidden" name="payment_method" value="visa" id="selected-payment-method">
+                                <input type="hidden" name="payment_method" value="paypal" id="selected-payment-method">
                                 
                                 <!-- Hidden inputs for coupon information -->
                                 <input type="hidden" name="coupon_code" id="coupon-code-input" value="">
@@ -708,7 +708,7 @@ $total = $subtotal + $shipping;
                 <div class="footer__column">
                     <h3 class="footer__title">Cổng thanh toán bảo mật</h3>
                     <div class="footer__payment">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/1200px-Visa_Inc._logo.svg.png" alt="Visa" class="payment-logo">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/1200px-PayPal.svg.png" alt="PayPal" class="payment-logo">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" alt="Mastercard" class="payment-logo">
                         <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" alt="Momo" class="payment-logo">
                     </div>
