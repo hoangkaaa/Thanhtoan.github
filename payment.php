@@ -1,4 +1,19 @@
 <?php
+// Hiển thị tất cả lỗi
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// Tạo file log riêng
+$log_file = __DIR__ . '/payment_debug.log';
+function writeLog($message) {
+    global $log_file;
+    $timestamp = date('Y-m-d H:i:s');
+    file_put_contents($log_file, "[$timestamp] $message\n", FILE_APPEND);
+}
+
+writeLog('=== New Payment Session Started ===');
+
 // Khởi tạo session và xử lý dữ liệu
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -11,8 +26,9 @@ require_once 'config/database.php';
 $database = new Database();
 $db = $database->connect();
 
-// Khởi tạo Cart class
+// Khởi tạo Cart class và Order class
 $cart = new Cart($db);
+$order = new Order($db);
 
 // Giả lập user_id - có thể thay đổi khi có hệ thống đăng nhập
 $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 1;
@@ -31,143 +47,99 @@ $applied_coupon = null;
 $errors = [];
 $success_message = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_payment'])) {
-    // Log để debug
-    error_log("Payment form submitted: " . print_r($_POST, true));
-    echo "<script>console.log('PHP: Form submitted!');</script>";
+// Thêm session token để tránh submit trùng
+if (!isset($_SESSION['payment_token'])) {
+    $_SESSION['payment_token'] = bin2hex(random_bytes(32));
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['submit_payment']) || isset($_POST['save_session_only']))) {
+    // Kiểm tra nếu chỉ cần lưu session (cho MoMo)
+    $saveSessionOnly = isset($_POST['save_session_only']);
     
-    // Validate dữ liệu form
-    $first_name = trim($_POST['first_name'] ?? '');
-    $last_name = trim($_POST['last_name'] ?? '');
-    $phone = trim($_POST['phone'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $delivery_method = $_POST['delivery_method'] ?? 'store';
-    $payment_method = $_POST['payment_method'] ?? 'visa';
-    $terms_accepted = isset($_POST['terms_checkbox']);
-    
-    // Lấy thông tin mã giảm giá nếu có
-    $coupon_code = trim($_POST['coupon_code'] ?? '');
-    $discount_amount = floatval($_POST['discount_amount'] ?? 0);
-    
-    // VALIDATION CẢI TIẾN
-    if (empty($first_name)) $errors[] = 'Tên không được để trống';
-    if (empty($last_name)) $errors[] = 'Họ và tên lót không được để trống';
-    if (empty($phone)) $errors[] = 'Số điện thoại không được để trống';
-    if (!preg_match('/^[0-9]{10,11}$/', $phone)) $errors[] = 'Số điện thoại không hợp lệ (10-11 số)';
-    if (empty($email)) $errors[] = 'Email không được để trống';
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Email không hợp lệ';
-    if (!$terms_accepted) $errors[] = 'Bạn phải đồng ý với điều khoản dịch vụ';
-    if (empty($cart_items)) $errors[] = 'Giỏ hàng trống, vui lòng thêm sản phẩm';
-    
-    // Khởi tạo biến cho giao hàng
-    $pickup_date = $pickup_time = $selected_store = '';
-    $delivery_date = $delivery_time = $city = $district = $address = $zipcode = '';
-    
-    // Tính lại shipping fee dựa trên delivery method
-    if ($delivery_method === 'delivery') {
-        $delivery_date = trim($_POST['delivery_date'] ?? '');
-        $delivery_time = trim($_POST['delivery_time'] ?? '');
-        $city = trim($_POST['city'] ?? '');
-        $district = trim($_POST['district'] ?? '');
-        $address = trim($_POST['address'] ?? '');
-        $zipcode = trim($_POST['zipcode'] ?? '');
-        
-        if (empty($delivery_date)) $errors[] = 'Ngày giao hàng không được để trống';
-        if (empty($delivery_time)) $errors[] = 'Thời gian giao hàng không được để trống';
-        if (empty($city)) $errors[] = 'Thành phố/Tỉnh không được để trống';
-        if (empty($district)) $errors[] = 'Quận/Huyện không được để trống';
-        if (empty($address)) $errors[] = 'Địa chỉ không được để trống';
-        if (empty($zipcode)) $errors[] = 'Mã Zip không được để trống';
-        
-        // Validate ngày giao hàng (phải từ ngày mai trở đi)
-        $delivery_timestamp = strtotime($delivery_date);
-        $tomorrow = strtotime('+1 day');
-        if ($delivery_timestamp < $tomorrow) {
-            $errors[] = 'Ngày giao hàng phải từ ngày mai trở đi';
+    if (!$saveSessionOnly) {
+        // Kiểm tra payment token chỉ khi không phải save session only
+        if (!isset($_POST['payment_token']) || $_POST['payment_token'] !== $_SESSION['payment_token']) {
+            writeLog("Invalid or missing payment token. Redirecting to payment.php");
+            header('Location: payment.php');
+            exit;
         }
-        
-        // Tính phí vận chuyển dựa trên thành phố
-        $shipping_fee = ($city === 'ho-chi-minh') ? 15000 : 30000;
-    } else {
-        $pickup_date = trim($_POST['pickup_date'] ?? '');
-        $pickup_time = trim($_POST['pickup_time'] ?? '');
-        $selected_store = trim($_POST['store'] ?? '');
-        
-        if (empty($pickup_date)) $errors[] = 'Ngày lấy hàng không được để trống';
-        if (empty($pickup_time)) $errors[] = 'Thời gian lấy hàng không được để trống';
-        if (empty($selected_store)) $errors[] = 'Vui lòng chọn cửa hàng';
-        
-        $shipping_fee = 0; // Miễn phí khi lấy tại cửa hàng
     }
+
+    // Log để debug
+    writeLog("=== PAYMENT FORM SUBMITTED ===");
+    writeLog("Save session only: " . ($saveSessionOnly ? 'YES' : 'NO'));
+    writeLog("POST data: " . print_r($_POST, true));
+    writeLog("Session payment_info before processing: " . print_r($_SESSION['payment_info'] ?? 'NOT SET', true));
     
-    // Nếu không có lỗi, xử lý đơn hàng
-    if (empty($errors)) {
-        try {
-            $order = new Order($db);
-            
-            // Chuẩn bị thông tin khách hàng
-            $customer_info = [
-                'name' => $first_name . ' ' . $last_name,
-                'email' => $email,
+    try {
+        // Validate form data
+        $first_name = trim($_POST['first_name'] ?? '');
+        $last_name = trim($_POST['last_name'] ?? '');
+        $phone = trim($_POST['phone'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $delivery_method = $_POST['delivery_method'] ?? 'store';
+        $payment_method = $_POST['payment_method'] ?? 'visa';
+        $terms_accepted = isset($_POST['terms_checkbox']) && $_POST['terms_checkbox'] == '1';
+        
+        writeLog("Extracted form data - First: $first_name, Last: $last_name, Phone: $phone, Email: $email, Payment: $payment_method");
+        
+        // Validation (ít nghiêm ngặt hơn cho save session only)
+        if (!$saveSessionOnly) {
+            if (empty($first_name)) $errors[] = 'Tên không được để trống';
+            if (empty($last_name)) $errors[] = 'Họ và tên lót không được để trống';
+            if (empty($phone)) $errors[] = 'Số điện thoại không được để trống';
+            if (!preg_match('/^[0-9]{10,11}$/', $phone)) $errors[] = 'Số điện thoại không hợp lệ';
+            if (empty($email)) $errors[] = 'Email không được để trống';
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Email không hợp lệ';
+            if (!$terms_accepted) $errors[] = 'Bạn phải đồng ý với điều khoản dịch vụ';
+            if (empty($cart_items)) $errors[] = 'Giỏ hàng trống';
+        }
+
+        writeLog("Validation errors: " . print_r($errors, true));
+
+        if ($saveSessionOnly || empty($errors)) {
+            // Lưu thông tin vào session
+            $_SESSION['payment_info'] = [
+                'first_name' => $first_name,
+                'last_name' => $last_name,
                 'phone' => $phone,
-                'address' => $delivery_method === 'delivery' ? 
-                    "$address, $district, $city, $zipcode" : 
-                    "Nhận tại cửa hàng: " . $selected_store,
-                'city' => $city ?? null,
-                'district' => $district ?? null,
-                'zipcode' => $zipcode ?? null
-            ];
-            
-            // Tính lại discount nếu có mã giảm giá
-            $final_discount = 0;
-            if (!empty($coupon_code)) {
-                if ($coupon_code === 'GIAIKHATHE') {
-                    $final_discount = min($shipping_fee * 0.1, 10000);
-                } elseif ($coupon_code === 'GIAIKHAT') {
-                    $final_discount = $cart_total * 0.15;
-                }
-            }
-            
-            // Chuẩn bị chi tiết đơn hàng
-            $order_details = [
+                'email' => $email,
                 'delivery_method' => $delivery_method,
                 'payment_method' => $payment_method,
-                'store_id' => $delivery_method === 'store' ? $selected_store : null,
-                'pickup_date' => $delivery_method === 'store' ? $pickup_date : null,
-                'pickup_time' => $delivery_method === 'store' ? $pickup_time : null,
-                'delivery_date' => $delivery_method === 'delivery' ? $delivery_date : null,
-                'delivery_time' => $delivery_method === 'delivery' ? $delivery_time : null,
-                'city' => $city ?? null,
-                'district' => $district ?? null,
-                'zipcode' => $zipcode ?? null,
-                'subtotal' => $cart_total,
+                'user_id' => $user_id,
+                'cart_items' => $cart_items,
+                'cart_total' => $cart_total,
                 'shipping_fee' => $shipping_fee,
-                'discount_amount' => $final_discount,
-                'coupon_code' => $coupon_code,
-                'total_amount' => $cart_total + $shipping_fee - $final_discount
+                'discount_amount' => $discount_amount,
+                'total_amount' => $cart_total + $shipping_fee - $discount_amount,
+                'payment_token' => $_SESSION['payment_token'] ?? bin2hex(random_bytes(32))
             ];
-            
-            // Tạo đơn hàng
-            $result = $order->createOrder($user_id, $customer_info, $cart_items, $order_details);
-            
-            if ($result['success']) {
-                // Clear cart after successful order
-                $cart->clearCart($user_id);
-                
-                // Lưu order_id và order_code vào session để hiển thị trang xác nhận
-                $_SESSION['last_order_id'] = $result['order_id'];
-                $_SESSION['last_order_code'] = $result['order_code'];
-                $_SESSION['payment_success'] = true;
-                $_SESSION['success_message'] = 'Đơn hàng của bạn đã được tạo thành công! Mã đơn hàng: ' . $result['order_code'];
-                
-                // Redirect to confirmation page
-                header('Location: order_confirmation.php?order_id=' . $result['order_id']);
+
+            writeLog("Payment info saved to session: " . print_r($_SESSION['payment_info'], true));
+
+            if ($saveSessionOnly) {
+                // Chỉ trả về success cho AJAX request
+                echo json_encode(['status' => 'success', 'message' => 'Session saved']);
                 exit;
             }
-            
-        } catch (Exception $e) {
-            $errors[] = 'Có lỗi xảy ra khi tạo đơn hàng: ' . $e->getMessage();
+
+            // Xóa token cũ và tạo token mới
+            unset($_SESSION['payment_token']);
+            $_SESSION['payment_token'] = bin2hex(random_bytes(32));
+
+            // Redirect based on payment method
+            if ($payment_method === 'momo') {
+                writeLog("Redirecting to MoMo payment...");
+                header('Location: momo_payment.php');
+                exit;
+            } else {
+                writeLog("Processing other payment method: " . $payment_method);
+                $errors[] = 'Phương thức thanh toán ' . $payment_method . ' chưa được tích hợp';
+            }
         }
+    } catch (Exception $e) {
+        writeLog("Payment error: " . $e->getMessage());
+        $errors[] = 'Có lỗi xảy ra: ' . $e->getMessage();
     }
 }
 
@@ -300,13 +272,23 @@ $total = $subtotal + $shipping;
     <!--=============== MAIN CONTENT ===============-->
     <main class="main">
         <!-- Hiển thị lỗi nếu có -->
-        <?php if (!empty($errors)): ?>
+        <?php if (!empty($errors) || isset($_SESSION['payment_error'])): ?>
             <div class="alert alert-error container">
                 <h4>Có lỗi xảy ra:</h4>
                 <ul>
+                    <?php if (!empty($errors)): ?>
                     <?php foreach ($errors as $error): ?>
                         <li><?php echo htmlspecialchars($error); ?></li>
                     <?php endforeach; ?>
+                    <?php endif; ?>
+                    
+                    <?php if (isset($_SESSION['payment_error']) && isset($_SESSION['error_message'])): ?>
+                        <li><?php echo htmlspecialchars($_SESSION['error_message']); ?></li>
+                        <?php 
+                        unset($_SESSION['payment_error']);
+                        unset($_SESSION['error_message']);
+                        ?>
+                    <?php endif; ?>
                 </ul>
             </div>
         <?php endif; ?>
@@ -324,6 +306,7 @@ $total = $subtotal + $shipping;
                     <section class="payment-form">
                         <h2><a href="cart.php" class="back-arrow">&#8592;</a> Thanh toán</h2>
                         <form id="payment-form" method="POST" action="payment.php">
+                            <input type="hidden" name="payment_token" value="<?php echo $_SESSION['payment_token']; ?>">
                             <div class="section">
                                 <h3>1. Thông tin khách hàng</h3>
                                 <div class="form-row">
@@ -414,8 +397,11 @@ $total = $subtotal + $shipping;
                                         <h4>Chọn cửa hàng</h4>
                                         <div class="store-options">
                                             <?php foreach ($stores as $index => $store): ?>
-                                                <div class="store-option <?php echo ($_POST['store'] ?? '') === $store['id'] ? 'selected' : ''; ?>">
-                                                    <input type="radio" id="<?php echo $store['id']; ?>" name="store" value="<?php echo $store['id']; ?>" 
+                                                <label class="store-option <?php echo ($_POST['store'] ?? '') === $store['id'] ? 'selected' : ''; ?>" for="store-<?php echo $store['id']; ?>">
+                                                    <input type="radio" 
+                                                           id="store-<?php echo $store['id']; ?>" 
+                                                           name="store" 
+                                                           value="<?php echo $store['id']; ?>" 
                                                            <?php echo ($index === 0 || ($_POST['store'] ?? '') === $store['id']) ? 'checked' : ''; ?>>
                                                     <span class="custom-radio"></span>
                                                     <div class="store-info">
@@ -423,7 +409,7 @@ $total = $subtotal + $shipping;
                                                         <div class="store-address"><?php echo htmlspecialchars($store['address']); ?></div>
                                                         <div class="store-hours"><?php echo htmlspecialchars($store['hours']); ?></div>
                                                     </div>
-                                                </div>
+                                                </label>
                                             <?php endforeach; ?>
                                         </div>
                                     </div>
@@ -630,7 +616,7 @@ $total = $subtotal + $shipping;
                         </div>
                         
                         <!-- Payment Button -->
-                        <div class="payment-container">
+                        <div class="payment-container" id="submit-payment-btn">
                             <div class="payment-left-side">
                                 <div class="payment-card">
                                     <div class="payment-card-line"></div>
@@ -645,8 +631,9 @@ $total = $subtotal + $shipping;
                                     <div class="payment-numbers-line2"></div>
                                 </div>
                             </div>
-                            <div class="payment-right-side">
-                                <button type="button" name="submit_payment" id="submit-payment-btn" class="payment-new">Tiến hành thanh toán</button>
+                            <div class="payment-right-side" >
+                                <button type="button" name="submit_payment"  class="payment-new">Tiến hành thanh toán</button>
+                                <input type="submit" name="submit_payment" id="hidden-submit" style="display: none;">
                             </div>
                         </div>
                     </aside>
@@ -747,6 +734,80 @@ $total = $subtotal + $shipping;
     <script src="assets/js/main.js"></script>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing payment page...');
+            
+            const paymentForm = document.getElementById('payment-form');
+            const paymentOptions = document.querySelectorAll('.payment-option');
+            const selectedPaymentInput = document.getElementById('selected-payment-method');
+            const submitBtn = document.getElementById('submit-payment-btn');
+
+            // Xử lý chọn phương thức thanh toán
+            paymentOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const method = this.getAttribute('data-method');
+                    console.log('Payment method selected:', method);
+                    selectedPaymentInput.value = method;
+                    
+                    // Bỏ active tất cả options
+                    paymentOptions.forEach(opt => opt.classList.remove('active'));
+                    // Thêm active cho option được chọn
+                    this.classList.add('active');
+                });
+            });
+
+            // XỬ LÝ NÚT THANH TOÁN
+            if (submitBtn) {
+                submitBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Payment button clicked!');
+                    
+                    if (validateFormBeforeSubmit()) {
+                        const selectedMethod = selectedPaymentInput.value;
+                        console.log('Selected payment method:', selectedMethod);
+                        
+                        // Lưu thông tin vào session trước khi chuyển hướng
+                        const formData = new FormData();
+                        formData.append('first_name', document.querySelector('input[name="first_name"]').value);
+                        formData.append('last_name', document.querySelector('input[name="last_name"]').value);
+                        formData.append('phone', document.querySelector('input[name="phone"]').value);
+                        formData.append('email', document.querySelector('input[name="email"]').value);
+                        formData.append('delivery_method', document.querySelector('.delivery-method-input').value);
+                        formData.append('payment_method', selectedMethod);
+                        formData.append('terms_checkbox', document.getElementById('terms_checkbox').checked ? '1' : '0');
+                        formData.append('save_session_only', '1'); // Flag để chỉ lưu session
+                        
+                        if (selectedMethod === 'momo') {
+                            showLoading();
+                            showNotification('Đang chuyển đến trang thanh toán MoMo...', 'info');
+                            
+                            // Gửi dữ liệu để lưu vào session
+                            fetch('payment.php', {
+                                method: 'POST',
+                                body: formData
+                            })
+                            .then(response => response.text())
+                            .then(data => {
+                                // Chuyển hướng đến MoMo
+                                window.location.href = 'momo_payment.php';
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                hideLoading();
+                                showNotification('Có lỗi xảy ra, vui lòng thử lại', 'error');
+                            });
+                        } else {
+                            showLoading();
+                            showNotification('Đang xử lý thanh toán, vui lòng đợi...', 'info');
+                            
+                            // Submit form trực tiếp cho các phương thức thanh toán khác
+                            document.getElementById('hidden-submit').click();
+                        }
+                    }
+                });
+            }
+        });
+
         // Validation function
         function validateFormBeforeSubmit() {
             console.log('Starting validation...');
@@ -815,122 +876,6 @@ $total = $subtotal + $shipping;
             return true;
         }
 
-        // Xử lý form submission
-        document.addEventListener('DOMContentLoaded', function() {
-            const paymentForm = document.getElementById('payment-form');
-            const paymentContainer = document.querySelector('.payment-container');
-            
-            // Hàm xử lý submit form
-            function handlePaymentSubmit(e) {
-                e.preventDefault();
-                e.stopPropagation(); // Ngăn event bubbling
-                
-                console.log('Payment initiated');
-                
-                if (validateFormBeforeSubmit()) {
-                    if (confirm('Bạn có chắc chắn muốn tiến hành thanh toán?')) {
-                        console.log('Submitting form...');
-                        showLoading();
-                        showNotification('Đang xử lý thanh toán, vui lòng đợi...', 'info');
-                        paymentForm.submit();
-                    }
-                }
-            }
-            
-            // Thêm event listener cho container
-            if (paymentContainer && paymentForm) {
-                paymentContainer.addEventListener('click', handlePaymentSubmit);
-            }
-            
-            // Vẫn giữ event listener cho button để đảm bảo hoạt động
-            const submitBtn = document.getElementById('submit-payment-btn');
-            if (submitBtn) {
-                submitBtn.addEventListener('click', handlePaymentSubmit);
-            }
-        });
-
-        // Debug function
-        function debugElements() {
-            console.log('=== DEBUG INFO ===');
-            console.log('Form by ID:', document.getElementById('payment-form'));
-            console.log('Form by querySelector:', document.querySelector('form#payment-form'));
-            console.log('Button by class:', document.querySelector('.payment-new'));
-            console.log('Button by name:', document.querySelector('button[name="submit_payment"]'));
-            console.log('Button by ID:', document.getElementById('submit-payment-btn'));
-            console.log('=== END DEBUG ===');
-        }
-
-        // Xử lý form thanh toán
-        document.addEventListener('DOMContentLoaded', function() {
-            // Debug elements
-            debugElements();
-            
-            // Thêm event listener trực tiếp vào form
-            document.querySelector('form#payment-form').onsubmit = function(e) {
-                console.log('Form onsubmit triggered');
-                e.preventDefault();
-                
-                if (validateFormBeforeSubmit()) {
-                    console.log('Validation passed');
-                    if (confirm('Bạn có chắc chắn muốn tiến hành thanh toán?')) {
-                        showLoading();
-                        showNotification('Đang xử lý thanh toán, vui lòng đợi...', 'info');
-                        this.submit();
-                    }
-                }
-                return false;
-            };
-            
-            // Đảm bảo các elements tồn tại
-            const paymentForm = document.getElementById('payment-form');
-            const paymentButton = document.querySelector('.payment-new');
-
-            // Debug để kiểm tra elements
-            console.log('Form:', paymentForm);
-            console.log('Button:', paymentButton);
-
-            // Thử thêm click event cho nút
-            const submitBtn = document.getElementById('submit-payment-btn');
-            if (submitBtn) {
-                submitBtn.onclick = function(e) {
-                    e.preventDefault();
-                    console.log('Button clicked!');
-                    if (validateFormBeforeSubmit()) {
-                        console.log('Validation passed!');
-                        if (confirm('Bạn có chắc chắn muốn tiến hành thanh toán?')) {
-                            showLoading();
-                            showNotification('Đang xử lý thanh toán, vui lòng đợi...', 'info');
-                            paymentForm.submit();
-                        }
-                    }
-                };
-            }
-
-            if (paymentForm) {
-                paymentForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    console.log('Form submitted');
-                    
-                    if (validateFormBeforeSubmit()) {
-                        if (confirm('Bạn có chắc chắn muốn tiến hành thanh toán?')) {
-                            showLoading();
-                            showNotification('Đang xử lý thanh toán, vui lòng đợi...', 'info');
-                            this.submit();
-                        }
-                    }
-                });
-            } else {
-                console.error('Payment form not found!');
-            }
-        });
-
-        // Biến để theo dõi trạng thái đang xử lý
-        let isProcessing = false;
-        
-        // Biến lưu trữ thông tin giảm giá và phí vận chuyển
-        let currentCoupon = null;
-        let currentShippingFee = 15000; // Mặc định TP.HCM
-        
         // Hàm hiển thị loading
         function showLoading() {
             const loadingIndicator = document.getElementById('loading-indicator');
@@ -945,326 +890,6 @@ $total = $subtotal + $shipping;
             if (loadingIndicator) {
                 loadingIndicator.style.display = 'none';
             }
-        }
-        
-        // Hàm cập nhật phí vận chuyển
-        function updateShippingFee() {
-            const citySelect = document.getElementById('city-select');
-            if (!citySelect) return;
-            
-            const selectedOption = citySelect.options[citySelect.selectedIndex];
-            
-            if (selectedOption && selectedOption.value) {
-                // Lấy phí vận chuyển từ data-fee
-                currentShippingFee = parseInt(selectedOption.getAttribute('data-fee')) || 15000;
-                
-                // Cập nhật hiển thị phí vận chuyển
-                const shippingFeeElement = document.getElementById('shipping-fee');
-                if (shippingFeeElement) {
-                    shippingFeeElement.textContent = new Intl.NumberFormat('vi-VN').format(currentShippingFee);
-                }
-                
-                // Hiển thị thông báo
-                const cityName = selectedOption.text;
-                showNotification(`Đã cập nhật phí vận chuyển cho ${cityName}: ${new Intl.NumberFormat('vi-VN').format(currentShippingFee)}₫`, 'success');
-                
-                // Tính lại tổng với mã giảm giá nếu có
-                recalculateTotal();
-            } else {
-                showNotification('Vui lòng chọn Tỉnh/Thành phố', 'error');
-            }
-        }
-
-        // Hàm áp dụng mã giảm giá
-        function applyCoupon() {
-            const couponSelect = document.getElementById('coupon-select');
-            if (!couponSelect) return;
-            
-            const selectedCoupon = couponSelect.value;
-            
-            if (!selectedCoupon) {
-                showNotification('Vui lòng chọn mã giảm giá', 'error');
-                return;
-            }
-            
-            // Lấy subtotal hiện tại
-            const subtotalElement = document.getElementById('cart-subtotal');
-            if (!subtotalElement) return;
-            
-            const subtotalText = subtotalElement.textContent;
-            const subtotal = parseInt(subtotalText.replace(/[^\d]/g, '')) || 0;
-            
-            let discountAmount = 0;
-            let discountDescription = '';
-            
-            switch (selectedCoupon) {
-                case 'GIAIKHATHE':
-                    // Giảm 10% phí vận chuyển, tối đa 10.000đ
-                    discountAmount = Math.min(currentShippingFee * 0.1, 10000);
-                    discountDescription = 'Giảm 10% phí vận chuyển (tối đa 10.000đ)';
-                    break;
-                    
-                case 'GIAIKHAT':
-                    // Giảm 15% giá trị đơn hàng
-                    discountAmount = subtotal * 0.15;
-                    discountDescription = 'Giảm 15% giá trị đơn hàng';
-                    break;
-            }
-            
-            // Lưu thông tin mã giảm giá
-            currentCoupon = {
-                code: selectedCoupon,
-                type: selectedCoupon === 'GIAIKHATHE' ? 'shipping' : 'order',
-                discount: discountAmount,
-                description: discountDescription
-            };
-            
-            // Hiển thị thông tin mã giảm giá đã áp dụng
-            const couponNameElement = document.getElementById('coupon-name');
-            const couponDiscountElement = document.getElementById('coupon-discount-amount');
-            const appliedCouponElement = document.getElementById('applied-coupon');
-            
-            if (couponNameElement) {
-                couponNameElement.textContent = `${selectedCoupon}: ${discountDescription}`;
-            }
-            if (couponDiscountElement) {
-                couponDiscountElement.textContent = new Intl.NumberFormat('vi-VN').format(Math.round(discountAmount));
-            }
-            if (appliedCouponElement) {
-                appliedCouponElement.style.display = 'block';
-            }
-            
-            // Hiển thị dòng giảm giá trong bảng tổng
-            const discountRow = document.getElementById('discount-row');
-            const discountAmountElement = document.getElementById('discount-amount');
-            
-            if (discountRow) {
-                discountRow.style.display = 'table-row';
-            }
-            if (discountAmountElement) {
-                discountAmountElement.textContent = '- ' + new Intl.NumberFormat('vi-VN').format(Math.round(discountAmount));
-            }
-            
-            // Tính lại tổng
-            recalculateTotal();
-            
-            // Reset dropdown
-            couponSelect.value = '';
-            
-            showNotification('Đã áp dụng mã giảm giá thành công!', 'success');
-        }
-
-        // Hàm xóa mã giảm giá
-        function removeCoupon() {
-            currentCoupon = null;
-            
-            // Ẩn thông tin mã giảm giá
-            const appliedCouponElement = document.getElementById('applied-coupon');
-            const discountRow = document.getElementById('discount-row');
-            
-            if (appliedCouponElement) {
-                appliedCouponElement.style.display = 'none';
-            }
-            if (discountRow) {
-                discountRow.style.display = 'none';
-            }
-            
-            // Tính lại tổng
-            recalculateTotal();
-            
-            showNotification('Đã xóa mã giảm giá', 'success');
-        }
-
-        // Hàm tính lại tổng tiền
-        function recalculateTotal() {
-            // Lấy tổng giá trị giỏ hàng
-            let subtotal = 0;
-            const cartItems = document.querySelectorAll('.cart-item');
-            cartItems.forEach(item => {
-                const price = parseInt(item.getAttribute('data-price')) || 0;
-                const quantity = parseInt(item.querySelector('.qty-number').textContent) || 1;
-                subtotal += price * quantity;
-            });
-            
-            // Tính giảm giá nếu có
-            let discountAmount = 0;
-            if (currentCoupon) {
-                if (currentCoupon.code === 'GIAIKHATHE') {
-                    // Giảm 10% phí vận chuyển, tối đa 10.000đ
-                    discountAmount = Math.min(currentShippingFee * 0.1, 10000);
-                } else if (currentCoupon.code === 'GIAIKHAT') {
-                    // Giảm 15% giá trị đơn hàng
-                    discountAmount = subtotal * 0.15;
-                }
-                    currentCoupon.discount = discountAmount;
-            }
-            
-            // Tính tổng cuối cùng
-            const total = subtotal + currentShippingFee - discountAmount;
-            
-            // Cập nhật hiển thị tổng
-            const totalDisplay = document.getElementById('total-display');
-            if (totalDisplay) {
-                totalDisplay.textContent = new Intl.NumberFormat('vi-VN').format(Math.round(total)) + ' vnd';
-            }
-        }
-
-        // Hàm tăng số lượng
-        function increaseQuantity(productId) {
-            if (isProcessing) return;
-            
-            const input = document.getElementById(`quantity-${productId}`);
-            if (!input) return;
-            
-            const currentValue = parseInt(input.value) || 0;
-            const newValue = currentValue + 1;
-            
-            updateQuantityInstant(productId, newValue);
-        }
-
-        // Hàm giảm số lượng
-        function decreaseQuantity(productId) {
-            if (isProcessing) return;
-            
-            const input = document.getElementById(`quantity-${productId}`);
-            if (!input) return;
-            
-            const currentValue = parseInt(input.value) || 0;
-            
-            if (currentValue > 1) {
-                const newValue = currentValue - 1;
-                updateQuantityInstant(productId, newValue);
-            }
-        }
-
-        // Hàm cập nhật số lượng ngay lập tức
-        function updateQuantityInstant(productId, quantity) {
-            if (isProcessing) return;
-            
-            quantity = parseInt(quantity);
-            if (quantity < 1) {
-                quantity = 1;
-            }
-            
-            isProcessing = true;
-            showLoading();
-            
-            // Cập nhật UI ngay lập tức
-            const input = document.getElementById(`quantity-${productId}`);
-            if (input) {
-                input.value = quantity;
-            }
-            updateItemSubtotal(productId);
-            
-            // Gửi request đến server để lưu vào database
-            fetch('cart_actions.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `action=update_quantity&product_id=${productId}&quantity=${quantity}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Cập nhật tổng giỏ hàng từ server
-                    updateCartTotalsFromServer();
-                    // Cập nhật số lượng trên header
-                    updateCartCount();
-                    
-                    // Hiển thị thông báo ngắn
-                    showNotification('Đã cập nhật số lượng', 'success');
-                } else {
-                    // Nếu lỗi, revert lại giá trị cũ
-                    location.reload();
-                    showNotification(data.message || 'Có lỗi xảy ra', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                location.reload();
-                showNotification('Có lỗi xảy ra', 'error');
-            })
-            .finally(() => {
-                isProcessing = false;
-                hideLoading();
-            });
-        }
-
-        // Override hàm updateCartTotalsFromServer để tính cả giảm giá
-        function updateCartTotalsFromServer() {
-            fetch('cart_actions.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'action=get_cart_items'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const subtotal = parseInt(data.data.cart_total) || 0;
-                    
-                    // Cập nhật hiển thị subtotal
-                    const subtotalElement = document.getElementById('cart-subtotal');
-                    if (subtotalElement) {
-                        subtotalElement.textContent = new Intl.NumberFormat('vi-VN').format(subtotal);
-                    }
-                    
-                    // Tính lại tổng với phí vận chuyển và giảm giá
-                    recalculateTotal();
-                }
-            })
-            .catch(error => {
-                console.error('Error updating totals:', error);
-            });
-        }
-
-        // Hàm cập nhật subtotal cho từng sản phẩm
-        function updateItemSubtotal(productId) {
-            const quantityInput = document.getElementById(`quantity-${productId}`);
-            if (!quantityInput) return;
-            
-            const quantity = parseInt(quantityInput.value) || 0;
-            
-            // Lấy giá sản phẩm
-            const productElement = document.querySelector(`[data-product-id="${productId}"]`);
-            if (!productElement) return;
-            
-            const priceElement = productElement.querySelector('.w-r__price');
-            if (!priceElement) return;
-            
-            const price = parseInt(priceElement.getAttribute('data-price')) || 0;
-            
-            // Tính subtotal
-            const subtotal = price * quantity;
-            
-            // Cập nhật hiển thị subtotal
-            const subtotalElement = document.getElementById(`subtotal-${productId}`);
-            if (subtotalElement) {
-                subtotalElement.textContent = new Intl.NumberFormat('vi-VN').format(subtotal);
-            }
-        }
-
-        // Các hàm khác giữ nguyên...
-        function removeItemInstant(productId) {
-            // Code cũ giữ nguyên
-        }
-
-        function clearCartInstant() {
-            // Code cũ giữ nguyên
-        }
-
-        function updateCartCount() {
-            // Code cũ giữ nguyên
-        }
-
-        function checkEmptyCart() {
-            // Code cũ giữ nguyên
-        }
-
-        function viewProduct(productId) {
-            window.location.href = `product-detail.php?id=${productId}`;
         }
 
         function showNotification(message, type) {
@@ -1348,7 +973,6 @@ $total = $subtotal + $shipping;
             }, 100);
             
             // Tự động ẩn notification
-            const hideTimeout = type === 'info' ? 4000 : 3000; // Info hiển thị lâu hơn
             setTimeout(() => {
                 notification.style.opacity = '0';
                 notification.style.transform = 'translateY(-20px)';
@@ -1357,7 +981,7 @@ $total = $subtotal + $shipping;
                         notification.remove();
                     }
                 }, 300);
-            }, hideTimeout);
+            }, type === 'info' ? 4000 : 3000);
             
             // Cho phép click để đóng
             notification.addEventListener('click', function() {
@@ -1372,611 +996,6 @@ $total = $subtotal + $shipping;
             
             // Thêm cursor pointer
             notification.style.cursor = 'pointer';
-        }
-
-        function updateInitialPriceFormat() {
-            // Code cũ giữ nguyên
-        }
-
-        // Khởi tạo khi trang load
-        document.addEventListener('DOMContentLoaded', function() {
-            // Thêm id cho form
-            const paymentForm = document.querySelector('form[method="POST"]');
-            if (paymentForm) {
-                paymentForm.id = 'payment-form';
-                
-                // Thêm xử lý form submission với validation
-                paymentForm.addEventListener('submit', function(e) {
-                    if (!validateFormBeforeSubmit()) {
-                        e.preventDefault();
-                        return false;
-                    }
-                    
-                    // Hiển thị loading
-                    showLoading();
-                    showNotification('Đang xử lý thanh toán...', 'info');
-                });
-            }
-            
-            // Thêm validation cho payment button
-            const paymentButton = document.querySelector('button[name="submit_payment"]');
-            if (paymentButton) {
-                paymentButton.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    if (validateFormBeforeSubmit()) {
-                        // Hiển thị confirmation
-                        if (confirm('Bạn có chắc chắn muốn tiến hành thanh toán?')) {
-                            showLoading();
-                            showNotification('Đang xử lý thanh toán, vui lòng đợi...', 'info');
-                            // Submit form
-                            paymentForm.submit();
-                        }
-                    }
-                });
-            }
-
-            // Validation function
-            function validateFormBeforeSubmit() {
-                console.log('Starting validation...');
-                const errors = [];
-                
-                // Kiểm tra thông tin khách hàng
-                const firstName = document.querySelector('input[name="first_name"]').value.trim();
-                const lastName = document.querySelector('input[name="last_name"]').value.trim();
-                const phone = document.querySelector('input[name="phone"]').value.trim();
-                const email = document.querySelector('input[name="email"]').value.trim();
-                const termsAccepted = document.querySelector('input[name="terms_checkbox"]').checked;
-                
-                if (!firstName) errors.push('Vui lòng nhập tên');
-                if (!lastName) errors.push('Vui lòng nhập họ và tên lót');
-                if (!phone) errors.push('Vui lòng nhập số điện thoại');
-                if (!email) errors.push('Vui lòng nhập email');
-                if (!termsAccepted) errors.push('Vui lòng đồng ý với điều khoản dịch vụ');
-                
-                // Kiểm tra email format
-                if (email && !isValidEmail(email)) {
-                    errors.push('Email không hợp lệ');
-                }
-                
-                // Kiểm tra phương thức giao hàng
-                const deliveryMethod = getCurrentDeliveryMethod();
-                
-                if (deliveryMethod === 'store') {
-                    const pickupDate = document.querySelector('input[name="pickup_date"]').value;
-                    const pickupTime = document.querySelector('select[name="pickup_time"]').value;
-                    const selectedStore = document.querySelector('input[name="store"]:checked');
-                    
-                    if (!pickupDate) errors.push('Vui lòng chọn ngày lấy hàng');
-                    if (!pickupTime) errors.push('Vui lòng chọn thời gian lấy hàng');
-                    if (!selectedStore) errors.push('Vui lòng chọn cửa hàng');
-                } else if (deliveryMethod === 'delivery') {
-                    const deliveryDate = document.querySelector('input[name="delivery_date"]').value;
-                    const deliveryTime = document.querySelector('select[name="delivery_time"]').value;
-                    const city = document.querySelector('select[name="city"]').value;
-                    const district = document.querySelector('input[name="district"]').value.trim();
-                    const address = document.querySelector('input[name="address"]').value.trim();
-                    const zipcode = document.querySelector('input[name="zipcode"]').value.trim();
-                    
-                    if (!deliveryDate) errors.push('Vui lòng chọn ngày giao hàng');
-                    if (!deliveryTime) errors.push('Vui lòng chọn thời gian giao hàng');
-                    if (!city) errors.push('Vui lòng chọn tỉnh/thành phố');
-                    if (!district) errors.push('Vui lòng nhập quận/huyện');
-                    if (!address) errors.push('Vui lòng nhập địa chỉ');
-                    if (!zipcode) errors.push('Vui lòng nhập mã ZIP');
-                }
-                
-                // Kiểm tra giỏ hàng có sản phẩm không
-                const cartItems = document.querySelectorAll('.cart-item');
-                if (cartItems.length === 0) {
-                    errors.push('Giỏ hàng trống, vui lòng thêm sản phẩm');
-                }
-                
-                // Hiển thị lỗi nếu có
-                if (errors.length > 0) {
-                    let errorMessage = 'Vui lòng kiểm tra lại thông tin:\n';
-                    errors.forEach((error, index) => {
-                        errorMessage += `${index + 1}. ${error}\n`;
-                    });
-                    
-                    showNotification('Thông tin chưa đầy đủ!', 'error');
-                    alert(errorMessage);
-                    
-                    // Highlight first error field
-                    highlightErrorField(errors[0]);
-                    
-                    return false;
-                }
-                
-                return true;
-            }
-            
-            // Hàm kiểm tra email hợp lệ
-            function isValidEmail(email) {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                return emailRegex.test(email);
-            }
-            
-            // Hàm lấy phương thức giao hàng hiện tại
-            function getCurrentDeliveryMethod() {
-                const storeBtn = document.querySelector('.store-btn');
-                const deliveryBtn = document.querySelector('.delivery-btn');
-                
-                if (storeBtn && storeBtn.classList.contains('active')) {
-                    return 'store';
-                } else if (deliveryBtn && deliveryBtn.classList.contains('active')) {
-                    return 'delivery';
-                }
-                
-                return 'store'; // mặc định
-            }
-            
-            // Hàm highlight field có lỗi
-            function highlightErrorField(errorMessage) {
-                // Remove previous highlights
-                document.querySelectorAll('.validation-error').forEach(el => {
-                    el.classList.remove('validation-error');
-                });
-                
-                // Highlight specific field based on error message
-                if (errorMessage.includes('tên')) {
-                    const field = errorMessage.includes('họ') ? 
-                        document.querySelector('input[name="last_name"]') : 
-                        document.querySelector('input[name="first_name"]');
-                    if (field) field.classList.add('validation-error');
-                } else if (errorMessage.includes('điện thoại')) {
-                    const field = document.querySelector('input[name="phone"]');
-                    if (field) field.classList.add('validation-error');
-                } else if (errorMessage.includes('email')) {
-                    const field = document.querySelector('input[name="email"]');
-                    if (field) field.classList.add('validation-error');
-                } else if (errorMessage.includes('điều khoản')) {
-                    const field = document.querySelector('input[name="terms_checkbox"]');
-                    if (field) {
-                        field.parentElement.classList.add('validation-error');
-                        // Scroll to terms
-                        field.parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                } else if (errorMessage.includes('ngày lấy hàng')) {
-                    const field = document.querySelector('input[name="pickup_date"]');
-                    if (field) field.classList.add('validation-error');
-                } else if (errorMessage.includes('thời gian lấy hàng')) {
-                    const field = document.querySelector('select[name="pickup_time"]');
-                    if (field) field.classList.add('validation-error');
-                } else if (errorMessage.includes('cửa hàng')) {
-                    const storeOptions = document.querySelectorAll('.store-option');
-                    storeOptions.forEach(option => option.classList.add('validation-error'));
-                } else if (errorMessage.includes('ngày giao hàng')) {
-                    const field = document.querySelector('input[name="delivery_date"]');
-                    if (field) field.classList.add('validation-error');
-                } else if (errorMessage.includes('thời gian giao hàng')) {
-                    const field = document.querySelector('select[name="delivery_time"]');
-                    if (field) field.classList.add('validation-error');
-                } else if (errorMessage.includes('tỉnh/thành phố')) {
-                    const field = document.querySelector('select[name="city"]');
-                    if (field) field.classList.add('validation-error');
-                } else if (errorMessage.includes('quận/huyện')) {
-                    const field = document.querySelector('input[name="district"]');
-                    if (field) field.classList.add('validation-error');
-                } else if (errorMessage.includes('địa chỉ')) {
-                    const field = document.querySelector('input[name="address"]');
-                    if (field) field.classList.add('validation-error');
-                } else if (errorMessage.includes('ZIP')) {
-                    const field = document.querySelector('input[name="zipcode"]');
-                    if (field) field.classList.add('validation-error');
-                }
-            }
-            
-            // Thêm event listeners để remove validation error khi user input
-            const allInputs = document.querySelectorAll('input, select');
-            allInputs.forEach(input => {
-                input.addEventListener('input', function() {
-                    this.classList.remove('validation-error');
-                    if (this.parentElement) {
-                        this.parentElement.classList.remove('validation-error');
-                    }
-                });
-                
-                input.addEventListener('change', function() {
-                    this.classList.remove('validation-error');
-                    if (this.parentElement) {
-                        this.parentElement.classList.remove('validation-error');
-                    }
-                });
-            });
-            
-            // Xử lý chọn phương thức giao hàng
-            const storeBtn = document.querySelector('.store-btn');
-            const deliveryBtn = document.querySelector('.delivery-btn');
-            const storeContainer = document.querySelector('.store-pickup-container');
-            const deliveryContainer = document.querySelector('.delivery-container');
-            
-            if (storeBtn && deliveryBtn) {
-                storeBtn.addEventListener('click', function() {
-                    storeBtn.classList.add('active');
-                    deliveryBtn.classList.remove('active');
-                    storeContainer.style.display = 'block';
-                    deliveryContainer.style.display = 'none';
-                    
-                    // Cập nhật input hidden
-                    const storeInput = storeContainer.querySelector('.delivery-method-input');
-                    if (storeInput) storeInput.value = 'store';
-                    
-                    // Disable required fields cho delivery
-                    deliveryContainer.querySelectorAll('input[required]').forEach(input => {
-                        input.removeAttribute('required');
-                    });
-                    
-                    // Enable required fields cho store
-                    storeContainer.querySelectorAll('input').forEach(input => {
-                        if (input.name === 'pickup_date' || input.name === 'pickup_time') {
-                            input.setAttribute('required', 'required');
-                        }
-                    });
-                    
-                    // Cập nhật phí vận chuyển
-                    document.getElementById('shipping-fee-display').textContent = 'Miễn phí';
-                    currentShippingFee = 0;
-                    recalculateTotal();
-                });
-                
-                deliveryBtn.addEventListener('click', function() {
-                    deliveryBtn.classList.add('active');
-                    storeBtn.classList.remove('active');
-                    deliveryContainer.style.display = 'block';
-                    storeContainer.style.display = 'none';
-                    
-                    // Cập nhật input hidden
-                    const deliveryInput = deliveryContainer.querySelector('.delivery-method-input');
-                    if (deliveryInput) deliveryInput.value = 'delivery';
-                    
-                    // Enable required fields cho delivery
-                    deliveryContainer.querySelectorAll('input').forEach(input => {
-                        if (['delivery_date', 'delivery_time', 'city', 'district', 'address', 'zipcode'].includes(input.name)) {
-                            input.setAttribute('required', 'required');
-                        }
-                    });
-                    
-                    // Disable required fields cho store
-                    storeContainer.querySelectorAll('input[required]').forEach(input => {
-                        input.removeAttribute('required');
-                    });
-                    
-                    // Cập nhật phí vận chuyển dựa trên tỉnh/thành phố đã chọn
-                    const citySelect = document.getElementById('city-select');
-                    if (citySelect && citySelect.value) {
-                        const selectedOption = citySelect.options[citySelect.selectedIndex];
-                        currentShippingFee = parseInt(selectedOption.getAttribute('data-fee')) || 30000;
-                    } else {
-                        // Mặc định nếu chưa chọn tỉnh/thành phố
-                        currentShippingFee = 30000;
-                    }
-                    
-                    document.getElementById('shipping-fee-display').textContent = new Intl.NumberFormat('vi-VN').format(currentShippingFee) + ' đ';
-                    recalculateTotal();
-                });
-            }
-            
-            // Xử lý click chọn cửa hàng
-            const storeOptions = document.querySelectorAll('.store-option');
-            storeOptions.forEach(option => {
-                // Validate thông tin giao hàng
-                const deliveryDate = document.querySelector('input[name="delivery_date"]').value;
-                option.addEventListener('click', function() {
-                    // Bỏ selected từ tất cả options
-                    storeOptions.forEach(opt => opt.classList.remove('selected'));
-                    
-                    // Thêm selected cho option được click
-                    this.classList.add('selected');
-                    
-                    // Check radio button tương ứng
-                    const radio = this.querySelector('input[type="radio"]');
-                    if (radio) {
-                        radio.checked = true;
-                    }
-                });
-            });
-            
-            // Xử lý click chọn phương thức thanh toán
-            const paymentOptions = document.querySelectorAll('.payment-option');
-            const selectedPaymentInput = document.getElementById('selected-payment-method');
-            
-            paymentOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    // Bỏ active từ tất cả options
-                    paymentOptions.forEach(opt => opt.classList.remove('active'));
-                    
-                    // Thêm active cho option được click
-                    this.classList.add('active');
-                    
-                    // Cập nhật giá trị input hidden
-                    const method = this.getAttribute('data-method');
-                    if (selectedPaymentInput) {
-                        selectedPaymentInput.value = method;
-                    }
-                    
-                    // Thêm hiệu ứng
-                    this.style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        this.style.transform = 'scale(1)';
-                    }, 100);
-                });
-            });
-            
-            // Xử lý country dropdown
-            const countrySelector = document.getElementById('country-selector');
-            const countryDropdown = document.getElementById('country-dropdown');
-            
-            if (countrySelector && countryDropdown) {
-                countrySelector.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    countryDropdown.classList.toggle('show');
-                });
-                
-                // Đóng dropdown khi click bên ngoài
-                document.addEventListener('click', function() {
-                    countryDropdown.classList.remove('show');
-                });
-                
-                // Xử lý chọn country
-                const countryOptions = countryDropdown.querySelectorAll('.country-option');
-                countryOptions.forEach(option => {
-                    option.addEventListener('click', function() {
-                        const code = this.getAttribute('data-code');
-                        const flag = this.querySelector('.country-flag').src;
-                        
-                        // Cập nhật button
-                        countrySelector.querySelector('.country-flag').src = flag;
-                        countrySelector.querySelector('span:nth-child(2)').textContent = code;
-                        
-                        // Đóng dropdown
-                        countryDropdown.classList.remove('show');
-                    });
-                });
-            }
-            
-            // Set mặc định TP.HCM và phí vận chuyển 15.000đ
-            const citySelect = document.getElementById('city-select');
-            if (citySelect) {
-                citySelect.value = 'ho-chi-minh';
-                currentShippingFee = 15000;
-                const shippingFeeElement = document.getElementById('shipping-fee');
-                if (shippingFeeElement) {
-                    shippingFeeElement.textContent = '15.000';
-                }
-            }
-            
-            // Tính tổng ban đầu
-            setTimeout(() => {
-                recalculateTotal();
-            }, 100);
-            
-            // Lưu thông tin vào sessionStorage khi chuyển trang thanh toán
-            const checkoutBtn = document.querySelector('a[href="payment.php"]');
-            if (checkoutBtn) {
-                checkoutBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    // Kiểm tra đã chọn tỉnh/thành phố chưa
-                    const citySelect = document.getElementById('city-select');
-                    if (!citySelect || !citySelect.value) {
-                        showNotification('Vui lòng chọn Tỉnh/Thành phố để tính phí vận chuyển', 'error');
-                        return;
-                    }
-                    
-                    // Lưu thông tin vào sessionStorage
-                    const shippingInfo = {
-                        city: citySelect.value,
-                        cityName: citySelect.options[citySelect.selectedIndex].text,
-                        shippingFee: currentShippingFee,
-                        coupon: currentCoupon
-                    };
-                    
-                    sessionStorage.setItem('shippingInfo', JSON.stringify(shippingInfo));
-                    
-                    // Chuyển trang
-                    window.location.href = 'payment.php';
-                });
-            }
-            
-            // Xử lý thay đổi thời gian dựa trên ngày và cửa hàng được chọn
-            function updateTimeSlots() {
-                const selectedStore = document.querySelector('input[name="store"]:checked');
-                const pickupDate = document.querySelector('input[name="pickup_date"]').value;
-                const pickupTimeSelect = document.querySelector('select[name="pickup_time"]');
-                
-                if (!pickupDate || !pickupTimeSelect) return;
-                
-                // Kiểm tra xem ngày được chọn có phải là ngày trong quá khứ không
-                const selectedDate = new Date(pickupDate);
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                
-                if (selectedDate < today) {
-                    showNotification('Vui lòng chọn ngày từ hôm nay trở đi', 'error');
-                    document.querySelector('input[name="pickup_date"]').value = '';
-                    return;
-                }
-                
-                // Reset select options
-                const defaultOptions = `
-                    <option value="">Chọn thời gian</option>
-                    <option value="8:00-9:00">8:00 - 9:00</option>
-                    <option value="9:00-10:00">9:00 - 10:00</option>
-                    <option value="10:00-11:00">10:00 - 11:00</option>
-                    <option value="11:00-12:00">11:00 - 12:00</option>
-                    <option value="12:00-13:00">12:00 - 13:00</option>
-                    <option value="13:00-14:00">13:00 - 14:00</option>
-                    <option value="14:00-15:00">14:00 - 15:00</option>
-                    <option value="15:00-16:00">15:00 - 16:00</option>
-                    <option value="16:00-17:00">16:00 - 17:00</option>
-                    <option value="17:00-18:00">17:00 - 18:00</option>
-                    <option value="18:00-19:00">18:00 - 19:00</option>
-                    <option value="19:00-20:00">19:00 - 20:00</option>
-                    <option value="20:00-21:00">20:00 - 21:00</option>
-                `;
-                pickupTimeSelect.innerHTML = defaultOptions;
-                
-                // Kiểm tra ngày có phải Chủ Nhật không (cho cửa hàng 1)
-                if (selectedStore && selectedStore.value === 'store1') {
-                    const dayOfWeek = selectedDate.getDay();
-                    if (dayOfWeek === 0) { // Chủ Nhật
-                        pickupTimeSelect.innerHTML = '<option value="">Cửa hàng đóng cửa Chủ Nhật</option>';
-                        pickupTimeSelect.disabled = true;
-                        showNotification('Cửa hàng chi nhánh 1 đóng cửa vào Chủ Nhật', 'warning');
-                        return;
-                    } else {
-                        pickupTimeSelect.disabled = false;
-                    }
-                }
-                
-                // Nếu là ngày hôm nay, disable các khung giờ đã qua
-                if (selectedDate.toDateString() === today.toDateString()) {
-                    const currentHour = new Date().getHours();
-                    const currentMinute = new Date().getMinutes();
-                    const options = pickupTimeSelect.querySelectorAll('option');
-                    
-                    options.forEach(option => {
-                        if (option.value) {
-                            const startHour = parseInt(option.value.split(':')[0]);
-                            // Thêm 1 giờ buffer để khách hàng có thời gian chuẩn bị
-                            if (startHour <= currentHour + 1) {
-                                option.disabled = true;
-                                option.textContent = option.textContent + ' (Không khả dụng)';
-                            }
-                        }
-                    });
-                    
-                    // Nếu tất cả slots đều disabled (quá muộn trong ngày)
-                    const availableOptions = pickupTimeSelect.querySelectorAll('option:not(:disabled)');
-                    if (availableOptions.length <= 1) { // Chỉ có option "Chọn thời gian"
-                        showNotification('Đã quá muộn để đặt hàng trong ngày hôm nay. Vui lòng chọn ngày mai.', 'warning');
-                    }
-                }
-            }
-            
-            // Lắng nghe sự kiện thay đổi ngày
-            const pickupDateInput = document.querySelector('input[name="pickup_date"]');
-            if (pickupDateInput) {
-                pickupDateInput.addEventListener('change', updateTimeSlots);
-                
-                // Set min date là ngày hôm nay
-                const today = new Date().toISOString().split('T')[0];
-                pickupDateInput.min = today;
-                
-                // Set max date là 30 ngày từ hôm nay
-                const maxDate = new Date();
-                maxDate.setDate(maxDate.getDate() + 30);
-                pickupDateInput.max = maxDate.toISOString().split('T')[0];
-            }
-            
-            // Update lại event listener cho store options
-            const existingStoreOptions = document.querySelectorAll('.store-option');
-            existingStoreOptions.forEach(option => {
-                const existingClickHandler = option.onclick;
-                option.addEventListener('click', function() {
-                    // Gọi handler cũ nếu có
-                    if (existingClickHandler) existingClickHandler.call(this);
-                    
-                    // Update time slots khi chọn cửa hàng khác
-                    setTimeout(updateTimeSlots, 100);
-                });
-            });
-            
-            // Cũng xử lý cho delivery date
-            const deliveryDateInput = document.querySelector('input[name="delivery_date"]');
-            if (deliveryDateInput) {
-                const today = new Date().toISOString().split('T')[0];
-                deliveryDateInput.min = today;
-                
-                const maxDate = new Date();
-                maxDate.setDate(maxDate.getDate() + 30);
-                deliveryDateInput.max = maxDate.toISOString().split('T')[0];
-                
-                deliveryDateInput.addEventListener('change', function() {
-                    const selectedDate = new Date(this.value);
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    
-                    if (selectedDate < today) {
-                        showNotification('Vui lòng chọn ngày từ hôm nay trở đi', 'error');
-                        this.value = '';
-                    }
-                });
-            }
-            
-            // Set mặc định TP.HCM nếu chưa có giá trị
-            const citySelectElement = document.getElementById('city-select');
-            if (citySelectElement && !citySelectElement.value) {
-                citySelectElement.value = 'ho-chi-minh';
-                
-                // Nếu đang ở phương thức giao hàng, cập nhật phí vận chuyển
-                const deliveryBtn = document.querySelector('.delivery-btn');
-                if (deliveryBtn && deliveryBtn.classList.contains('active')) {
-                    currentShippingFee = 15000;
-                    document.getElementById('shipping-fee-display').textContent = '15.000 đ';
-                    recalculateTotal();
-                }
-            }
-            
-            // Lấy thông tin từ sessionStorage nếu có (từ trang cart)
-            const shippingInfo = sessionStorage.getItem('shippingInfo');
-            if (shippingInfo) {
-                const info = JSON.parse(shippingInfo);
-                if (info.city && citySelectElement) {
-                    citySelectElement.value = info.city;
-                    currentShippingFee = info.shippingFee || 15000;
-                    
-                    // Áp dụng mã giảm giá nếu có
-                    if (info.coupon) {
-                        currentCoupon = info.coupon;
-                        // Hiển thị thông tin mã giảm giá
-                        showNotification(`Đã áp dụng mã giảm giá ${info.coupon.code}`, 'success');
-                    }
-                    
-                    // Cập nhật hiển thị
-                    if (document.querySelector('.delivery-btn.active')) {
-                        document.getElementById('shipping-fee-display').textContent = new Intl.NumberFormat('vi-VN').format(currentShippingFee) + ' đ';
-                        recalculateTotal();
-                    }
-                }
-                
-                // Xóa thông tin từ sessionStorage sau khi sử dụng
-                sessionStorage.removeItem('shippingInfo');
-            }
-        });
-
-        // Hàm cập nhật phí vận chuyển cho phương thức giao hàng
-        function updateDeliveryShippingFee() {
-            const deliveryBtn = document.querySelector('.delivery-btn');
-            
-            // Chỉ cập nhật nếu đang chọn phương thức giao hàng
-            if (!deliveryBtn || !deliveryBtn.classList.contains('active')) {
-                return;
-            }
-            
-            const citySelect = document.getElementById('city-select');
-            if (!citySelect) return;
-            
-            const selectedOption = citySelect.options[citySelect.selectedIndex];
-            
-            if (selectedOption && selectedOption.value) {
-                // Lấy phí vận chuyển từ data-fee
-                currentShippingFee = parseInt(selectedOption.getAttribute('data-fee')) || 15000;
-                
-                // Cập nhật hiển thị phí vận chuyển
-                const shippingFeeDisplay = document.getElementById('shipping-fee-display');
-                if (shippingFeeDisplay) {
-                    shippingFeeDisplay.textContent = new Intl.NumberFormat('vi-VN').format(currentShippingFee) + ' đ';
-                }
-                
-                // Hiển thị thông báo
-                const cityName = selectedOption.text;
-                showNotification(`Phí vận chuyển cho ${cityName}: ${new Intl.NumberFormat('vi-VN').format(currentShippingFee)}₫`, 'info');
-                
-                // Tính lại tổng
-                recalculateTotal();
-            }
         }
     </script>
 
@@ -2460,6 +1479,320 @@ $total = $subtotal + $shipping;
             position: relative;
             z-index: 1000;
         }
+
+        /* Store selection styles */
+        .store-location {
+            margin-top: 20px;
+        }
+
+        .store-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .store-option {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fff;
+            position: relative;
+        }
+
+        .store-option:hover {
+            border-color: #26551D;
+            background-color: rgba(38, 85, 29, 0.03);
+            transform: translateY(-2px);
+        }
+
+        .store-option.selected {
+            border-color: #26551D;
+            background-color: rgba(38, 85, 29, 0.05);
+        }
+
+        .store-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .store-option .custom-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            margin-right: 15px;
+            position: relative;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .store-option input[type="radio"]:checked + .custom-radio {
+            border-color: #26551D;
+            background: #26551D;
+        }
+
+        .store-option input[type="radio"]:checked + .custom-radio:after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .store-info {
+            flex: 1;
+        }
+
+        .store-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .store-address {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 3px;
+        }
+
+        .store-hours {
+            font-size: 0.85em;
+            color: #888;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .store-option {
+                padding: 12px;
+            }
+            
+            .store-name {
+                font-size: 0.95em;
+            }
+            
+            .store-address {
+                font-size: 0.85em;
+            }
+            
+            .store-hours {
+                font-size: 0.8em;
+            }
+        }
+
+        /* Delivery method tabs */
+        .shipping-methods {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .store-btn, .delivery-btn {
+            padding: 12px 24px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            min-width: 120px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .store-btn:hover, .delivery-btn:hover {
+            border-color: #26551D;
+            background-color: rgba(38, 85, 29, 0.03);
+        }
+
+        .store-btn.active, .delivery-btn.active {
+            border-color: #26551D;
+            background-color: #26551D;
+            color: white;
+        }
+
+        /* Phone dropdown */
+        .phone-country-code {
+            position: relative;
+            min-width: 100px;
+        }
+
+        .phone-dropdown-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .phone-dropdown-btn:hover {
+            border-color: #26551D;
+        }
+
+        .country-dropdown {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            width: 200px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .country-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .country-option:hover {
+            background-color: rgba(38, 85, 29, 0.05);
+        }
+
+        .country-flag {
+            width: 20px;
+            height: 15px;
+            object-fit: cover;
+        }
+
+        .country-name {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .country-code {
+            margin-left: auto;
+            color: #666;
+            font-size: 13px;
+        }
+
+        /* Delivery sections */
+        .delivery-section {
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .delivery-section[style*="display: none"] {
+            opacity: 0;
+        }
+
+        /* Smooth transitions */
+        .store-pickup-container,
+        .delivery-container {
+            transition: all 0.3s ease;
+        }
     </style>
+
+    <script>
+    // Add this to your existing JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+        // Store selection handling
+        const storeOptions = document.querySelectorAll('.store-option');
+        
+        storeOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from all options
+                storeOptions.forEach(opt => opt.classList.remove('selected'));
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                // Check the radio input
+                const radio = this.querySelector('input[type="radio"]');
+                if (radio) {
+                    radio.checked = true;
+                }
+            });
+        });
+    });
+    </script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, initializing payment page...');
+        
+        // Delivery method switching
+        const storeBtn = document.querySelector('.store-btn');
+        const deliveryBtn = document.querySelector('.delivery-btn');
+        const storeContainer = document.querySelector('.store-pickup-container');
+        const deliveryContainer = document.querySelector('.delivery-container');
+        
+        if (storeBtn && deliveryBtn) {
+            storeBtn.addEventListener('click', function() {
+                console.log('Store button clicked');
+                storeBtn.classList.add('active');
+                deliveryBtn.classList.remove('active');
+                storeContainer.style.display = 'block';
+                deliveryContainer.style.display = 'none';
+                document.querySelector('.delivery-method-input').value = 'store';
+            });
+
+            deliveryBtn.addEventListener('click', function() {
+                console.log('Delivery button clicked');
+                deliveryBtn.classList.add('active');
+                storeBtn.classList.remove('active');
+                deliveryContainer.style.display = 'block';
+                storeContainer.style.display = 'none';
+                document.querySelector('.delivery-method-input').value = 'delivery';
+            });
+        }
+
+        // Phone country code dropdown
+        const countrySelector = document.getElementById('country-selector');
+        const countryDropdown = document.getElementById('country-dropdown');
+
+        if (countrySelector && countryDropdown) {
+            countrySelector.addEventListener('click', function(e) {
+                e.stopPropagation();
+                console.log('Country selector clicked');
+                countryDropdown.style.display = countryDropdown.style.display === 'block' ? 'none' : 'block';
+            });
+
+            const countryOptions = document.querySelectorAll('.country-option');
+            countryOptions.forEach(option => {
+                option.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const code = this.getAttribute('data-code');
+                    const flag = this.querySelector('.country-flag').src;
+                    
+                    // Update button content
+                    countrySelector.querySelector('.country-flag').src = flag;
+                    countrySelector.querySelector('span').textContent = code;
+                    
+                    // Hide dropdown
+                    countryDropdown.style.display = 'none';
+                });
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                if (countryDropdown) {
+                    countryDropdown.style.display = 'none';
+                }
+            });
+        }
+
+        // Rest of your existing JavaScript code...
+    });
+    </script>
 </body>
 </html>
