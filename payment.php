@@ -263,12 +263,6 @@ $total = $subtotal + $shipping;
         </div>
     </section>
 
-    <!--=============== LOADING INDICATOR ===============-->
-    <div id="loading-indicator" class="loading-indicator" style="display: none;">
-        <div class="spinner"></div>
-        <span>Đang xử lý...</span>
-    </div>
-
     <!--=============== MAIN CONTENT ===============-->
     <main class="main">
         <!-- Hiển thị lỗi nếu có -->
@@ -778,8 +772,7 @@ $total = $subtotal + $shipping;
                         formData.append('save_session_only', '1'); // Flag để chỉ lưu session
                         
                         if (selectedMethod === 'momo') {
-                            showLoading();
-                            showNotification('Đang chuyển đến trang thanh toán MoMo...', 'info');
+                            console.log('Processing MoMo payment...');
                             
                             // Gửi dữ liệu để lưu vào session
                             fetch('payment.php', {
@@ -788,18 +781,16 @@ $total = $subtotal + $shipping;
                             })
                             .then(response => response.text())
                             .then(data => {
+                                console.log('Session saved, redirecting to MoMo...');
                                 // Chuyển hướng đến MoMo
                                 window.location.href = 'momo_payment.php';
                             })
                             .catch(error => {
-                                console.error('Error:', error);
-                                hideLoading();
-                                showNotification('Có lỗi xảy ra, vui lòng thử lại', 'error');
+                                console.error('Error saving session:', error);
+                                alert('Có lỗi xảy ra khi lưu thông tin: ' + error.message);
                             });
                         } else {
-                            showLoading();
-                            showNotification('Đang xử lý thanh toán, vui lòng đợi...', 'info');
-                            
+                            console.log('Processing other payment method...');
                             // Submit form trực tiếp cho các phương thức thanh toán khác
                             document.getElementById('hidden-submit').click();
                         }
@@ -868,7 +859,6 @@ $total = $subtotal + $shipping;
                     errorMessage += `${index + 1}. ${error}\n`;
                 });
                 
-                showNotification('Thông tin chưa đầy đủ!', 'error');
                 alert(errorMessage);
                 return false;
             }
