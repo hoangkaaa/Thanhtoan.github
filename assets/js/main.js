@@ -113,6 +113,8 @@ tabs.forEach((tab) => {
 });
 
 // Xử lý toggle menu khi nhấn nút menu trên màn hình nhỏ
-menuToggle.addEventListener("click", () => {
-  accountTabs.classList.toggle("active"); // Thêm/xóa class 'active' để mở/đóng menu
-});
+if (menuToggle && accountTabs) {
+  menuToggle.addEventListener("click", () => {
+    accountTabs.classList.toggle("active"); // Thêm/xóa class 'active' để mở/đóng menu
+  });
+}

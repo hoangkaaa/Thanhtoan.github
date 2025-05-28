@@ -34,6 +34,7 @@ $success_message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_payment'])) {
     // Log để debug
     error_log("Payment form submitted: " . print_r($_POST, true));
+    echo "<script>console.log('PHP: Form submitted!');</script>";
     
     // Validate dữ liệu form
     $first_name = trim($_POST['first_name'] ?? '');
@@ -200,6 +201,10 @@ $total = $subtotal + $shipping;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <!-- Swiper JS -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     
     <!--=============== FLATICON ===============-->
     <link rel="icon" href="./assets/img/logo_hinh_red.svg" type="image/png">
@@ -318,7 +323,7 @@ $total = $subtotal + $shipping;
                 <div class="payment__container container">
                     <section class="payment-form">
                         <h2><a href="cart.php" class="back-arrow">&#8592;</a> Thanh toán</h2>
-                        <form id="payment-form" method="POST">
+                        <form id="payment-form" method="POST" action="payment.php">
                             <div class="section">
                                 <h3>1. Thông tin khách hàng</h3>
                                 <div class="form-row">
@@ -616,8 +621,8 @@ $total = $subtotal + $shipping;
                             <span class="total-value" id="total-display"><?php echo number_format($final_total, 0, ',', '.'); ?> vnd</span>
                         </div>
                         <div class="terms">
-                            <label class="check-box" for="terms-checkbox">
-                                <input type="checkbox" id="terms-checkbox" name="terms_checkbox" required 
+                            <label class="check-box" for="terms_checkbox">
+                                <input type="checkbox" id="terms_checkbox" name="terms_checkbox" required 
                                        <?php echo isset($_POST['terms_checkbox']) ? 'checked' : ''; ?>>
                                 <span class="checkbox-custom"></span>
                                 <span>Tôi đồng ý với <a href="terms.php" target="_blank">Điều khoản và dịch vụ</a></span>
@@ -641,7 +646,7 @@ $total = $subtotal + $shipping;
                                 </div>
                             </div>
                             <div class="payment-right-side">
-                                <button type="submit" name="submit_payment" form="payment-form" class="payment-new">Tiến hành thanh toán</button>
+                                <button type="button" name="submit_payment" id="submit-payment-btn" class="payment-new">Tiến hành thanh toán</button>
                             </div>
                         </div>
                     </aside>
@@ -742,6 +747,183 @@ $total = $subtotal + $shipping;
     <script src="assets/js/main.js"></script>
 
     <script>
+        // Validation function
+        function validateFormBeforeSubmit() {
+            console.log('Starting validation...');
+            const errors = [];
+            
+            // Kiểm tra thông tin khách hàng
+            const firstName = document.querySelector('input[name="first_name"]').value.trim();
+            const lastName = document.querySelector('input[name="last_name"]').value.trim();
+            const phone = document.querySelector('input[name="phone"]').value.trim();
+            const email = document.querySelector('input[name="email"]').value.trim();
+            const termsAccepted = document.getElementById('terms_checkbox').checked;
+            
+            if (!firstName) errors.push('Vui lòng nhập tên');
+            if (!lastName) errors.push('Vui lòng nhập họ và tên lót');
+            if (!phone) errors.push('Vui lòng nhập số điện thoại');
+            if (!email) errors.push('Vui lòng nhập email');
+            if (!termsAccepted) errors.push('Vui lòng đồng ý với điều khoản dịch vụ');
+            
+            // Kiểm tra email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (email && !emailRegex.test(email)) {
+                errors.push('Email không hợp lệ');
+            }
+            
+            // Kiểm tra phương thức giao hàng
+            const storeBtn = document.querySelector('.store-btn');
+            const deliveryBtn = document.querySelector('.delivery-btn');
+            const isStorePickup = storeBtn && storeBtn.classList.contains('active');
+            
+            if (isStorePickup) {
+                const pickupDate = document.querySelector('input[name="pickup_date"]').value;
+                const pickupTime = document.querySelector('select[name="pickup_time"]').value;
+                const selectedStore = document.querySelector('input[name="store"]:checked');
+                
+                if (!pickupDate) errors.push('Vui lòng chọn ngày lấy hàng');
+                if (!pickupTime) errors.push('Vui lòng chọn thời gian lấy hàng');
+                if (!selectedStore) errors.push('Vui lòng chọn cửa hàng');
+            } else {
+                const deliveryDate = document.querySelector('input[name="delivery_date"]').value;
+                const deliveryTime = document.querySelector('select[name="delivery_time"]').value;
+                const city = document.querySelector('select[name="city"]').value;
+                const district = document.querySelector('input[name="district"]').value.trim();
+                const address = document.querySelector('input[name="address"]').value.trim();
+                const zipcode = document.querySelector('input[name="zipcode"]').value.trim();
+                
+                if (!deliveryDate) errors.push('Vui lòng chọn ngày giao hàng');
+                if (!deliveryTime) errors.push('Vui lòng chọn thời gian giao hàng');
+                if (!city) errors.push('Vui lòng chọn tỉnh/thành phố');
+                if (!district) errors.push('Vui lòng nhập quận/huyện');
+                if (!address) errors.push('Vui lòng nhập địa chỉ');
+                if (!zipcode) errors.push('Vui lòng nhập mã ZIP');
+            }
+            
+            // Hiển thị lỗi nếu có
+            if (errors.length > 0) {
+                let errorMessage = 'Vui lòng kiểm tra lại thông tin:\n';
+                errors.forEach((error, index) => {
+                    errorMessage += `${index + 1}. ${error}\n`;
+                });
+                
+                showNotification('Thông tin chưa đầy đủ!', 'error');
+                alert(errorMessage);
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Xử lý form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentForm = document.getElementById('payment-form');
+            const paymentContainer = document.querySelector('.payment-container');
+            
+            // Hàm xử lý submit form
+            function handlePaymentSubmit(e) {
+                e.preventDefault();
+                e.stopPropagation(); // Ngăn event bubbling
+                
+                console.log('Payment initiated');
+                
+                if (validateFormBeforeSubmit()) {
+                    if (confirm('Bạn có chắc chắn muốn tiến hành thanh toán?')) {
+                        console.log('Submitting form...');
+                        showLoading();
+                        showNotification('Đang xử lý thanh toán, vui lòng đợi...', 'info');
+                        paymentForm.submit();
+                    }
+                }
+            }
+            
+            // Thêm event listener cho container
+            if (paymentContainer && paymentForm) {
+                paymentContainer.addEventListener('click', handlePaymentSubmit);
+            }
+            
+            // Vẫn giữ event listener cho button để đảm bảo hoạt động
+            const submitBtn = document.getElementById('submit-payment-btn');
+            if (submitBtn) {
+                submitBtn.addEventListener('click', handlePaymentSubmit);
+            }
+        });
+
+        // Debug function
+        function debugElements() {
+            console.log('=== DEBUG INFO ===');
+            console.log('Form by ID:', document.getElementById('payment-form'));
+            console.log('Form by querySelector:', document.querySelector('form#payment-form'));
+            console.log('Button by class:', document.querySelector('.payment-new'));
+            console.log('Button by name:', document.querySelector('button[name="submit_payment"]'));
+            console.log('Button by ID:', document.getElementById('submit-payment-btn'));
+            console.log('=== END DEBUG ===');
+        }
+
+        // Xử lý form thanh toán
+        document.addEventListener('DOMContentLoaded', function() {
+            // Debug elements
+            debugElements();
+            
+            // Thêm event listener trực tiếp vào form
+            document.querySelector('form#payment-form').onsubmit = function(e) {
+                console.log('Form onsubmit triggered');
+                e.preventDefault();
+                
+                if (validateFormBeforeSubmit()) {
+                    console.log('Validation passed');
+                    if (confirm('Bạn có chắc chắn muốn tiến hành thanh toán?')) {
+                        showLoading();
+                        showNotification('Đang xử lý thanh toán, vui lòng đợi...', 'info');
+                        this.submit();
+                    }
+                }
+                return false;
+            };
+            
+            // Đảm bảo các elements tồn tại
+            const paymentForm = document.getElementById('payment-form');
+            const paymentButton = document.querySelector('.payment-new');
+
+            // Debug để kiểm tra elements
+            console.log('Form:', paymentForm);
+            console.log('Button:', paymentButton);
+
+            // Thử thêm click event cho nút
+            const submitBtn = document.getElementById('submit-payment-btn');
+            if (submitBtn) {
+                submitBtn.onclick = function(e) {
+                    e.preventDefault();
+                    console.log('Button clicked!');
+                    if (validateFormBeforeSubmit()) {
+                        console.log('Validation passed!');
+                        if (confirm('Bạn có chắc chắn muốn tiến hành thanh toán?')) {
+                            showLoading();
+                            showNotification('Đang xử lý thanh toán, vui lòng đợi...', 'info');
+                            paymentForm.submit();
+                        }
+                    }
+                };
+            }
+
+            if (paymentForm) {
+                paymentForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('Form submitted');
+                    
+                    if (validateFormBeforeSubmit()) {
+                        if (confirm('Bạn có chắc chắn muốn tiến hành thanh toán?')) {
+                            showLoading();
+                            showNotification('Đang xử lý thanh toán, vui lòng đợi...', 'info');
+                            this.submit();
+                        }
+                    }
+                });
+            } else {
+                console.error('Payment form not found!');
+            }
+        });
+
         // Biến để theo dõi trạng thái đang xử lý
         let isProcessing = false;
         
@@ -1236,6 +1418,7 @@ $total = $subtotal + $shipping;
 
             // Validation function
             function validateFormBeforeSubmit() {
+                console.log('Starting validation...');
                 const errors = [];
                 
                 // Kiểm tra thông tin khách hàng
@@ -1798,6 +1981,12 @@ $total = $subtotal + $shipping;
     </script>
 
     <style>
+        /* Ensure button is clickable */
+        .payment-new {
+            position: relative;
+            z-index: 1000;
+            pointer-events: auto !important;
+        }
         /* Additional styles to match payment.html */
         .alert {
             padding: 15px;
@@ -2267,7 +2456,9 @@ $total = $subtotal + $shipping;
 
         .payment-container .payment-new {
             cursor: pointer;
-            pointer-events: none; /* Để click event đi qua container */
+            pointer-events: auto !important;
+            position: relative;
+            z-index: 1000;
         }
     </style>
 </body>
