@@ -221,20 +221,32 @@ class Order {
             // Lưu thông tin khách hàng
             $this->saveCustomerInfo($customer_info);
             
+            // Cập nhật sử dụng mã giảm giá nếu có
+            if (!empty($order_details['coupon_code'])) {
+                $this->updateCouponUsage($order_details['coupon_code']);
+            }
+            
             // Thêm đơn hàng vào bảng orders với đầy đủ thông tin
             $order_query = "INSERT INTO " . $this->table . " 
                            (order_code, user_id, customer_name, customer_email, customer_phone, 
                             customer_address, delivery_method, payment_method, store_id,
                             pickup_date, pickup_time, delivery_date, delivery_time,
-                            city, district, zipcode, subtotal, shipping_fee, total_amount,
-                            order_status, payment_status, created_at) 
+                            city, district, zipcode, subtotal, shipping_fee, discount_amount, 
+                            total_amount, order_status, payment_status, notes, created_at) 
                            VALUES (:order_code, :user_id, :customer_name, :customer_email, :customer_phone, 
                                    :customer_address, :delivery_method, :payment_method, :store_id,
                                    :pickup_date, :pickup_time, :delivery_date, :delivery_time,
-                                   :city, :district, :zipcode, :subtotal, :shipping_fee, :total_amount,
-                                   'pending', 'pending', NOW())";
+                                   :city, :district, :zipcode, :subtotal, :shipping_fee, :discount_amount,
+                                   :total_amount, 'pending', 'pending', :notes, NOW())";
             
             $order_stmt = $this->conn->prepare($order_query);
+            
+            // Tạo notes với thông tin mã giảm giá
+            $notes = '';
+            if (!empty($order_details['coupon_code'])) {
+                $notes = 'Mã giảm giá đã sử dụng: ' . $order_details['coupon_code'] . 
+                        ' (Giảm: ' . number_format($order_details['discount_amount'], 0, ',', '.') . '₫)';
+            }
             
             // Bind parameters
             $order_stmt->bindParam(':order_code', $order_code);
@@ -255,7 +267,9 @@ class Order {
             $order_stmt->bindParam(':zipcode', $order_details['zipcode']);
             $order_stmt->bindParam(':subtotal', $order_details['subtotal']);
             $order_stmt->bindParam(':shipping_fee', $order_details['shipping_fee']);
+            $order_stmt->bindParam(':discount_amount', $order_details['discount_amount']);
             $order_stmt->bindParam(':total_amount', $order_details['total_amount']);
+            $order_stmt->bindParam(':notes', $notes);
             
             $order_stmt->execute();
             
@@ -282,13 +296,17 @@ class Order {
                 $item_stmt->execute();
             }
             
+            // Thêm lịch sử đơn hàng
+            $this->addOrderHistory($order_id, 'pending', 'Đơn hàng được tạo');
+            
             // Commit transaction
             $this->conn->commit();
             
             return [
                 'success' => true,
                 'order_id' => $order_id,
-                'order_code' => $order_code
+                'order_code' => $order_code,
+                'message' => 'Đơn hàng đã được tạo thành công!'
             ];
             
         } catch (Exception $e) {
@@ -296,6 +314,73 @@ class Order {
             $this->conn->rollback();
             throw $e;
         }
+    }
+    
+    // Cập nhật số lần sử dụng mã giảm giá
+    private function updateCouponUsage($coupon_code) {
+        $query = "UPDATE coupons SET used_count = used_count + 1 WHERE code = :code AND status = 'active'";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':code', $coupon_code);
+        $stmt->execute();
+    }
+    
+    // Thêm lịch sử đơn hàng
+    private function addOrderHistory($order_id, $status, $notes, $created_by = 'System') {
+        $query = "INSERT INTO order_history (order_id, status, notes, created_by) VALUES (:order_id, :status, :notes, :created_by)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':order_id', $order_id);
+        $stmt->bindParam(':status', $status);
+        $stmt->bindParam(':notes', $notes);
+        $stmt->bindParam(':created_by', $created_by);
+        $stmt->execute();
+    }
+    
+    // Kiểm tra mã giảm giá
+    public function validateCoupon($coupon_code, $order_amount = 0) {
+        $query = "SELECT * FROM coupons WHERE code = :code AND status = 'active' 
+                 AND (usage_limit = 0 OR used_count < usage_limit)
+                 AND (valid_from IS NULL OR valid_from <= NOW())
+                 AND (valid_until IS NULL OR valid_until >= NOW())";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':code', $coupon_code);
+        $stmt->execute();
+        
+        $coupon = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$coupon) {
+            return ['valid' => false, 'message' => 'Mã giảm giá không hợp lệ hoặc đã hết hạn'];
+        }
+        
+        if ($order_amount < $coupon['min_order_amount']) {
+            return ['valid' => false, 'message' => 'Đơn hàng chưa đủ giá trị tối thiểu để sử dụng mã này'];
+        }
+        
+        return ['valid' => true, 'coupon' => $coupon];
+    }
+    
+    // Tính toán giảm giá
+    public function calculateDiscount($coupon, $order_amount, $shipping_fee = 0) {
+        $discount = 0;
+        
+        switch ($coupon['type']) {
+            case 'fixed':
+                $discount = $coupon['value'];
+                break;
+            case 'percentage':
+                $discount = ($order_amount * $coupon['value']) / 100;
+                if ($coupon['max_discount'] > 0) {
+                    $discount = min($discount, $coupon['max_discount']);
+                }
+                break;
+            case 'shipping':
+                $discount = ($shipping_fee * $coupon['value']) / 100;
+                if ($coupon['max_discount'] > 0) {
+                    $discount = min($discount, $coupon['max_discount']);
+                }
+                break;
+        }
+        
+        return $discount;
     }
     
     // Lưu thông tin khách hàng
@@ -307,8 +392,8 @@ class Order {
         
         if ($check_stmt->rowCount() == 0) {
             // Thêm khách hàng mới
-            $insert_query = "INSERT INTO customers (email, first_name, last_name, phone, address, city, district, zipcode) 
-                           VALUES (:email, :first_name, :last_name, :phone, :address, :city, :district, :zipcode)";
+            $insert_query = "INSERT INTO customers (email, first_name, last_name, phone, address, city, district, zipcode, created_at) 
+                           VALUES (:email, :first_name, :last_name, :phone, :address, :city, :district, :zipcode, NOW())";
             $insert_stmt = $this->conn->prepare($insert_query);
             
             $names = explode(' ', $customer_info['name'], 2);
@@ -325,6 +410,20 @@ class Order {
             $insert_stmt->bindParam(':zipcode', $customer_info['zipcode']);
             
             $insert_stmt->execute();
+        } else {
+            // Cập nhật thông tin khách hàng hiện có
+            $update_query = "UPDATE customers SET phone = :phone, address = :address, city = :city, 
+                           district = :district, zipcode = :zipcode, updated_at = NOW() WHERE email = :email";
+            $update_stmt = $this->conn->prepare($update_query);
+            
+            $update_stmt->bindParam(':phone', $customer_info['phone']);
+            $update_stmt->bindParam(':address', $customer_info['address']);
+            $update_stmt->bindParam(':city', $customer_info['city']);
+            $update_stmt->bindParam(':district', $customer_info['district']);
+            $update_stmt->bindParam(':zipcode', $customer_info['zipcode']);
+            $update_stmt->bindParam(':email', $customer_info['email']);
+            
+            $update_stmt->execute();
         }
     }
     
@@ -346,6 +445,63 @@ class Order {
         $stmt->execute();
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    // Lấy lịch sử đơn hàng
+    public function getOrderHistory($order_id) {
+        $query = "SELECT * FROM order_history WHERE order_id = :order_id ORDER BY created_at ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':order_id', $order_id);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    // Cập nhật trạng thái đơn hàng
+    public function updateOrderStatus($order_id, $new_status, $notes = '', $updated_by = 'System') {
+        try {
+            $this->conn->beginTransaction();
+            
+            // Cập nhật trạng thái trong bảng orders
+            $query = "UPDATE " . $this->table . " SET order_status = :status, updated_at = NOW() WHERE id = :order_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':status', $new_status);
+            $stmt->bindParam(':order_id', $order_id);
+            $stmt->execute();
+            
+            // Thêm vào lịch sử
+            $this->addOrderHistory($order_id, $new_status, $notes, $updated_by);
+            
+            $this->conn->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->conn->rollback();
+            return false;
+        }
+    }
+    
+    // Cập nhật trạng thái thanh toán
+    public function updatePaymentStatus($order_id, $payment_status, $notes = '', $updated_by = 'System') {
+        try {
+            $this->conn->beginTransaction();
+            
+            // Cập nhật trạng thái thanh toán
+            $query = "UPDATE " . $this->table . " SET payment_status = :payment_status, updated_at = NOW() WHERE id = :order_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':payment_status', $payment_status);
+            $stmt->bindParam(':order_id', $order_id);
+            $stmt->execute();
+            
+            // Thêm vào lịch sử
+            $history_notes = "Trạng thái thanh toán: $payment_status" . ($notes ? " - $notes" : "");
+            $this->addOrderHistory($order_id, "payment_$payment_status", $history_notes, $updated_by);
+            
+            $this->conn->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->conn->rollback();
+            return false;
+        }
     }
 }
 ?> 

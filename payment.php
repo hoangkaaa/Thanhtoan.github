@@ -1,7 +1,7 @@
 <?php
 // Khởi tạo session và xử lý dữ liệu
 if (session_status() == PHP_SESSION_NONE) {
-session_start();
+    session_start();
 }
 
 // Include các file cần thiết
@@ -14,7 +14,7 @@ $db = $database->connect();
 // Khởi tạo Cart class
 $cart = new Cart($db);
 
-// Giả lập user_id
+// Giả lập user_id - có thể thay đổi khi có hệ thống đăng nhập
 $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 1;
 
 // Lấy thông tin giỏ hàng từ DATABASE
@@ -22,29 +22,19 @@ $cart_items = $cart->getItems($user_id);
 $cart_total = $cart->getTotal($user_id);
 $cart_count = $cart->getItemCount($user_id);
 
-// Lấy thông tin shipping và coupon từ session hoặc JavaScript
-$shipping_info = isset($_SESSION['shipping_info']) ? $_SESSION['shipping_info'] : null;
-$selected_city = $shipping_info['city'] ?? '';
-$shipping_fee = $shipping_info['shippingFee'] ?? 0;
-$applied_coupon = $shipping_info['coupon'] ?? null;
-
-// Tính toán lại với mã giảm giá
+// Khởi tạo các biến
+$shipping_fee = 0;
 $discount_amount = 0;
-if ($applied_coupon) {
-    if ($applied_coupon['code'] === 'GIAIKHATHE') {
-        $discount_amount = min($shipping_fee * 0.1, 10000);
-    } elseif ($applied_coupon['code'] === 'GIAIKHAT') {
-        $discount_amount = $cart_total * 0.15;
-    }
-}
+$applied_coupon = null;
 
-$final_total = $cart_total + $shipping_fee - $discount_amount;
-
-// Xử lý form submission
+// Xử lý form submission - TĂNG CƯỜNG XỬ LÝ
 $errors = [];
 $success_message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_payment'])) {
+    // Log để debug
+    error_log("Payment form submitted: " . print_r($_POST, true));
+    
     // Validate dữ liệu form
     $first_name = trim($_POST['first_name'] ?? '');
     $last_name = trim($_POST['last_name'] ?? '');
@@ -54,19 +44,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_payment'])) {
     $payment_method = $_POST['payment_method'] ?? 'visa';
     $terms_accepted = isset($_POST['terms_checkbox']);
     
-    // Validation
+    // Lấy thông tin mã giảm giá nếu có
+    $coupon_code = trim($_POST['coupon_code'] ?? '');
+    $discount_amount = floatval($_POST['discount_amount'] ?? 0);
+    
+    // VALIDATION CẢI TIẾN
     if (empty($first_name)) $errors[] = 'Tên không được để trống';
     if (empty($last_name)) $errors[] = 'Họ và tên lót không được để trống';
     if (empty($phone)) $errors[] = 'Số điện thoại không được để trống';
+    if (!preg_match('/^[0-9]{10,11}$/', $phone)) $errors[] = 'Số điện thoại không hợp lệ (10-11 số)';
     if (empty($email)) $errors[] = 'Email không được để trống';
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Email không hợp lệ';
     if (!$terms_accepted) $errors[] = 'Bạn phải đồng ý với điều khoản dịch vụ';
-    if (empty($cart_items)) $errors[] = 'Giỏ hàng trống';
+    if (empty($cart_items)) $errors[] = 'Giỏ hàng trống, vui lòng thêm sản phẩm';
     
-    // Validate theo phương thức giao hàng
+    // Khởi tạo biến cho giao hàng
+    $pickup_date = $pickup_time = $selected_store = '';
+    $delivery_date = $delivery_time = $city = $district = $address = $zipcode = '';
+    
+    // Tính lại shipping fee dựa trên delivery method
     if ($delivery_method === 'delivery') {
-        $delivery_date = $_POST['delivery_date'] ?? '';
-        $delivery_time = $_POST['delivery_time'] ?? '';
+        $delivery_date = trim($_POST['delivery_date'] ?? '');
+        $delivery_time = trim($_POST['delivery_time'] ?? '');
         $city = trim($_POST['city'] ?? '');
         $district = trim($_POST['district'] ?? '');
         $address = trim($_POST['address'] ?? '');
@@ -79,15 +78,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_payment'])) {
         if (empty($address)) $errors[] = 'Địa chỉ không được để trống';
         if (empty($zipcode)) $errors[] = 'Mã Zip không được để trống';
         
-        $shipping_fee = 25000; // Phí giao hàng
+        // Validate ngày giao hàng (phải từ ngày mai trở đi)
+        $delivery_timestamp = strtotime($delivery_date);
+        $tomorrow = strtotime('+1 day');
+        if ($delivery_timestamp < $tomorrow) {
+            $errors[] = 'Ngày giao hàng phải từ ngày mai trở đi';
+        }
+        
+        // Tính phí vận chuyển dựa trên thành phố
+        $shipping_fee = ($city === 'ho-chi-minh') ? 15000 : 30000;
     } else {
-        $pickup_date = $_POST['pickup_date'] ?? '';
-        $pickup_time = $_POST['pickup_time'] ?? '';
-        $selected_store = $_POST['store'] ?? '';
+        $pickup_date = trim($_POST['pickup_date'] ?? '');
+        $pickup_time = trim($_POST['pickup_time'] ?? '');
+        $selected_store = trim($_POST['store'] ?? '');
         
         if (empty($pickup_date)) $errors[] = 'Ngày lấy hàng không được để trống';
         if (empty($pickup_time)) $errors[] = 'Thời gian lấy hàng không được để trống';
         if (empty($selected_store)) $errors[] = 'Vui lòng chọn cửa hàng';
+        
+        $shipping_fee = 0; // Miễn phí khi lấy tại cửa hàng
     }
     
     // Nếu không có lỗi, xử lý đơn hàng
@@ -108,6 +117,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_payment'])) {
                 'zipcode' => $zipcode ?? null
             ];
             
+            // Tính lại discount nếu có mã giảm giá
+            $final_discount = 0;
+            if (!empty($coupon_code)) {
+                if ($coupon_code === 'GIAIKHATHE') {
+                    $final_discount = min($shipping_fee * 0.1, 10000);
+                } elseif ($coupon_code === 'GIAIKHAT') {
+                    $final_discount = $cart_total * 0.15;
+                }
+            }
+            
             // Chuẩn bị chi tiết đơn hàng
             $order_details = [
                 'delivery_method' => $delivery_method,
@@ -122,23 +141,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_payment'])) {
                 'zipcode' => $zipcode ?? null,
                 'subtotal' => $cart_total,
                 'shipping_fee' => $shipping_fee,
-                'total_amount' => $cart_total + $shipping_fee
+                'discount_amount' => $final_discount,
+                'coupon_code' => $coupon_code,
+                'total_amount' => $cart_total + $shipping_fee - $final_discount
             ];
             
             // Tạo đơn hàng
             $result = $order->createOrder($user_id, $customer_info, $cart_items, $order_details);
             
             if ($result['success']) {
-            // Clear cart after successful order
-            $cart->clearCart($user_id);
+                // Clear cart after successful order
+                $cart->clearCart($user_id);
                 
                 // Lưu order_id và order_code vào session để hiển thị trang xác nhận
                 $_SESSION['last_order_id'] = $result['order_id'];
                 $_SESSION['last_order_code'] = $result['order_code'];
-            
-            // Redirect to confirmation page
+                $_SESSION['payment_success'] = true;
+                $_SESSION['success_message'] = 'Đơn hàng của bạn đã được tạo thành công! Mã đơn hàng: ' . $result['order_code'];
+                
+                // Redirect to confirmation page
                 header('Location: order_confirmation.php?order_id=' . $result['order_id']);
-        exit;
+                exit;
             }
             
         } catch (Exception $e) {
@@ -295,7 +318,7 @@ $total = $subtotal + $shipping;
                 <div class="payment__container container">
                     <section class="payment-form">
                         <h2><a href="cart.php" class="back-arrow">&#8592;</a> Thanh toán</h2>
-                        <form method="POST">
+                        <form id="payment-form" method="POST">
                             <div class="section">
                                 <h3>1. Thông tin khách hàng</h3>
                                 <div class="form-row">
@@ -550,6 +573,10 @@ $total = $subtotal + $shipping;
                                     </div>
                                 </div>
                                 <input type="hidden" name="payment_method" value="visa" id="selected-payment-method">
+                                
+                                <!-- Hidden inputs for coupon information -->
+                                <input type="hidden" name="coupon_code" id="coupon-code-input" value="">
+                                <input type="hidden" name="discount_amount" id="discount-amount-input" value="0">
                             </div>
                         </form>
                     </section>
@@ -1069,21 +1096,66 @@ $total = $subtotal + $shipping;
             notification.className = `toast-notification ${type}`;
             notification.textContent = message;
             
+            // Định nghĩa màu sắc cho từng loại thông báo
+            let backgroundColor, textColor;
+            switch(type) {
+                case 'success':
+                    backgroundColor = '#4CAF50';
+                    textColor = 'white';
+                    break;
+                case 'error':
+                    backgroundColor = '#f44336';
+                    textColor = 'white';
+                    break;
+                case 'warning':
+                    backgroundColor = '#ff9800';
+                    textColor = 'white';
+                    break;
+                case 'info':
+                    backgroundColor = '#2196F3';
+                    textColor = 'white';
+                    break;
+                default:
+                    backgroundColor = '#333';
+                    textColor = 'white';
+            }
+            
             notification.style.cssText = `
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                padding: 12px 20px;
-                background: ${type === 'success' ? '#4CAF50' : '#f44336'};
-                color: white;
-                border-radius: 6px;
+                padding: 15px 25px;
+                background: ${backgroundColor};
+                color: ${textColor};
+                border-radius: 8px;
                 z-index: 10000;
                 opacity: 0;
                 transition: all 0.3s ease;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
                 font-size: 14px;
-                max-width: 300px;
+                font-weight: 500;
+                max-width: 350px;
+                word-wrap: break-word;
+                border-left: 4px solid rgba(255,255,255,0.3);
             `;
+            
+            // Thêm icon dựa trên type
+            let icon = '';
+            switch(type) {
+                case 'success':
+                    icon = '✅ ';
+                    break;
+                case 'error':
+                    icon = '❌ ';
+                    break;
+                case 'warning':
+                    icon = '⚠️ ';
+                    break;
+                case 'info':
+                    icon = 'ℹ️ ';
+                    break;
+            }
+            notification.textContent = icon + message;
             
             document.body.appendChild(notification);
             
@@ -1093,7 +1165,8 @@ $total = $subtotal + $shipping;
                 notification.style.transform = 'translateY(0)';
             }, 100);
             
-            // Ẩn sau 2 giây
+            // Tự động ẩn notification
+            const hideTimeout = type === 'info' ? 4000 : 3000; // Info hiển thị lâu hơn
             setTimeout(() => {
                 notification.style.opacity = '0';
                 notification.style.transform = 'translateY(-20px)';
@@ -1102,7 +1175,21 @@ $total = $subtotal + $shipping;
                         notification.remove();
                     }
                 }, 300);
-            }, 2000);
+            }, hideTimeout);
+            
+            // Cho phép click để đóng
+            notification.addEventListener('click', function() {
+                this.style.opacity = '0';
+                this.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    if (this.parentNode) {
+                        this.remove();
+                    }
+                }, 300);
+            });
+            
+            // Thêm cursor pointer
+            notification.style.cursor = 'pointer';
         }
 
         function updateInitialPriceFormat() {
@@ -1115,7 +1202,205 @@ $total = $subtotal + $shipping;
             const paymentForm = document.querySelector('form[method="POST"]');
             if (paymentForm) {
                 paymentForm.id = 'payment-form';
+                
+                // Thêm xử lý form submission với validation
+                paymentForm.addEventListener('submit', function(e) {
+                    if (!validateFormBeforeSubmit()) {
+                        e.preventDefault();
+                        return false;
+                    }
+                    
+                    // Hiển thị loading
+                    showLoading();
+                    showNotification('Đang xử lý thanh toán...', 'info');
+                });
             }
+            
+            // Thêm validation cho payment button
+            const paymentButton = document.querySelector('button[name="submit_payment"]');
+            if (paymentButton) {
+                paymentButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    if (validateFormBeforeSubmit()) {
+                        // Hiển thị confirmation
+                        if (confirm('Bạn có chắc chắn muốn tiến hành thanh toán?')) {
+                            showLoading();
+                            showNotification('Đang xử lý thanh toán, vui lòng đợi...', 'info');
+                            // Submit form
+                            paymentForm.submit();
+                        }
+                    }
+                });
+            }
+
+            // Validation function
+            function validateFormBeforeSubmit() {
+                const errors = [];
+                
+                // Kiểm tra thông tin khách hàng
+                const firstName = document.querySelector('input[name="first_name"]').value.trim();
+                const lastName = document.querySelector('input[name="last_name"]').value.trim();
+                const phone = document.querySelector('input[name="phone"]').value.trim();
+                const email = document.querySelector('input[name="email"]').value.trim();
+                const termsAccepted = document.querySelector('input[name="terms_checkbox"]').checked;
+                
+                if (!firstName) errors.push('Vui lòng nhập tên');
+                if (!lastName) errors.push('Vui lòng nhập họ và tên lót');
+                if (!phone) errors.push('Vui lòng nhập số điện thoại');
+                if (!email) errors.push('Vui lòng nhập email');
+                if (!termsAccepted) errors.push('Vui lòng đồng ý với điều khoản dịch vụ');
+                
+                // Kiểm tra email format
+                if (email && !isValidEmail(email)) {
+                    errors.push('Email không hợp lệ');
+                }
+                
+                // Kiểm tra phương thức giao hàng
+                const deliveryMethod = getCurrentDeliveryMethod();
+                
+                if (deliveryMethod === 'store') {
+                    const pickupDate = document.querySelector('input[name="pickup_date"]').value;
+                    const pickupTime = document.querySelector('select[name="pickup_time"]').value;
+                    const selectedStore = document.querySelector('input[name="store"]:checked');
+                    
+                    if (!pickupDate) errors.push('Vui lòng chọn ngày lấy hàng');
+                    if (!pickupTime) errors.push('Vui lòng chọn thời gian lấy hàng');
+                    if (!selectedStore) errors.push('Vui lòng chọn cửa hàng');
+                } else if (deliveryMethod === 'delivery') {
+                    const deliveryDate = document.querySelector('input[name="delivery_date"]').value;
+                    const deliveryTime = document.querySelector('select[name="delivery_time"]').value;
+                    const city = document.querySelector('select[name="city"]').value;
+                    const district = document.querySelector('input[name="district"]').value.trim();
+                    const address = document.querySelector('input[name="address"]').value.trim();
+                    const zipcode = document.querySelector('input[name="zipcode"]').value.trim();
+                    
+                    if (!deliveryDate) errors.push('Vui lòng chọn ngày giao hàng');
+                    if (!deliveryTime) errors.push('Vui lòng chọn thời gian giao hàng');
+                    if (!city) errors.push('Vui lòng chọn tỉnh/thành phố');
+                    if (!district) errors.push('Vui lòng nhập quận/huyện');
+                    if (!address) errors.push('Vui lòng nhập địa chỉ');
+                    if (!zipcode) errors.push('Vui lòng nhập mã ZIP');
+                }
+                
+                // Kiểm tra giỏ hàng có sản phẩm không
+                const cartItems = document.querySelectorAll('.cart-item');
+                if (cartItems.length === 0) {
+                    errors.push('Giỏ hàng trống, vui lòng thêm sản phẩm');
+                }
+                
+                // Hiển thị lỗi nếu có
+                if (errors.length > 0) {
+                    let errorMessage = 'Vui lòng kiểm tra lại thông tin:\n';
+                    errors.forEach((error, index) => {
+                        errorMessage += `${index + 1}. ${error}\n`;
+                    });
+                    
+                    showNotification('Thông tin chưa đầy đủ!', 'error');
+                    alert(errorMessage);
+                    
+                    // Highlight first error field
+                    highlightErrorField(errors[0]);
+                    
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            // Hàm kiểm tra email hợp lệ
+            function isValidEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
+            
+            // Hàm lấy phương thức giao hàng hiện tại
+            function getCurrentDeliveryMethod() {
+                const storeBtn = document.querySelector('.store-btn');
+                const deliveryBtn = document.querySelector('.delivery-btn');
+                
+                if (storeBtn && storeBtn.classList.contains('active')) {
+                    return 'store';
+                } else if (deliveryBtn && deliveryBtn.classList.contains('active')) {
+                    return 'delivery';
+                }
+                
+                return 'store'; // mặc định
+            }
+            
+            // Hàm highlight field có lỗi
+            function highlightErrorField(errorMessage) {
+                // Remove previous highlights
+                document.querySelectorAll('.validation-error').forEach(el => {
+                    el.classList.remove('validation-error');
+                });
+                
+                // Highlight specific field based on error message
+                if (errorMessage.includes('tên')) {
+                    const field = errorMessage.includes('họ') ? 
+                        document.querySelector('input[name="last_name"]') : 
+                        document.querySelector('input[name="first_name"]');
+                    if (field) field.classList.add('validation-error');
+                } else if (errorMessage.includes('điện thoại')) {
+                    const field = document.querySelector('input[name="phone"]');
+                    if (field) field.classList.add('validation-error');
+                } else if (errorMessage.includes('email')) {
+                    const field = document.querySelector('input[name="email"]');
+                    if (field) field.classList.add('validation-error');
+                } else if (errorMessage.includes('điều khoản')) {
+                    const field = document.querySelector('input[name="terms_checkbox"]');
+                    if (field) {
+                        field.parentElement.classList.add('validation-error');
+                        // Scroll to terms
+                        field.parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                } else if (errorMessage.includes('ngày lấy hàng')) {
+                    const field = document.querySelector('input[name="pickup_date"]');
+                    if (field) field.classList.add('validation-error');
+                } else if (errorMessage.includes('thời gian lấy hàng')) {
+                    const field = document.querySelector('select[name="pickup_time"]');
+                    if (field) field.classList.add('validation-error');
+                } else if (errorMessage.includes('cửa hàng')) {
+                    const storeOptions = document.querySelectorAll('.store-option');
+                    storeOptions.forEach(option => option.classList.add('validation-error'));
+                } else if (errorMessage.includes('ngày giao hàng')) {
+                    const field = document.querySelector('input[name="delivery_date"]');
+                    if (field) field.classList.add('validation-error');
+                } else if (errorMessage.includes('thời gian giao hàng')) {
+                    const field = document.querySelector('select[name="delivery_time"]');
+                    if (field) field.classList.add('validation-error');
+                } else if (errorMessage.includes('tỉnh/thành phố')) {
+                    const field = document.querySelector('select[name="city"]');
+                    if (field) field.classList.add('validation-error');
+                } else if (errorMessage.includes('quận/huyện')) {
+                    const field = document.querySelector('input[name="district"]');
+                    if (field) field.classList.add('validation-error');
+                } else if (errorMessage.includes('địa chỉ')) {
+                    const field = document.querySelector('input[name="address"]');
+                    if (field) field.classList.add('validation-error');
+                } else if (errorMessage.includes('ZIP')) {
+                    const field = document.querySelector('input[name="zipcode"]');
+                    if (field) field.classList.add('validation-error');
+                }
+            }
+            
+            // Thêm event listeners để remove validation error khi user input
+            const allInputs = document.querySelectorAll('input, select');
+            allInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    this.classList.remove('validation-error');
+                    if (this.parentElement) {
+                        this.parentElement.classList.remove('validation-error');
+                    }
+                });
+                
+                input.addEventListener('change', function() {
+                    this.classList.remove('validation-error');
+                    if (this.parentElement) {
+                        this.parentElement.classList.remove('validation-error');
+                    }
+                });
+            });
             
             // Xử lý chọn phương thức giao hàng
             const storeBtn = document.querySelector('.store-btn');
@@ -1192,6 +1477,8 @@ $total = $subtotal + $shipping;
             // Xử lý click chọn cửa hàng
             const storeOptions = document.querySelectorAll('.store-option');
             storeOptions.forEach(option => {
+                // Validate thông tin giao hàng
+                const deliveryDate = document.querySelector('input[name="delivery_date"]').value;
                 option.addEventListener('click', function() {
                     // Bỏ selected từ tất cả options
                     storeOptions.forEach(opt => opt.classList.remove('selected'));
@@ -1942,6 +2229,46 @@ $total = $subtotal + $shipping;
         .toast-notification {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
+
+        /* Thêm vào phần <style> trong file */
+        /* Validation error highlight */
+        .validation-error {
+            border-color: #ff6b35 !important;
+            box-shadow: 0 0 10px rgba(255, 107, 53, 0.3) !important;
+            animation: errorPulse 1s ease-in-out 3;
+        }
+
+        @keyframes errorPulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Style cải thiện cho thông báo lỗi */
+        .payment-container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(38, 85, 29, 0.15);
+        }
+
+        .payment-container:active {
+            transform: scale(0.98);
+        }
+
+        /* Thêm cursor pointer cho payment container */
+        .payment-container {
+            cursor: pointer;
+        }
+
+        .payment-container .payment-new {
+            cursor: pointer;
+            pointer-events: none; /* Để click event đi qua container */
+        }
     </style>
 </body>
-</html> 
+</html>
