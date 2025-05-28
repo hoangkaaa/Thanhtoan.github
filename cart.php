@@ -236,14 +236,78 @@ function getNumericPrice($price) {
               <!-- Phí vận chuyển -->
               <div class="cart__shippinp">
                 <h3 class="section__title">Phí vận chuyển</h3>
-                <form action="" method="POST" class="form grid">
-                  <input type="text" name="city" class="form__input" placeholder="Tỉnh/Thành phố" />
-                  <div class="form__group grid">
-                    <input type="text" name="district" class="form__input" placeholder="Quận/Huyện" />
-                    <input type="text" name="postal_code" class="form__input" placeholder="Mã bưu điện" />
+                <form action="" method="POST" class="form grid" id="shipping-form">
+                  <!-- Dropdown Tỉnh/Thành phố -->
+                  <div class="form__group">
+                    <select name="city" id="city-select" class="form__input form__select" onchange="updateShippingFee()">
+                      <option value="">-- Chọn Tỉnh/Thành phố --</option>
+                      <option value="ho-chi-minh" data-fee="15000">TP. Hồ Chí Minh</option>
+                      <option value="ha-noi" data-fee="30000">Hà Nội</option>
+                      <option value="da-nang" data-fee="30000">Đà Nẵng</option>
+                      <option value="can-tho" data-fee="30000">Cần Thơ</option>
+                      <option value="hai-phong" data-fee="30000">Hải Phòng</option>
+                      <option value="binh-duong" data-fee="30000">Bình Dương</option>
+                      <option value="dong-nai" data-fee="30000">Đồng Nai</option>
+                      <option value="long-an" data-fee="30000">Long An</option>
+                      <option value="ba-ria-vung-tau" data-fee="30000">Bà Rịa - Vũng Tàu</option>
+                      <option value="an-giang" data-fee="30000">An Giang</option>
+                      <option value="bac-giang" data-fee="30000">Bắc Giang</option>
+                      <option value="bac-kan" data-fee="30000">Bắc Kạn</option>
+                      <option value="bac-lieu" data-fee="30000">Bạc Liêu</option>
+                      <option value="bac-ninh" data-fee="30000">Bắc Ninh</option>
+                      <option value="ben-tre" data-fee="30000">Bến Tre</option>
+                      <option value="binh-dinh" data-fee="30000">Bình Định</option>
+                      <option value="binh-phuoc" data-fee="30000">Bình Phước</option>
+                      <option value="binh-thuan" data-fee="30000">Bình Thuận</option>
+                      <option value="ca-mau" data-fee="30000">Cà Mau</option>
+                      <option value="cao-bang" data-fee="30000">Cao Bằng</option>
+                      <option value="dak-lak" data-fee="30000">Đắk Lắk</option>
+                      <option value="dak-nong" data-fee="30000">Đắk Nông</option>
+                      <option value="dien-bien" data-fee="30000">Điện Biên</option>
+                      <option value="dong-thap" data-fee="30000">Đồng Tháp</option>
+                      <option value="gia-lai" data-fee="30000">Gia Lai</option>
+                      <option value="ha-giang" data-fee="30000">Hà Giang</option>
+                      <option value="ha-nam" data-fee="30000">Hà Nam</option>
+                      <option value="ha-tinh" data-fee="30000">Hà Tĩnh</option>
+                      <option value="hai-duong" data-fee="30000">Hải Dương</option>
+                      <option value="hau-giang" data-fee="30000">Hậu Giang</option>
+                      <option value="hoa-binh" data-fee="30000">Hòa Bình</option>
+                      <option value="hung-yen" data-fee="30000">Hưng Yên</option>
+                      <option value="khanh-hoa" data-fee="30000">Khánh Hòa</option>
+                      <option value="kien-giang" data-fee="30000">Kiên Giang</option>
+                      <option value="kon-tum" data-fee="30000">Kon Tum</option>
+                      <option value="lai-chau" data-fee="30000">Lai Châu</option>
+                      <option value="lam-dong" data-fee="30000">Lâm Đồng</option>
+                      <option value="lang-son" data-fee="30000">Lạng Sơn</option>
+                      <option value="lao-cai" data-fee="30000">Lào Cai</option>
+                      <option value="nam-dinh" data-fee="30000">Nam Định</option>
+                      <option value="nghe-an" data-fee="30000">Nghệ An</option>
+                      <option value="ninh-binh" data-fee="30000">Ninh Bình</option>
+                      <option value="ninh-thuan" data-fee="30000">Ninh Thuận</option>
+                      <option value="phu-tho" data-fee="30000">Phú Thọ</option>
+                      <option value="phu-yen" data-fee="30000">Phú Yên</option>
+                      <option value="quang-binh" data-fee="30000">Quảng Bình</option>
+                      <option value="quang-nam" data-fee="30000">Quảng Nam</option>
+                      <option value="quang-ngai" data-fee="30000">Quảng Ngãi</option>
+                      <option value="quang-ninh" data-fee="30000">Quảng Ninh</option>
+                      <option value="quang-tri" data-fee="30000">Quảng Trị</option>
+                      <option value="soc-trang" data-fee="30000">Sóc Trăng</option>
+                      <option value="son-la" data-fee="30000">Sơn La</option>
+                      <option value="tay-ninh" data-fee="30000">Tây Ninh</option>
+                      <option value="thai-binh" data-fee="30000">Thái Bình</option>
+                      <option value="thai-nguyen" data-fee="30000">Thái Nguyên</option>
+                      <option value="thanh-hoa" data-fee="30000">Thanh Hóa</option>
+                      <option value="thua-thien-hue" data-fee="30000">Thừa Thiên Huế</option>
+                      <option value="tien-giang" data-fee="30000">Tiền Giang</option>
+                      <option value="tra-vinh" data-fee="30000">Trà Vinh</option>
+                      <option value="tuyen-quang" data-fee="30000">Tuyên Quang</option>
+                      <option value="vinh-long" data-fee="30000">Vĩnh Long</option>
+                      <option value="vinh-phuc" data-fee="30000">Vĩnh Phúc</option>
+                      <option value="yen-bai" data-fee="30000">Yên Bái</option>
+                    </select>
                   </div>
                   <div class="form__btn">
-                    <button type="submit" name="update_shipping" class="btn flex btn--sm">
+                    <button type="button" onclick="updateShippingFee()" class="btn flex btn--sm">
                       <i class="fi-rs-shuffle"></i> Cập nhật
                     </button>
                   </div>
@@ -253,16 +317,29 @@ function getNumericPrice($price) {
               <!-- Mã giảm giá -->
               <div class="cart__coupon">
                 <h3 class="section__title">Mã giảm giá</h3>
-                <form action="" method="POST" class="coupon__form form grid">
-                  <div class="form__group grid">
-                    <input type="text" name="coupon_code" class="form__input" placeholder="Nhập mã giảm giá" />
-                    <div class="form__btn">
-                      <button type="submit" name="apply_coupon" class="btn flex btn--sm">
-                        <i class="fi-rs-label"></i> Áp dụng
-                      </button>
-                    </div>
+                <form action="" method="POST" class="coupon__form form grid" id="coupon-form">
+                  <div class="form__group">
+                    <!-- Dropdown mã giảm giá -->
+                    <select name="coupon_code" id="coupon-select" class="form__input form__select">
+                      <option value="">-- Chọn mã giảm giá --</option>
+                      <option value="GIAIKHATHE">GIAIKHATHE - Giảm 10% phí vận chuyển (tối đa 10.000đ)</option>
+                      <option value="GIAIKHAT">GIAIKHAT - Giảm 15% giá trị đơn hàng</option>
+                    </select>
+                  </div>
+                  <div class="form__btn">
+                    <button type="button" onclick="applyCoupon()" class="btn flex btn--sm">
+                      <i class="fi-rs-label"></i> Áp dụng
+                    </button>
                   </div>
                 </form>
+                <!-- Hiển thị mã giảm giá đã áp dụng -->
+                <div id="applied-coupon" class="applied-coupon" style="display: none;">
+                  <p class="coupon-info">
+                    <span id="coupon-name"></span>
+                    <button type="button" onclick="removeCoupon()" class="remove-coupon-btn">✕</button>
+                  </p>
+                  <p class="coupon-discount">Giảm: <span id="coupon-discount-amount">0</span>₫</p>
+                </div>
               </div>
             </div>
 
@@ -276,7 +353,11 @@ function getNumericPrice($price) {
                 </tr>
                 <tr>
                   <td><span class="cart__total-title">Vận chuyển</span></td>
-                  <td><span class="cart__total-price"><?php echo number_format($shipping, 0, ',', '.'); ?></span></td>
+                  <td><span class="cart__total-price" id="shipping-fee">21.000</span></td>
+                </tr>
+                <tr id="discount-row" style="display: none;">
+                  <td><span class="cart__total-title">Giảm giá</span></td>
+                  <td><span class="cart__total-price discount-amount" id="discount-amount">- 0</span></td>
                 </tr>
                 <tr>
                   <td><span class="cart__total-title">Tổng</span></td>

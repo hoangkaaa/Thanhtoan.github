@@ -194,7 +194,7 @@ class Cart {
     }
 }
 
-// Class để quản lý đơn hàng
+// Class để quản lý đơn hàng - CẢI TIẾN
 class Order {
     private $conn;
     private $table = 'orders';
@@ -204,26 +204,58 @@ class Order {
         $this->conn = $db;
     }
     
-    // Tạo đơn hàng mới
-    public function createOrder($user_id, $customer_info, $cart_items, $total_amount) {
+    // Tạo mã đơn hàng
+    private function generateOrderCode() {
+        return 'ORD' . date('Ymd') . strtoupper(substr(uniqid(), -5));
+    }
+    
+    // Tạo đơn hàng mới - CẢI TIẾN
+    public function createOrder($user_id, $customer_info, $cart_items, $order_details) {
         try {
             // Bắt đầu transaction
             $this->conn->beginTransaction();
             
-            // Thêm đơn hàng vào bảng orders
+            // Tạo mã đơn hàng
+            $order_code = $this->generateOrderCode();
+            
+            // Lưu thông tin khách hàng
+            $this->saveCustomerInfo($customer_info);
+            
+            // Thêm đơn hàng vào bảng orders với đầy đủ thông tin
             $order_query = "INSERT INTO " . $this->table . " 
-                           (user_id, customer_name, customer_email, customer_phone, 
-                            customer_address, total_amount, order_status, created_at) 
-                           VALUES (:user_id, :customer_name, :customer_email, :customer_phone, 
-                                   :customer_address, :total_amount, 'pending', NOW())";
+                           (order_code, user_id, customer_name, customer_email, customer_phone, 
+                            customer_address, delivery_method, payment_method, store_id,
+                            pickup_date, pickup_time, delivery_date, delivery_time,
+                            city, district, zipcode, subtotal, shipping_fee, total_amount,
+                            order_status, payment_status, created_at) 
+                           VALUES (:order_code, :user_id, :customer_name, :customer_email, :customer_phone, 
+                                   :customer_address, :delivery_method, :payment_method, :store_id,
+                                   :pickup_date, :pickup_time, :delivery_date, :delivery_time,
+                                   :city, :district, :zipcode, :subtotal, :shipping_fee, :total_amount,
+                                   'pending', 'pending', NOW())";
             
             $order_stmt = $this->conn->prepare($order_query);
+            
+            // Bind parameters
+            $order_stmt->bindParam(':order_code', $order_code);
             $order_stmt->bindParam(':user_id', $user_id);
             $order_stmt->bindParam(':customer_name', $customer_info['name']);
             $order_stmt->bindParam(':customer_email', $customer_info['email']);
             $order_stmt->bindParam(':customer_phone', $customer_info['phone']);
             $order_stmt->bindParam(':customer_address', $customer_info['address']);
-            $order_stmt->bindParam(':total_amount', $total_amount);
+            $order_stmt->bindParam(':delivery_method', $order_details['delivery_method']);
+            $order_stmt->bindParam(':payment_method', $order_details['payment_method']);
+            $order_stmt->bindParam(':store_id', $order_details['store_id']);
+            $order_stmt->bindParam(':pickup_date', $order_details['pickup_date']);
+            $order_stmt->bindParam(':pickup_time', $order_details['pickup_time']);
+            $order_stmt->bindParam(':delivery_date', $order_details['delivery_date']);
+            $order_stmt->bindParam(':delivery_time', $order_details['delivery_time']);
+            $order_stmt->bindParam(':city', $order_details['city']);
+            $order_stmt->bindParam(':district', $order_details['district']);
+            $order_stmt->bindParam(':zipcode', $order_details['zipcode']);
+            $order_stmt->bindParam(':subtotal', $order_details['subtotal']);
+            $order_stmt->bindParam(':shipping_fee', $order_details['shipping_fee']);
+            $order_stmt->bindParam(':total_amount', $order_details['total_amount']);
             
             $order_stmt->execute();
             
@@ -250,13 +282,14 @@ class Order {
                 $item_stmt->execute();
             }
             
-            // Xóa giỏ hàng sau khi đặt hàng thành công
-            $this->clearCart($user_id);
-            
             // Commit transaction
             $this->conn->commit();
             
-            return $order_id;
+            return [
+                'success' => true,
+                'order_id' => $order_id,
+                'order_code' => $order_code
+            ];
             
         } catch (Exception $e) {
             // Rollback nếu có lỗi
@@ -265,13 +298,54 @@ class Order {
         }
     }
     
-    // Xóa giỏ hàng sau khi đặt hàng
-    private function clearCart($user_id) {
-        $query = "DELETE FROM cart_items WHERE user_id = :user_id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':user_id', $user_id);
+    // Lưu thông tin khách hàng
+    private function saveCustomerInfo($customer_info) {
+        $check_query = "SELECT id FROM customers WHERE email = :email";
+        $check_stmt = $this->conn->prepare($check_query);
+        $check_stmt->bindParam(':email', $customer_info['email']);
+        $check_stmt->execute();
         
-        return $stmt->execute();
+        if ($check_stmt->rowCount() == 0) {
+            // Thêm khách hàng mới
+            $insert_query = "INSERT INTO customers (email, first_name, last_name, phone, address, city, district, zipcode) 
+                           VALUES (:email, :first_name, :last_name, :phone, :address, :city, :district, :zipcode)";
+            $insert_stmt = $this->conn->prepare($insert_query);
+            
+            $names = explode(' ', $customer_info['name'], 2);
+            $first_name = $names[0] ?? '';
+            $last_name = $names[1] ?? '';
+            
+            $insert_stmt->bindParam(':email', $customer_info['email']);
+            $insert_stmt->bindParam(':first_name', $first_name);
+            $insert_stmt->bindParam(':last_name', $last_name);
+            $insert_stmt->bindParam(':phone', $customer_info['phone']);
+            $insert_stmt->bindParam(':address', $customer_info['address']);
+            $insert_stmt->bindParam(':city', $customer_info['city']);
+            $insert_stmt->bindParam(':district', $customer_info['district']);
+            $insert_stmt->bindParam(':zipcode', $customer_info['zipcode']);
+            
+            $insert_stmt->execute();
+        }
+    }
+    
+    // Lấy thông tin đơn hàng
+    public function getOrderById($order_id) {
+        $query = "SELECT * FROM " . $this->table . " WHERE id = :order_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':order_id', $order_id);
+        $stmt->execute();
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    // Lấy chi tiết đơn hàng
+    public function getOrderItems($order_id) {
+        $query = "SELECT * FROM " . $this->order_items_table . " WHERE order_id = :order_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':order_id', $order_id);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
 ?> 
