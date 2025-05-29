@@ -132,6 +132,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['submit_payment']) ||
                 writeLog("Redirecting to MoMo payment...");
                 header('Location: momo_payment.php');
                 exit;
+            } elseif ($payment_method === 'paypal') {
+                writeLog("Redirecting to PayPal payment...");
+                header('Location: paypal.php');
+                exit;
             } else {
                 writeLog("Processing other payment method: " . $payment_method);
                 $errors[] = 'Phương thức thanh toán ' . $payment_method . ' chưa được tích hợp';
@@ -818,7 +822,8 @@ $total = $subtotal + $shipping;
                         if (selectedMethod === 'momo') {
                             console.log('Processing MoMo payment...');
                             
-                            // Gửi dữ liệu để lưu vào session
+                            formData.append('save_session_only', '1');
+                            
                             fetch('payment.php', {
                                 method: 'POST',
                                 body: formData
@@ -826,16 +831,32 @@ $total = $subtotal + $shipping;
                             .then(response => response.text())
                             .then(data => {
                                 console.log('Session saved, redirecting to MoMo...');
-                                // Chuyển hướng đến MoMo
                                 window.location.href = 'momo_payment.php';
                             })
                             .catch(error => {
                                 console.error('Error saving session:', error);
                                 alert('Có lỗi xảy ra khi lưu thông tin: ' + error.message);
                             });
+                        } else if (selectedMethod === 'paypal') {
+                            console.log('Processing PayPal payment...');
+                            
+                            formData.append('save_session_only', '1');
+                            
+                            fetch('payment.php', {
+                                method: 'POST',
+                                body: formData
+                            })
+                            .then(response => response.text())
+                            .then(data => {
+                                console.log('Session saved, redirecting to PayPal...');
+                                window.location.href = 'paypal.php';
+                            })
+                            .catch(error => {
+                                console.error('Error saving session:', error);
+                                alert('Có lỗi xảy ra khi lưu thông tin PayPal: ' + error.message);
+                            });
                         } else {
                             console.log('Processing other payment method...');
-                            // Submit form trực tiếp cho các phương thức thanh toán khác
                             document.getElementById('hidden-submit').click();
                         }
                     }
