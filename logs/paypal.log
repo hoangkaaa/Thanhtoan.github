@@ -1,0 +1,48 @@
+2025-05-29 06:52:17 - === PayPal Payment Started ===
+2025-05-29 06:52:17 - Amount: 170000 VND = 6.97 USD
+2025-05-29 06:52:18 - Token response code: 200
+2025-05-29 06:52:18 - Got access token successfully
+2025-05-29 06:52:18 - Order data: {"intent":"CAPTURE","purchase_units":[{"amount":{"currency_code":"USD","value":"6.97"},"description":"Sunkissed Store Order #1748494338"}],"application_context":{"brand_name":"Sunkissed Store","landing_page":"LOGIN","user_action":"PAY_NOW","return_url":"http:\/\/localhost\/paypal_return.php","cancel_url":"http:\/\/localhost\/payment.php?cancelled=1"}}
+2025-05-29 06:52:19 - Order response code: 201
+2025-05-29 06:52:19 - Order created: 3VF93799DR4164826
+2025-05-29 06:52:19 - Redirecting to: https://www.sandbox.paypal.com/checkoutnow?token=3VF93799DR4164826
+2025-05-29 06:53:32 - === PayPal Payment Started ===
+2025-05-29 06:53:32 - Amount: 170000 VND = 6.97 USD
+2025-05-29 06:54:15 - Token response code: 200
+2025-05-29 06:54:15 - Got access token successfully
+2025-05-29 06:54:15 - Order data: {"intent":"CAPTURE","purchase_units":[{"amount":{"currency_code":"USD","value":"6.97"},"description":"Sunkissed Store Order #1748494455"}],"application_context":{"brand_name":"Sunkissed Store","landing_page":"LOGIN","user_action":"PAY_NOW","return_url":"http:\/\/localhost:3000\\\/paypal_return.php","cancel_url":"http:\/\/localhost:3000\\\/payment.php?payment_cancelled=paypal"}}
+2025-05-29 06:54:15 - Order response code: 400
+2025-05-29 06:54:15 - Order response: {"name":"INVALID_REQUEST","message":"Request is not well-formed, syntactically incorrect, or violates schema.","debug_id":"f7302105001bd","details":[{"field":"/application_context/cancel_url","value":"http://localhost:3000\\/payment.php?payment_cancelled=paypal","location":"body","issue":"INVALID_PARAMETER_SYNTAX","description":"The value of a field does not conform to the expected format."},{"field":"/application_context/return_url","value":"http://localhost:3000\\/paypal_return.php","location":"body","issue":"INVALID_PARAMETER_SYNTAX","description":"The value of a field does not conform to the expected format."}],"links":[{"href":"https://developer.paypal.com/docs/api/orders/v2/#error-INVALID_PARAMETER_SYNTAX","rel":"information_link","encType":"application/json"}]}
+2025-05-29 06:54:15 - ERROR: Cannot create PayPal order: HTTP 400
+2025-05-29 06:55:07 - === PayPal Payment Started ===
+2025-05-29 06:55:07 - Amount: 170000 VND = 6.97 USD
+2025-05-29 06:55:07 - Token response code: 200
+2025-05-29 06:55:07 - Got access token successfully
+2025-05-29 06:55:07 - Order data: {"intent":"CAPTURE","purchase_units":[{"amount":{"currency_code":"USD","value":"6.97"},"description":"Sunkissed Store Order #1748494507"}],"application_context":{"brand_name":"Sunkissed Store","landing_page":"LOGIN","user_action":"PAY_NOW","return_url":"http:\/\/localhost:3000\\\/paypal_return.php","cancel_url":"http:\/\/localhost:3000\\\/payment.php?payment_cancelled=paypal"}}
+2025-05-29 06:55:29 - Order response code: 400
+2025-05-29 06:55:29 - Order response: {"name":"INVALID_REQUEST","message":"Request is not well-formed, syntactically incorrect, or violates schema.","debug_id":"f2234530767d3","details":[{"field":"/application_context/return_url","value":"http://localhost:3000\\/paypal_return.php","location":"body","issue":"INVALID_PARAMETER_SYNTAX","description":"The value of a field does not conform to the expected format."},{"field":"/application_context/cancel_url","value":"http://localhost:3000\\/payment.php?payment_cancelled=paypal","location":"body","issue":"INVALID_PARAMETER_SYNTAX","description":"The value of a field does not conform to the expected format."}],"links":[{"href":"https://developer.paypal.com/docs/api/orders/v2/#error-INVALID_PARAMETER_SYNTAX","rel":"information_link","encType":"application/json"}]}
+2025-05-29 06:55:29 - ERROR: Cannot create PayPal order: HTTP 400
+2025-05-29 06:55:38 - === PayPal Payment Started ===
+2025-05-29 06:55:38 - Amount: 170000 VND = 6.97 USD
+2025-05-29 06:55:39 - Token response code: 200
+2025-05-29 06:55:39 - Got access token successfully
+2025-05-29 06:55:39 - Order data: {"intent":"CAPTURE","purchase_units":[{"amount":{"currency_code":"USD","value":"6.97"},"description":"Sunkissed Store Order #1748494539"}],"application_context":{"brand_name":"Sunkissed Store","landing_page":"LOGIN","user_action":"PAY_NOW","return_url":"http:\/\/localhost:3000\\\/paypal_return.php","cancel_url":"http:\/\/localhost:3000\\\/payment.php?payment_cancelled=paypal"}}
+2025-05-29 06:55:40 - Order response code: 400
+2025-05-29 06:55:40 - Order response: {"name":"INVALID_REQUEST","message":"Request is not well-formed, syntactically incorrect, or violates schema.","debug_id":"f916693588e18","details":[{"field":"/application_context/return_url","value":"http://localhost:3000\\/paypal_return.php","location":"body","issue":"INVALID_PARAMETER_SYNTAX","description":"The value of a field does not conform to the expected format."},{"field":"/application_context/cancel_url","value":"http://localhost:3000\\/payment.php?payment_cancelled=paypal","location":"body","issue":"INVALID_PARAMETER_SYNTAX","description":"The value of a field does not conform to the expected format."}],"links":[{"href":"https://developer.paypal.com/docs/api/orders/v2/#error-INVALID_PARAMETER_SYNTAX","rel":"information_link","encType":"application/json"}]}
+2025-05-29 06:55:40 - ERROR: Cannot create PayPal order: HTTP 400
+2025-05-29 06:56:50 - === PayPal Payment Started ===
+2025-05-29 06:56:50 - Amount: 170000 VND = 6.97 USD
+2025-05-29 06:56:50 - Token response code: 200
+2025-05-29 06:56:50 - Got access token successfully
+2025-05-29 06:56:50 - Order data: {"intent":"CAPTURE","purchase_units":[{"amount":{"currency_code":"USD","value":"6.97"},"description":"Sunkissed Store Order #1748494610"}],"application_context":{"brand_name":"Sunkissed Store","landing_page":"LOGIN","user_action":"PAY_NOW","return_url":"http:\/\/localhost\/paypal_return.php","cancel_url":"http:\/\/localhost\/payment.php?cancelled=1"}}
+2025-05-29 06:57:12 - Order response code: 201
+2025-05-29 06:57:12 - Order created: 7AF71115SR0160247
+2025-05-29 06:57:12 - Redirecting to: https://www.sandbox.paypal.com/checkoutnow?token=7AF71115SR0160247
+2025-05-29 07:01:19 - === PayPal Payment Started ===
+2025-05-29 07:01:19 - Amount: 170000 VND = 6.97 USD
+2025-05-29 07:01:41 - Token response code: 200
+2025-05-29 07:01:41 - Got access token successfully
+2025-05-29 07:01:41 - Order data: {"intent":"CAPTURE","purchase_units":[{"amount":{"currency_code":"USD","value":"6.97"},"description":"Sunkissed Store Order #1748494901"}],"application_context":{"brand_name":"Sunkissed Store","landing_page":"LOGIN","user_action":"PAY_NOW","return_url":"https:\/\/abc123.ngrok.io\/paypal_return.php","cancel_url":"https:\/\/abc123.ngrok.io\/payment.php?cancelled=1"}}
+2025-05-29 07:01:42 - Order response code: 201
+2025-05-29 07:01:42 - Order created: 6G101440EX354171N
+2025-05-29 07:01:42 - Redirecting to: https://www.sandbox.paypal.com/checkoutnow?token=6G101440EX354171N

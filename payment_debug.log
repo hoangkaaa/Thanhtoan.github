@@ -2455,3 +2455,1022 @@
     [payment_token] => febcd818632af7a017a7d8489a8e83e0a38b2b9d23f8b94f26e0c8203fc86b22
 )
 
+[2025-05-29 06:52:08] === New Payment Session Started ===
+[2025-05-29 06:52:17] === New Payment Session Started ===
+[2025-05-29 06:52:17] === PAYMENT FORM SUBMITTED ===
+[2025-05-29 06:52:17] Save session only: YES
+[2025-05-29 06:52:17] POST data: Array
+(
+    [first_name] => Việt
+    [last_name] => Trương
+    [phone] => +84347108123
+    [email] => hoangtruong.31221026191@st.ueh.edu.vn
+    [delivery_method] => store
+    [payment_method] => paypal
+    [terms_checkbox] => 1
+    [save_session_only] => 1
+)
+
+[2025-05-29 06:52:17] Session payment_info before processing: Array
+(
+    [first_name] => Test
+    [last_name] => User
+    [email] => test@example.com
+    [phone] => 0123456789
+    [delivery_method] => store
+    [payment_method] => paypal
+    [user_id] => 1
+    [cart_items] => Array
+        (
+            [0] => Array
+                (
+                    [product_id] => 1
+                    [name] => Test Product
+                    [price] => 100000
+                    [quantity] => 1
+                )
+
+        )
+
+    [cart_total] => 100000
+    [shipping_fee] => 0
+    [discount_amount] => 0
+    [total_amount] => 100000
+)
+
+[2025-05-29 06:52:17] Extracted form data - First: Việt, Last: Trương, Phone: +84347108123, Email: hoangtruong.31221026191@st.ueh.edu.vn, Payment: paypal
+[2025-05-29 06:52:17] Validation errors: Array
+(
+)
+
+[2025-05-29 06:52:17] Payment info saved to session: Array
+(
+    [first_name] => Việt
+    [last_name] => Trương
+    [phone] => +84347108123
+    [email] => hoangtruong.31221026191@st.ueh.edu.vn
+    [delivery_method] => store
+    [payment_method] => paypal
+    [user_id] => 1
+    [cart_items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 21
+                    [user_id] => 1
+                    [product_id] => 3
+                    [product_name] => Vị Sài Gòn
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/cf_p1_bg.png
+                    [product_category] => Cà Phê
+                    [product_variant] => 500ml
+                    [quantity] => 3
+                    [created_at] => 2025-05-28 22:28:54
+                    [updated_at] => 2025-05-28 22:28:57
+                )
+
+            [1] => Array
+                (
+                    [id] => 20
+                    [user_id] => 1
+                    [product_id] => 2
+                    [product_name] => Hương Socola
+                    [product_price] => 30000.00
+                    [product_image] => assets/img/mt_p1_bg.png
+                    [product_category] => Trà Sữa
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:51
+                    [updated_at] => 2025-05-28 22:28:51
+                )
+
+            [2] => Array
+                (
+                    [id] => 19
+                    [user_id] => 1
+                    [product_id] => 1
+                    [product_name] => Hương Cam
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/td_p1_bg.png
+                    [product_category] => Tropical
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:48
+                    [updated_at] => 2025-05-28 22:28:48
+                )
+
+        )
+
+    [cart_total] => 170000.00
+    [shipping_fee] => 0
+    [discount_amount] => 0
+    [total_amount] => 170000
+    [payment_token] => febcd818632af7a017a7d8489a8e83e0a38b2b9d23f8b94f26e0c8203fc86b22
+)
+
+[2025-05-29 06:53:11] === New Payment Session Started ===
+[2025-05-29 06:53:32] === New Payment Session Started ===
+[2025-05-29 06:53:32] === PAYMENT FORM SUBMITTED ===
+[2025-05-29 06:53:32] Save session only: YES
+[2025-05-29 06:53:32] POST data: Array
+(
+    [first_name] => Việt
+    [last_name] => Trương
+    [phone] => +84347108123
+    [email] => hoangtruong.31221026191@st.ueh.edu.vn
+    [delivery_method] => store
+    [payment_method] => paypal
+    [terms_checkbox] => 1
+    [save_session_only] => 1
+)
+
+[2025-05-29 06:53:32] Session payment_info before processing: Array
+(
+    [first_name] => Việt
+    [last_name] => Trương
+    [phone] => +84347108123
+    [email] => hoangtruong.31221026191@st.ueh.edu.vn
+    [delivery_method] => store
+    [payment_method] => paypal
+    [user_id] => 1
+    [cart_items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 21
+                    [user_id] => 1
+                    [product_id] => 3
+                    [product_name] => Vị Sài Gòn
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/cf_p1_bg.png
+                    [product_category] => Cà Phê
+                    [product_variant] => 500ml
+                    [quantity] => 3
+                    [created_at] => 2025-05-28 22:28:54
+                    [updated_at] => 2025-05-28 22:28:57
+                )
+
+            [1] => Array
+                (
+                    [id] => 20
+                    [user_id] => 1
+                    [product_id] => 2
+                    [product_name] => Hương Socola
+                    [product_price] => 30000.00
+                    [product_image] => assets/img/mt_p1_bg.png
+                    [product_category] => Trà Sữa
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:51
+                    [updated_at] => 2025-05-28 22:28:51
+                )
+
+            [2] => Array
+                (
+                    [id] => 19
+                    [user_id] => 1
+                    [product_id] => 1
+                    [product_name] => Hương Cam
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/td_p1_bg.png
+                    [product_category] => Tropical
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:48
+                    [updated_at] => 2025-05-28 22:28:48
+                )
+
+        )
+
+    [cart_total] => 170000.00
+    [shipping_fee] => 0
+    [discount_amount] => 0
+    [total_amount] => 170000
+    [payment_token] => febcd818632af7a017a7d8489a8e83e0a38b2b9d23f8b94f26e0c8203fc86b22
+)
+
+[2025-05-29 06:53:32] Extracted form data - First: Việt, Last: Trương, Phone: +84347108123, Email: hoangtruong.31221026191@st.ueh.edu.vn, Payment: paypal
+[2025-05-29 06:53:32] Validation errors: Array
+(
+)
+
+[2025-05-29 06:53:32] Payment info saved to session: Array
+(
+    [first_name] => Việt
+    [last_name] => Trương
+    [phone] => +84347108123
+    [email] => hoangtruong.31221026191@st.ueh.edu.vn
+    [delivery_method] => store
+    [payment_method] => paypal
+    [user_id] => 1
+    [cart_items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 21
+                    [user_id] => 1
+                    [product_id] => 3
+                    [product_name] => Vị Sài Gòn
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/cf_p1_bg.png
+                    [product_category] => Cà Phê
+                    [product_variant] => 500ml
+                    [quantity] => 3
+                    [created_at] => 2025-05-28 22:28:54
+                    [updated_at] => 2025-05-28 22:28:57
+                )
+
+            [1] => Array
+                (
+                    [id] => 20
+                    [user_id] => 1
+                    [product_id] => 2
+                    [product_name] => Hương Socola
+                    [product_price] => 30000.00
+                    [product_image] => assets/img/mt_p1_bg.png
+                    [product_category] => Trà Sữa
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:51
+                    [updated_at] => 2025-05-28 22:28:51
+                )
+
+            [2] => Array
+                (
+                    [id] => 19
+                    [user_id] => 1
+                    [product_id] => 1
+                    [product_name] => Hương Cam
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/td_p1_bg.png
+                    [product_category] => Tropical
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:48
+                    [updated_at] => 2025-05-28 22:28:48
+                )
+
+        )
+
+    [cart_total] => 170000.00
+    [shipping_fee] => 0
+    [discount_amount] => 0
+    [total_amount] => 170000
+    [payment_token] => febcd818632af7a017a7d8489a8e83e0a38b2b9d23f8b94f26e0c8203fc86b22
+)
+
+[2025-05-29 06:54:15] === New Payment Session Started ===
+[2025-05-29 06:55:07] === New Payment Session Started ===
+[2025-05-29 06:55:07] === PAYMENT FORM SUBMITTED ===
+[2025-05-29 06:55:07] Save session only: YES
+[2025-05-29 06:55:07] POST data: Array
+(
+    [first_name] => Việt
+    [last_name] => Trương
+    [phone] => +84347108123
+    [email] => hoangtruong.31221026191@st.ueh.edu.vn
+    [delivery_method] => store
+    [payment_method] => paypal
+    [terms_checkbox] => 1
+    [save_session_only] => 1
+)
+
+[2025-05-29 06:55:07] Session payment_info before processing: Array
+(
+    [first_name] => Việt
+    [last_name] => Trương
+    [phone] => +84347108123
+    [email] => hoangtruong.31221026191@st.ueh.edu.vn
+    [delivery_method] => store
+    [payment_method] => paypal
+    [user_id] => 1
+    [cart_items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 21
+                    [user_id] => 1
+                    [product_id] => 3
+                    [product_name] => Vị Sài Gòn
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/cf_p1_bg.png
+                    [product_category] => Cà Phê
+                    [product_variant] => 500ml
+                    [quantity] => 3
+                    [created_at] => 2025-05-28 22:28:54
+                    [updated_at] => 2025-05-28 22:28:57
+                )
+
+            [1] => Array
+                (
+                    [id] => 20
+                    [user_id] => 1
+                    [product_id] => 2
+                    [product_name] => Hương Socola
+                    [product_price] => 30000.00
+                    [product_image] => assets/img/mt_p1_bg.png
+                    [product_category] => Trà Sữa
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:51
+                    [updated_at] => 2025-05-28 22:28:51
+                )
+
+            [2] => Array
+                (
+                    [id] => 19
+                    [user_id] => 1
+                    [product_id] => 1
+                    [product_name] => Hương Cam
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/td_p1_bg.png
+                    [product_category] => Tropical
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:48
+                    [updated_at] => 2025-05-28 22:28:48
+                )
+
+        )
+
+    [cart_total] => 170000.00
+    [shipping_fee] => 0
+    [discount_amount] => 0
+    [total_amount] => 170000
+    [payment_token] => febcd818632af7a017a7d8489a8e83e0a38b2b9d23f8b94f26e0c8203fc86b22
+)
+
+[2025-05-29 06:55:07] Extracted form data - First: Việt, Last: Trương, Phone: +84347108123, Email: hoangtruong.31221026191@st.ueh.edu.vn, Payment: paypal
+[2025-05-29 06:55:07] Validation errors: Array
+(
+)
+
+[2025-05-29 06:55:07] Payment info saved to session: Array
+(
+    [first_name] => Việt
+    [last_name] => Trương
+    [phone] => +84347108123
+    [email] => hoangtruong.31221026191@st.ueh.edu.vn
+    [delivery_method] => store
+    [payment_method] => paypal
+    [user_id] => 1
+    [cart_items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 21
+                    [user_id] => 1
+                    [product_id] => 3
+                    [product_name] => Vị Sài Gòn
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/cf_p1_bg.png
+                    [product_category] => Cà Phê
+                    [product_variant] => 500ml
+                    [quantity] => 3
+                    [created_at] => 2025-05-28 22:28:54
+                    [updated_at] => 2025-05-28 22:28:57
+                )
+
+            [1] => Array
+                (
+                    [id] => 20
+                    [user_id] => 1
+                    [product_id] => 2
+                    [product_name] => Hương Socola
+                    [product_price] => 30000.00
+                    [product_image] => assets/img/mt_p1_bg.png
+                    [product_category] => Trà Sữa
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:51
+                    [updated_at] => 2025-05-28 22:28:51
+                )
+
+            [2] => Array
+                (
+                    [id] => 19
+                    [user_id] => 1
+                    [product_id] => 1
+                    [product_name] => Hương Cam
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/td_p1_bg.png
+                    [product_category] => Tropical
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:48
+                    [updated_at] => 2025-05-28 22:28:48
+                )
+
+        )
+
+    [cart_total] => 170000.00
+    [shipping_fee] => 0
+    [discount_amount] => 0
+    [total_amount] => 170000
+    [payment_token] => febcd818632af7a017a7d8489a8e83e0a38b2b9d23f8b94f26e0c8203fc86b22
+)
+
+[2025-05-29 06:55:29] === New Payment Session Started ===
+[2025-05-29 06:55:38] === New Payment Session Started ===
+[2025-05-29 06:55:38] === PAYMENT FORM SUBMITTED ===
+[2025-05-29 06:55:38] Save session only: YES
+[2025-05-29 06:55:38] POST data: Array
+(
+    [first_name] => Việt
+    [last_name] => Trương
+    [phone] => +84347108123
+    [email] => hoangtruong.31221026191@st.ueh.edu.vn
+    [delivery_method] => store
+    [payment_method] => paypal
+    [terms_checkbox] => 1
+    [save_session_only] => 1
+)
+
+[2025-05-29 06:55:38] Session payment_info before processing: Array
+(
+    [first_name] => Việt
+    [last_name] => Trương
+    [phone] => +84347108123
+    [email] => hoangtruong.31221026191@st.ueh.edu.vn
+    [delivery_method] => store
+    [payment_method] => paypal
+    [user_id] => 1
+    [cart_items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 21
+                    [user_id] => 1
+                    [product_id] => 3
+                    [product_name] => Vị Sài Gòn
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/cf_p1_bg.png
+                    [product_category] => Cà Phê
+                    [product_variant] => 500ml
+                    [quantity] => 3
+                    [created_at] => 2025-05-28 22:28:54
+                    [updated_at] => 2025-05-28 22:28:57
+                )
+
+            [1] => Array
+                (
+                    [id] => 20
+                    [user_id] => 1
+                    [product_id] => 2
+                    [product_name] => Hương Socola
+                    [product_price] => 30000.00
+                    [product_image] => assets/img/mt_p1_bg.png
+                    [product_category] => Trà Sữa
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:51
+                    [updated_at] => 2025-05-28 22:28:51
+                )
+
+            [2] => Array
+                (
+                    [id] => 19
+                    [user_id] => 1
+                    [product_id] => 1
+                    [product_name] => Hương Cam
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/td_p1_bg.png
+                    [product_category] => Tropical
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:48
+                    [updated_at] => 2025-05-28 22:28:48
+                )
+
+        )
+
+    [cart_total] => 170000.00
+    [shipping_fee] => 0
+    [discount_amount] => 0
+    [total_amount] => 170000
+    [payment_token] => febcd818632af7a017a7d8489a8e83e0a38b2b9d23f8b94f26e0c8203fc86b22
+)
+
+[2025-05-29 06:55:38] Extracted form data - First: Việt, Last: Trương, Phone: +84347108123, Email: hoangtruong.31221026191@st.ueh.edu.vn, Payment: paypal
+[2025-05-29 06:55:38] Validation errors: Array
+(
+)
+
+[2025-05-29 06:55:38] Payment info saved to session: Array
+(
+    [first_name] => Việt
+    [last_name] => Trương
+    [phone] => +84347108123
+    [email] => hoangtruong.31221026191@st.ueh.edu.vn
+    [delivery_method] => store
+    [payment_method] => paypal
+    [user_id] => 1
+    [cart_items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 21
+                    [user_id] => 1
+                    [product_id] => 3
+                    [product_name] => Vị Sài Gòn
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/cf_p1_bg.png
+                    [product_category] => Cà Phê
+                    [product_variant] => 500ml
+                    [quantity] => 3
+                    [created_at] => 2025-05-28 22:28:54
+                    [updated_at] => 2025-05-28 22:28:57
+                )
+
+            [1] => Array
+                (
+                    [id] => 20
+                    [user_id] => 1
+                    [product_id] => 2
+                    [product_name] => Hương Socola
+                    [product_price] => 30000.00
+                    [product_image] => assets/img/mt_p1_bg.png
+                    [product_category] => Trà Sữa
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:51
+                    [updated_at] => 2025-05-28 22:28:51
+                )
+
+            [2] => Array
+                (
+                    [id] => 19
+                    [user_id] => 1
+                    [product_id] => 1
+                    [product_name] => Hương Cam
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/td_p1_bg.png
+                    [product_category] => Tropical
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:48
+                    [updated_at] => 2025-05-28 22:28:48
+                )
+
+        )
+
+    [cart_total] => 170000.00
+    [shipping_fee] => 0
+    [discount_amount] => 0
+    [total_amount] => 170000
+    [payment_token] => febcd818632af7a017a7d8489a8e83e0a38b2b9d23f8b94f26e0c8203fc86b22
+)
+
+[2025-05-29 06:55:40] === New Payment Session Started ===
+[2025-05-29 06:56:50] === New Payment Session Started ===
+[2025-05-29 06:56:50] === PAYMENT FORM SUBMITTED ===
+[2025-05-29 06:56:50] Save session only: YES
+[2025-05-29 06:56:50] POST data: Array
+(
+    [first_name] => Việt
+    [last_name] => Trương
+    [phone] => +84347108123
+    [email] => hoangtruong.31221026191@st.ueh.edu.vn
+    [delivery_method] => store
+    [payment_method] => paypal
+    [terms_checkbox] => 1
+    [save_session_only] => 1
+)
+
+[2025-05-29 06:56:50] Session payment_info before processing: Array
+(
+    [first_name] => Việt
+    [last_name] => Trương
+    [phone] => +84347108123
+    [email] => hoangtruong.31221026191@st.ueh.edu.vn
+    [delivery_method] => store
+    [payment_method] => paypal
+    [user_id] => 1
+    [cart_items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 21
+                    [user_id] => 1
+                    [product_id] => 3
+                    [product_name] => Vị Sài Gòn
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/cf_p1_bg.png
+                    [product_category] => Cà Phê
+                    [product_variant] => 500ml
+                    [quantity] => 3
+                    [created_at] => 2025-05-28 22:28:54
+                    [updated_at] => 2025-05-28 22:28:57
+                )
+
+            [1] => Array
+                (
+                    [id] => 20
+                    [user_id] => 1
+                    [product_id] => 2
+                    [product_name] => Hương Socola
+                    [product_price] => 30000.00
+                    [product_image] => assets/img/mt_p1_bg.png
+                    [product_category] => Trà Sữa
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:51
+                    [updated_at] => 2025-05-28 22:28:51
+                )
+
+            [2] => Array
+                (
+                    [id] => 19
+                    [user_id] => 1
+                    [product_id] => 1
+                    [product_name] => Hương Cam
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/td_p1_bg.png
+                    [product_category] => Tropical
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:48
+                    [updated_at] => 2025-05-28 22:28:48
+                )
+
+        )
+
+    [cart_total] => 170000.00
+    [shipping_fee] => 0
+    [discount_amount] => 0
+    [total_amount] => 170000
+    [payment_token] => febcd818632af7a017a7d8489a8e83e0a38b2b9d23f8b94f26e0c8203fc86b22
+)
+
+[2025-05-29 06:56:50] Extracted form data - First: Việt, Last: Trương, Phone: +84347108123, Email: hoangtruong.31221026191@st.ueh.edu.vn, Payment: paypal
+[2025-05-29 06:56:50] Validation errors: Array
+(
+)
+
+[2025-05-29 06:56:50] Payment info saved to session: Array
+(
+    [first_name] => Việt
+    [last_name] => Trương
+    [phone] => +84347108123
+    [email] => hoangtruong.31221026191@st.ueh.edu.vn
+    [delivery_method] => store
+    [payment_method] => paypal
+    [user_id] => 1
+    [cart_items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 21
+                    [user_id] => 1
+                    [product_id] => 3
+                    [product_name] => Vị Sài Gòn
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/cf_p1_bg.png
+                    [product_category] => Cà Phê
+                    [product_variant] => 500ml
+                    [quantity] => 3
+                    [created_at] => 2025-05-28 22:28:54
+                    [updated_at] => 2025-05-28 22:28:57
+                )
+
+            [1] => Array
+                (
+                    [id] => 20
+                    [user_id] => 1
+                    [product_id] => 2
+                    [product_name] => Hương Socola
+                    [product_price] => 30000.00
+                    [product_image] => assets/img/mt_p1_bg.png
+                    [product_category] => Trà Sữa
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:51
+                    [updated_at] => 2025-05-28 22:28:51
+                )
+
+            [2] => Array
+                (
+                    [id] => 19
+                    [user_id] => 1
+                    [product_id] => 1
+                    [product_name] => Hương Cam
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/td_p1_bg.png
+                    [product_category] => Tropical
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:48
+                    [updated_at] => 2025-05-28 22:28:48
+                )
+
+        )
+
+    [cart_total] => 170000.00
+    [shipping_fee] => 0
+    [discount_amount] => 0
+    [total_amount] => 170000
+    [payment_token] => febcd818632af7a017a7d8489a8e83e0a38b2b9d23f8b94f26e0c8203fc86b22
+)
+
+[2025-05-29 06:58:32] === New Payment Session Started ===
+[2025-05-29 06:58:41] === New Payment Session Started ===
+[2025-05-29 06:58:41] === PAYMENT FORM SUBMITTED ===
+[2025-05-29 06:58:41] Save session only: YES
+[2025-05-29 06:58:41] POST data: Array
+(
+    [first_name] => Việt
+    [last_name] => Trương
+    [phone] => +84347108123
+    [email] => hoangtruong.31221026191@st.ueh.edu.vn
+    [delivery_method] => store
+    [payment_method] => momo
+    [terms_checkbox] => 1
+    [save_session_only] => 1
+)
+
+[2025-05-29 06:58:41] Session payment_info before processing: Array
+(
+    [first_name] => Việt
+    [last_name] => Trương
+    [phone] => +84347108123
+    [email] => hoangtruong.31221026191@st.ueh.edu.vn
+    [delivery_method] => store
+    [payment_method] => paypal
+    [user_id] => 1
+    [cart_items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 21
+                    [user_id] => 1
+                    [product_id] => 3
+                    [product_name] => Vị Sài Gòn
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/cf_p1_bg.png
+                    [product_category] => Cà Phê
+                    [product_variant] => 500ml
+                    [quantity] => 3
+                    [created_at] => 2025-05-28 22:28:54
+                    [updated_at] => 2025-05-28 22:28:57
+                )
+
+            [1] => Array
+                (
+                    [id] => 20
+                    [user_id] => 1
+                    [product_id] => 2
+                    [product_name] => Hương Socola
+                    [product_price] => 30000.00
+                    [product_image] => assets/img/mt_p1_bg.png
+                    [product_category] => Trà Sữa
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:51
+                    [updated_at] => 2025-05-28 22:28:51
+                )
+
+            [2] => Array
+                (
+                    [id] => 19
+                    [user_id] => 1
+                    [product_id] => 1
+                    [product_name] => Hương Cam
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/td_p1_bg.png
+                    [product_category] => Tropical
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:48
+                    [updated_at] => 2025-05-28 22:28:48
+                )
+
+        )
+
+    [cart_total] => 170000.00
+    [shipping_fee] => 0
+    [discount_amount] => 0
+    [total_amount] => 170000
+    [payment_token] => febcd818632af7a017a7d8489a8e83e0a38b2b9d23f8b94f26e0c8203fc86b22
+)
+
+[2025-05-29 06:58:41] Extracted form data - First: Việt, Last: Trương, Phone: +84347108123, Email: hoangtruong.31221026191@st.ueh.edu.vn, Payment: momo
+[2025-05-29 06:58:41] Validation errors: Array
+(
+)
+
+[2025-05-29 06:58:41] Payment info saved to session: Array
+(
+    [first_name] => Việt
+    [last_name] => Trương
+    [phone] => +84347108123
+    [email] => hoangtruong.31221026191@st.ueh.edu.vn
+    [delivery_method] => store
+    [payment_method] => momo
+    [user_id] => 1
+    [cart_items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 21
+                    [user_id] => 1
+                    [product_id] => 3
+                    [product_name] => Vị Sài Gòn
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/cf_p1_bg.png
+                    [product_category] => Cà Phê
+                    [product_variant] => 500ml
+                    [quantity] => 3
+                    [created_at] => 2025-05-28 22:28:54
+                    [updated_at] => 2025-05-28 22:28:57
+                )
+
+            [1] => Array
+                (
+                    [id] => 20
+                    [user_id] => 1
+                    [product_id] => 2
+                    [product_name] => Hương Socola
+                    [product_price] => 30000.00
+                    [product_image] => assets/img/mt_p1_bg.png
+                    [product_category] => Trà Sữa
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:51
+                    [updated_at] => 2025-05-28 22:28:51
+                )
+
+            [2] => Array
+                (
+                    [id] => 19
+                    [user_id] => 1
+                    [product_id] => 1
+                    [product_name] => Hương Cam
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/td_p1_bg.png
+                    [product_category] => Tropical
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:48
+                    [updated_at] => 2025-05-28 22:28:48
+                )
+
+        )
+
+    [cart_total] => 170000.00
+    [shipping_fee] => 0
+    [discount_amount] => 0
+    [total_amount] => 170000
+    [payment_token] => febcd818632af7a017a7d8489a8e83e0a38b2b9d23f8b94f26e0c8203fc86b22
+)
+
+[2025-05-29 06:58:59] === New Payment Session Started ===
+[2025-05-29 07:01:19] === New Payment Session Started ===
+[2025-05-29 07:01:19] === PAYMENT FORM SUBMITTED ===
+[2025-05-29 07:01:19] Save session only: YES
+[2025-05-29 07:01:19] POST data: Array
+(
+    [first_name] => Việt
+    [last_name] => Trương
+    [phone] => +84347108123
+    [email] => hoangtruong.31221026191@st.ueh.edu.vn
+    [delivery_method] => store
+    [payment_method] => paypal
+    [terms_checkbox] => 1
+    [save_session_only] => 1
+)
+
+[2025-05-29 07:01:19] Session payment_info before processing: Array
+(
+    [first_name] => Việt
+    [last_name] => Trương
+    [phone] => +84347108123
+    [email] => hoangtruong.31221026191@st.ueh.edu.vn
+    [delivery_method] => store
+    [payment_method] => momo
+    [user_id] => 1
+    [cart_items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 21
+                    [user_id] => 1
+                    [product_id] => 3
+                    [product_name] => Vị Sài Gòn
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/cf_p1_bg.png
+                    [product_category] => Cà Phê
+                    [product_variant] => 500ml
+                    [quantity] => 3
+                    [created_at] => 2025-05-28 22:28:54
+                    [updated_at] => 2025-05-28 22:28:57
+                )
+
+            [1] => Array
+                (
+                    [id] => 20
+                    [user_id] => 1
+                    [product_id] => 2
+                    [product_name] => Hương Socola
+                    [product_price] => 30000.00
+                    [product_image] => assets/img/mt_p1_bg.png
+                    [product_category] => Trà Sữa
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:51
+                    [updated_at] => 2025-05-28 22:28:51
+                )
+
+            [2] => Array
+                (
+                    [id] => 19
+                    [user_id] => 1
+                    [product_id] => 1
+                    [product_name] => Hương Cam
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/td_p1_bg.png
+                    [product_category] => Tropical
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:48
+                    [updated_at] => 2025-05-28 22:28:48
+                )
+
+        )
+
+    [cart_total] => 170000.00
+    [shipping_fee] => 0
+    [discount_amount] => 0
+    [total_amount] => 170000
+    [payment_token] => febcd818632af7a017a7d8489a8e83e0a38b2b9d23f8b94f26e0c8203fc86b22
+)
+
+[2025-05-29 07:01:19] Extracted form data - First: Việt, Last: Trương, Phone: +84347108123, Email: hoangtruong.31221026191@st.ueh.edu.vn, Payment: paypal
+[2025-05-29 07:01:19] Validation errors: Array
+(
+)
+
+[2025-05-29 07:01:19] Payment info saved to session: Array
+(
+    [first_name] => Việt
+    [last_name] => Trương
+    [phone] => +84347108123
+    [email] => hoangtruong.31221026191@st.ueh.edu.vn
+    [delivery_method] => store
+    [payment_method] => paypal
+    [user_id] => 1
+    [cart_items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 21
+                    [user_id] => 1
+                    [product_id] => 3
+                    [product_name] => Vị Sài Gòn
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/cf_p1_bg.png
+                    [product_category] => Cà Phê
+                    [product_variant] => 500ml
+                    [quantity] => 3
+                    [created_at] => 2025-05-28 22:28:54
+                    [updated_at] => 2025-05-28 22:28:57
+                )
+
+            [1] => Array
+                (
+                    [id] => 20
+                    [user_id] => 1
+                    [product_id] => 2
+                    [product_name] => Hương Socola
+                    [product_price] => 30000.00
+                    [product_image] => assets/img/mt_p1_bg.png
+                    [product_category] => Trà Sữa
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:51
+                    [updated_at] => 2025-05-28 22:28:51
+                )
+
+            [2] => Array
+                (
+                    [id] => 19
+                    [user_id] => 1
+                    [product_id] => 1
+                    [product_name] => Hương Cam
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/td_p1_bg.png
+                    [product_category] => Tropical
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 22:28:48
+                    [updated_at] => 2025-05-28 22:28:48
+                )
+
+        )
+
+    [cart_total] => 170000.00
+    [shipping_fee] => 0
+    [discount_amount] => 0
+    [total_amount] => 170000
+    [payment_token] => febcd818632af7a017a7d8489a8e83e0a38b2b9d23f8b94f26e0c8203fc86b22
+)
+
