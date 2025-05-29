@@ -127,14 +127,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['submit_payment']) ||
             unset($_SESSION['payment_token']);
             $_SESSION['payment_token'] = bin2hex(random_bytes(32));
 
-            // Redirect based on payment method
+            /**
+             * PHẦN REDIRECT ĐẾN CÁC PHƯƠNG THỨC THANH TOÁN
+             * Dựa vào phương thức thanh toán được chọn để redirect đến trang tương ứng
+             */
             if ($payment_method === 'momo') {
+                // ★★★ REDIRECT ĐẾN TRANG THANH TOÁN MOMO ★★★
                 writeLog("Redirecting to MoMo payment...");
-                header('Location: momo_payment.php');
+                header('Location: momo_payment.php'); // Chuyển hướng đến file xử lý MoMo
                 exit;
             } elseif ($payment_method === 'paypal') {
+                // Redirect đến trang thanh toán PayPal
                 writeLog("Redirecting to PayPal payment...");
-                header('Location: paypal.php');
+                header('Location: paypal.php'); // Chuyển hướng đến file xử lý PayPal
                 exit;
             } else {
                 writeLog("Processing other payment method: " . $payment_method);

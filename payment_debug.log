@@ -3474,3 +3474,253 @@
     [payment_token] => febcd818632af7a017a7d8489a8e83e0a38b2b9d23f8b94f26e0c8203fc86b22
 )
 
+[2025-05-29 10:58:24] === New Payment Session Started ===
+[2025-05-29 10:58:39] === New Payment Session Started ===
+[2025-05-29 10:58:39] === PAYMENT FORM SUBMITTED ===
+[2025-05-29 10:58:39] Save session only: YES
+[2025-05-29 10:58:39] POST data: Array
+(
+    [first_name] => Khoi
+    [last_name] => Vo
+    [phone] => +843359966666
+    [email] => lekhoizero@gmail.com
+    [delivery_method] => store
+    [payment_method] => paypal
+    [terms_checkbox] => 1
+    [save_session_only] => 1
+)
+
+[2025-05-29 10:58:39] Session payment_info before processing: Array
+(
+    [first_name] => Khoi
+    [last_name] => Vo
+    [phone] => +843359966666
+    [email] => lekhoizero@gmail.com
+    [delivery_method] => store
+    [payment_method] => momo
+    [user_id] => 1
+    [cart_items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 10
+                    [user_id] => 1
+                    [product_id] => 3
+                    [product_name] => Vị Sài Gòn
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/cf_p1_bg.png
+                    [product_category] => Cà Phê
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 21:40:22
+                    [updated_at] => 2025-05-28 21:40:22
+                )
+
+            [1] => Array
+                (
+                    [id] => 9
+                    [user_id] => 1
+                    [product_id] => 1
+                    [product_name] => Hương Cam
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/td_p1_bg.png
+                    [product_category] => Tropical
+                    [product_variant] => 500ml
+                    [quantity] => 4
+                    [created_at] => 2025-05-28 21:38:19
+                    [updated_at] => 2025-05-28 21:39:48
+                )
+
+        )
+
+    [cart_total] => 175000.00
+    [shipping_fee] => 0
+    [discount_amount] => 0
+    [total_amount] => 175000
+    [payment_token] => 5681d6faef7f66b14e47ee9427c293b132f268f96b1df026c5afc9c7d6b46d83
+)
+
+[2025-05-29 10:58:39] Extracted form data - First: Khoi, Last: Vo, Phone: +843359966666, Email: lekhoizero@gmail.com, Payment: paypal
+[2025-05-29 10:58:39] Validation errors: Array
+(
+)
+
+[2025-05-29 10:58:39] Payment info saved to session: Array
+(
+    [first_name] => Khoi
+    [last_name] => Vo
+    [phone] => +843359966666
+    [email] => lekhoizero@gmail.com
+    [delivery_method] => store
+    [payment_method] => paypal
+    [user_id] => 1
+    [cart_items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 10
+                    [user_id] => 1
+                    [product_id] => 3
+                    [product_name] => Vị Sài Gòn
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/cf_p1_bg.png
+                    [product_category] => Cà Phê
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 21:40:22
+                    [updated_at] => 2025-05-28 21:40:22
+                )
+
+            [1] => Array
+                (
+                    [id] => 9
+                    [user_id] => 1
+                    [product_id] => 1
+                    [product_name] => Hương Cam
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/td_p1_bg.png
+                    [product_category] => Tropical
+                    [product_variant] => 500ml
+                    [quantity] => 4
+                    [created_at] => 2025-05-28 21:38:19
+                    [updated_at] => 2025-05-28 21:39:48
+                )
+
+        )
+
+    [cart_total] => 175000.00
+    [shipping_fee] => 0
+    [discount_amount] => 0
+    [total_amount] => 175000
+    [payment_token] => 5681d6faef7f66b14e47ee9427c293b132f268f96b1df026c5afc9c7d6b46d83
+)
+
+[2025-05-29 10:58:53] === New Payment Session Started ===
+[2025-05-29 10:58:56] === New Payment Session Started ===
+[2025-05-29 10:58:56] === PAYMENT FORM SUBMITTED ===
+[2025-05-29 10:58:56] Save session only: YES
+[2025-05-29 10:58:56] POST data: Array
+(
+    [first_name] => Khoi
+    [last_name] => Vo
+    [phone] => +843359966666
+    [email] => lekhoizero@gmail.com
+    [delivery_method] => store
+    [payment_method] => momo
+    [terms_checkbox] => 1
+    [save_session_only] => 1
+)
+
+[2025-05-29 10:58:56] Session payment_info before processing: Array
+(
+    [first_name] => Khoi
+    [last_name] => Vo
+    [phone] => +843359966666
+    [email] => lekhoizero@gmail.com
+    [delivery_method] => store
+    [payment_method] => paypal
+    [user_id] => 1
+    [cart_items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 10
+                    [user_id] => 1
+                    [product_id] => 3
+                    [product_name] => Vị Sài Gòn
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/cf_p1_bg.png
+                    [product_category] => Cà Phê
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 21:40:22
+                    [updated_at] => 2025-05-28 21:40:22
+                )
+
+            [1] => Array
+                (
+                    [id] => 9
+                    [user_id] => 1
+                    [product_id] => 1
+                    [product_name] => Hương Cam
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/td_p1_bg.png
+                    [product_category] => Tropical
+                    [product_variant] => 500ml
+                    [quantity] => 4
+                    [created_at] => 2025-05-28 21:38:19
+                    [updated_at] => 2025-05-28 21:39:48
+                )
+
+        )
+
+    [cart_total] => 175000.00
+    [shipping_fee] => 0
+    [discount_amount] => 0
+    [total_amount] => 175000
+    [payment_token] => 5681d6faef7f66b14e47ee9427c293b132f268f96b1df026c5afc9c7d6b46d83
+)
+
+[2025-05-29 10:58:56] Extracted form data - First: Khoi, Last: Vo, Phone: +843359966666, Email: lekhoizero@gmail.com, Payment: momo
+[2025-05-29 10:58:56] Validation errors: Array
+(
+)
+
+[2025-05-29 10:58:56] Payment info saved to session: Array
+(
+    [first_name] => Khoi
+    [last_name] => Vo
+    [phone] => +843359966666
+    [email] => lekhoizero@gmail.com
+    [delivery_method] => store
+    [payment_method] => momo
+    [user_id] => 1
+    [cart_items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 10
+                    [user_id] => 1
+                    [product_id] => 3
+                    [product_name] => Vị Sài Gòn
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/cf_p1_bg.png
+                    [product_category] => Cà Phê
+                    [product_variant] => 500ml
+                    [quantity] => 1
+                    [created_at] => 2025-05-28 21:40:22
+                    [updated_at] => 2025-05-28 21:40:22
+                )
+
+            [1] => Array
+                (
+                    [id] => 9
+                    [user_id] => 1
+                    [product_id] => 1
+                    [product_name] => Hương Cam
+                    [product_price] => 35000.00
+                    [product_image] => assets/img/td_p1_bg.png
+                    [product_category] => Tropical
+                    [product_variant] => 500ml
+                    [quantity] => 4
+                    [created_at] => 2025-05-28 21:38:19
+                    [updated_at] => 2025-05-28 21:39:48
+                )
+
+        )
+
+    [cart_total] => 175000.00
+    [shipping_fee] => 0
+    [discount_amount] => 0
+    [total_amount] => 175000
+    [payment_token] => 5681d6faef7f66b14e47ee9427c293b132f268f96b1df026c5afc9c7d6b46d83
+)
+
+[2025-05-29 10:59:12] === New Payment Session Started ===
+[2025-05-29 10:59:14] === New Payment Session Started ===
+[2025-05-29 11:00:04] === New Payment Session Started ===
+[2025-05-29 11:00:56] === New Payment Session Started ===
+[2025-05-29 11:01:08] === New Payment Session Started ===
+[2025-05-29 11:48:49] === New Payment Session Started ===
+[2025-05-29 12:24:07] === New Payment Session Started ===
+[2025-05-29 12:24:17] === New Payment Session Started ===

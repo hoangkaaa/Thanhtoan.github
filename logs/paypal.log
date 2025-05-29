@@ -46,3 +46,11 @@
 2025-05-29 07:01:42 - Order response code: 201
 2025-05-29 07:01:42 - Order created: 6G101440EX354171N
 2025-05-29 07:01:42 - Redirecting to: https://www.sandbox.paypal.com/checkoutnow?token=6G101440EX354171N
+2025-05-29 10:58:39 - === PayPal Payment Started ===
+2025-05-29 10:58:39 - Amount: 175000 VND = 7.18 USD
+2025-05-29 10:58:40 - Token response code: 200
+2025-05-29 10:58:40 - Got access token successfully
+2025-05-29 10:58:40 - Order data: {"intent":"CAPTURE","purchase_units":[{"amount":{"currency_code":"USD","value":"7.18"},"description":"Sunkissed Store Order #1748509120"}],"application_context":{"brand_name":"Sunkissed Store","landing_page":"LOGIN","user_action":"PAY_NOW","return_url":"https:\/\/abc123.ngrok.io\/paypal_return.php","cancel_url":"https:\/\/abc123.ngrok.io\/payment.php?cancelled=1"}}
+2025-05-29 10:58:41 - Order response code: 201
+2025-05-29 10:58:41 - Order created: 6C927821VG5814837
+2025-05-29 10:58:41 - Redirecting to: https://www.sandbox.paypal.com/checkoutnow?token=6C927821VG5814837
